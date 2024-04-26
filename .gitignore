@@ -1,3 +1,5 @@
 *
-!app/code
-!.gitignore
+!/app
+!/app/*/
+!/app/code/**
+/.gitignore
