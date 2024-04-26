@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+
+    <group id="account_configuration" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+           showInStore="1">
+        <label>Shop Smart</label>
+
+        <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1"
+               showInWebsite="1" showInStore="1">
+            <label>Enable Shop Smart</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>shop_smart/general/enable</config_path>
+        </field>
+
+        <field id="shop_smart_mode" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1"
+               showInStore="0">
+            <label>Mode</label>
+            <depends>
+                <field id="shop_smart/general/account_configuration/enable">1</field>
+            </depends>
+            <source_model>NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source\Mode</source_model>
+            <config_path>shop_smart/general/shop_smart_mode</config_path>
+        </field>
+
+        <field id="user_id" translate="label" type="text" sortOrder="60" showInDefault="50" showInWebsite="1"
+               showInStore="1">
+            <label>User ID</label>
+            <depends>
+                <field id="shop_smart/general/account_configuration/enable">1</field>
+            </depends>
+            <comment><![CDATA[<strong>For Example</strong>: example1234. Check usage <a href="#">here</a>]]></comment>
+            <config_path>shop_smart/general/user_id</config_path>
+        </field>
+
+        <field id="user_name" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1"
+               showInStore="1">
+            <label>User Name</label>
+            <depends>
+                <field id="shop_smart/general/account_configuration/enable">1</field>
+            </depends>
+            <comment><![CDATA[<strong>For Example</strong>: NewEcomAi. Check usage <a href="#">here</a>]]></comment>
+            <config_path>shop_smart/general/user_name</config_path>
+        </field>
+
+        <field id="password" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+               showInStore="1">
+            <label>Password</label>
+            <depends>
+                <field id="shop_smart/general/account_configuration/enable">1</field>
+            </depends>
+            <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+            <config_path>shop_smart/general/password</config_path>
+        </field>
+
+        <field id="ab_testing" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1"
+               showInStore="1">
+            <label>AB Testing 50%-50%:</label>
+            <depends>
+                <field id="shop_smart/general/account_configuration/enable">1</field>
+            </depends>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>shop_smart/general/ab_testing</config_path>
+        </field>
+    </group>
+</include>

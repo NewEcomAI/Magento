@@ -10,16 +10,15 @@
             <class>separator-top</class>
             <label>Shop Smart</label>
             <tab>new_ecom_ai</tab>
-            <resource>NewEcomAi_ShopSmart::config_newecomai</resource>
+            <resource>NewEcomAI_ShopSmart::config_newecomai</resource>
+
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
                    showInStore="1">
-                <label>General Configuration</label>
-                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Enable Shop Smart</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-
+                <label>NewEcomAi API Configurationn</label>
+                <include path="NewEcomAI_ShopSmart::system/account_configuration.xml"/>
+                <include path="NewEcomAI_ShopSmart::system/catalog_sync.xml"/>
+                <include path="NewEcomAI_ShopSmart::system/product_attribute_mapping.xml"/>
+                <include path="NewEcomAI_ShopSmart::system/search_popup_config.xml"/>
             </group>
         </section>
     </system>
