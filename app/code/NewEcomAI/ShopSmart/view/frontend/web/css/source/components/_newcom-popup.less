@@ -1,0 +1,438 @@
+
+@import "../core/_variables.less";
+@import "../_typography.less";
+
+.NewEcomAi {
+  &__popup {
+    background-color: @popup-background-color;
+    display: none;
+    height: 100%;
+    left: 0;
+    overflow: auto;
+    padding-top: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 999;
+  }
+
+  &__popup-content {
+    background-color: @white;
+    border-radius: 10px;
+    height: 100%;
+    margin: auto;
+    max-height: initial;
+    max-width: 800px;
+    overflow: scroll;
+    padding: 0;
+    padding: 20px;
+    position: relative;
+    width: 100%;
+
+    &__upload {
+      border-left: 1px solid;
+      cursor: pointer;
+      height: 65px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 50px;
+    }
+
+    &__svg {
+      height: 65px;
+      z-index: 0;
+    }
+
+    &__file {
+      height: 43px;
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      width: 35px;
+      z-index: 1;
+    }
+
+    &__inner {
+      margin: 20px auto;
+      max-width: 86%;
+      text-align: center;
+    }
+
+    &__heading {
+      color: @color-foreground;
+      font-family: @font-heading-family;
+      font-size: calc(@font-heading-scale * 2rem);
+      font-weight: @font-weight-bold;
+      letter-spacing: calc(@font-heading-scale * .06rem);
+      margin-bottom: 19px;
+      margin-top: 0;
+      word-break: break-word;
+    }
+
+    &__input {
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 16px;
+      max-height: 200px;
+      min-height: 100px;
+      padding: 20px;
+      resize: vertical;
+      width: 100%;
+    }
+
+    &__search-box {
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    &__examples {
+      text-align: left;
+
+      &__query {
+        border: 1px solid @popup-example-border-color;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 12px;
+        margin-bottom: 5px;
+        padding: 5px;
+        text-align: left;
+
+        &:hover {
+          background-color: @popup-examples-hover-background-color;
+        }
+      }
+    }
+  }
+
+  &__close {
+    color: @popup-close-button-color;
+    cursor: pointer;
+    font-size: 28px;
+    font-weight: @font-weight-bold;
+    position: absolute;
+    right: 12px;
+    top: -7px;
+    z-index: 1;
+  }
+
+  &__close {
+    &:hover,
+    &:focus {
+      color: @black;
+      cursor: pointer;
+      text-decoration: none;
+    }
+  }
+
+  &.newcomProductGrid {
+    .NewEcomAi {
+      &__close {
+          display: none;
+      }
+
+
+      &__popup {
+        background-color: transparent;
+        padding-top: 0;
+        position: relative;
+        overflow: visible;
+      }
+
+      &__popup-content {
+        border-radius: 0;
+        border: 0;
+        max-height: 100%;
+        max-width: 100%;
+        overflow: visible;
+        width: 100%;
+
+        &__heading {
+            font-size: 20px;
+            font-weight: @font-weight-bold;
+            margin-bottom: 16px;
+            margin-top: 0;
+            text-align: left;
+        }
+
+        &__search-box {
+            align-items: flex-start;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        &__upload {
+            border-left: 1px solid;
+            height: 65px;
+            position: absolute;
+            right: 0;
+            text-align: center;
+            top: 0;
+            width: 50px;
+        }
+
+        &__inner {
+          max-width: 100%;
+          padding: 10px 20px;
+        }
+
+        &__file {
+            border-bottom: 1px solid;
+            border-top: 1px solid;
+            cursor: pointer;
+            height: 41px;
+            opacity: 0;
+            position: relative;
+            width: 60px;
+        }
+
+        &__svg {
+            height: 65px;
+        }
+
+        &__input {
+            border-radius: 0;
+            box-sizing: border-box;
+            height: 43px;
+            max-height: 80px;
+            min-height: 65px;
+            padding-right: 50px;
+            padding: 8px 10px;
+            resize: vertical;
+            width: 100%;
+        }
+
+        &__button {
+            border-radius: 0;
+            border: 0;
+            height: 43px;
+            margin-bottom: 0;
+            padding: 13px 10px;
+            width: 100%;
+        }
+
+        &__examples {
+          text-align: left;
+    
+          &__query {
+            border: 1px solid @popup-example-border-color;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 12px;
+            margin-bottom: 5px;
+            padding: 5px;
+            text-align: left;
+    
+            &:hover {
+              background-color: @popup-examples-hover-background-color;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.newcomLeftSide {
+    .NewEcomAi {
+      &__left {
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+        left: 0;
+    
+        &__desc {
+            display: none;
+            padding: 10px;
+        }
+    
+        &__text {
+            border-left: 1px solid;
+            overflow: hidden;
+            padding: 10px;
+            position: relative;
+            transition: all 0.2s ease;
+            writing-mode: vertical-lr;
+        }
+    
+        &:hover {
+          .NewEcomAi {
+              &__left {
+              &__desc {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+                transition: opacity 0.2s ease, transform 0.2s ease;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.newSmartShopDiscover {
+    .NewEcomAi {
+      &__btn {
+        display: none;
+      }
+    }
+  }
+
+  &.newcomRightSide {
+    .NewEcomAi {
+      &__right {
+        display: flex;
+      }
+    }
+  }
+
+  &.newcomLeftSide {
+    .NewEcomAi {
+      &__left {
+        display: flex;
+      }
+    }
+  }
+
+  &.newcomRightSide {
+    .NewEcomAi {
+      &__right {
+        border-bottom-left-radius: 10px;
+        border-top-left-radius: 10px;
+        right: 0;
+    
+        &__desc {
+          display: none;
+          padding: 10px;
+        }
+    
+        &__text {
+          border-left: 1px solid;
+          overflow: hidden;
+          padding: 10px;
+          position: relative;
+          transform: rotate(180deg);
+          transition: all 0.2s ease;
+          writing-mode: vertical-lr;
+        }
+    
+        &:hover {
+          .NewEcomAi {
+            &__right {
+              &__desc {
+                  display: block;
+                  opacity: 1;
+                  transform: translateY(0);
+                  transition: opacity 0.2s ease, transform 0.2s ease;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &__btn {
+    align-items: center;
+    color: @white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    max-width: 30%;
+    overflow: hidden;
+    position: fixed;
+    top: 50%;
+    z-index: 4;
+    font-size: 16px;
+  }
+}
+
+//
+//  Mobile (style-l.css)
+//  _____________________________________________
+
+
+//
+//  Desktop (style-l.css)
+//  _____________________________________________
+@media (min-width: @screen__s) {
+  .NewEcomAi {
+    &__popup-content {
+      width: 50%;
+      max-height: 80vh;
+      overflow: scroll;
+      height: auto;
+
+      &__input {
+        width: 85%;
+      }
+
+      &__search-box {
+        position: unset;
+      }
+
+      &__upload {
+        border-bottom: 1px solid;
+        border-left: none;
+        border-top: 1px solid;
+        height: 41px;
+        position: relative;
+        width: 60px;
+      }
+
+      &__heading {
+        font-size: calc(@font-heading-scale * 2.4rem);
+      }
+
+      &__svg {
+        height: unset;
+      }
+    }
+
+    &.newcomProductGrid {
+      .NewEcomAi {
+          &__popup-content {
+              &__button {
+                  width: 25%;
+              }
+
+              &__svg {
+                  height: auto;
+              }
+
+              &__upload {
+                  border-bottom: 1px solid;
+                  border-left: none;
+                  border-top: 1px solid;
+                  cursor: pointer;
+                  height: 41px;
+                  position: relative;
+                  width: 60px;
+              }
+
+              &__input {
+                  min-height: 41px;
+                  padding-right: 0px;
+                  width: 75%;
+              }
+
+              &__search-box {
+                  align-items: flex-start;
+                  flex-direction: row;
+              }
+          }
+      }
+    }
+  }
+}
+
+@media (min-width: @screen__m) {
+  .NewEcomAi {
+    &__popup {
+      padding-top: 140px;
+      z-index: 3;
+    }
+  }
+}
