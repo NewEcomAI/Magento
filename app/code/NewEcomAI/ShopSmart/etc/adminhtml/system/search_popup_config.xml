@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+
+    <group id="search_popup_config" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+           showInStore="1">
+        <label>Popup Position Configuration</label>
+        <depends>
+            <field id="shop_smart/general/account_configuration/enable">1</field>
+        </depends>
+
+
+        <field id="popup" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Search Popup Position</label>
+            <depends>
+                <field id="shop_smart/general/account_configuration/enable">1</field>
+            </depends>
+            <source_model>NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source\SearchPopup</source_model>
+            <config_path>shop_smart/general/popup</config_path>
+        </field>
+
+    </group>
+</include>

@@ -1,0 +1,51 @@
+<?php
+
+use NewEcomAi\ShopSmart\Block\System\Config\Button\CatalogSyncExecution;
+
+/** @var CatalogSyncExecution $block */
+
+?>
+<div class="pp-buttons-container">
+    <button id="batch_execution_button">
+        <span><span><span><?= $block->escapeHtml($block->getButtonLabel()); ?></span></span></span>
+    </button>
+    <div id="overlay" class="success_msg" style="display: none">
+        <div id="popup">
+            <header class="modal-header">
+                <h1 id="modal-title-0" class="modal-title" data-role="title"><?= __('Success!') ?></h1>
+                <button class="action-close" data-role="closeBtn" type="button">
+                    <span><?= __('Close') ?></span>
+                </button>
+            </header>
+            <div id="modal-content-0" class="modal-content" data-role="content">
+                <div class="popup-modal" style="">
+                    <p><?= __('Catalog Sync Run Successfully.') ?></p>
+                    <div class="modal_close_btn">
+                        <button class="close_popup"><?= __('Ok') ?></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay" class="error_msg" style="display: none">
+        <div id="popup">
+            <header class="modal-header">
+                <h1 id="modal-title-0" class="modal-title" data-role="title"><?= __('Error!') ?></h1>
+                <button class="action-close" data-role="closeBtn" type="button">
+                    <span><?= __('Close') ?></span>
+                </button>
+            </header>
+            <div id="modal-content-0" class="modal-content" data-role="content">
+                <div class="popup-modal" style="">
+                    <p> <?= __('Catalog Sync Failed.') ?> </p>
+                    <p class="custom_error"></p>
+                    <div class="modal_close_btn">
+                        <button class="close_popup"><?= __('Ok') ?></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
