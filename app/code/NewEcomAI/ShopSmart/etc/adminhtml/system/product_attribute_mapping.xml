@@ -16,7 +16,7 @@
                 <field id="shop_smart/general/account_configuration/enable">1</field>
             </depends>
             <source_model>NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source\ProductAttributeSource</source_model>
-            <config_path>shop_smart/general/mapping</config_path>
+            <config_path>shop_smart/general_product_attribute_mapping/mapping</config_path>
         </field>
 
     </group>
