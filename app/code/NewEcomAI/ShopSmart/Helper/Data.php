@@ -82,6 +82,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Get Admin Configuration Values
+     *
      * @param $path
      * @return mixed|void
      */
@@ -98,6 +100,9 @@ class Data extends AbstractHelper
         }
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getPopUpPosition()
     {
         return $this->getConfigValue('shop_smart/general/popup');

@@ -18,7 +18,6 @@
                 <include path="NewEcomAI_ShopSmart::system/account_configuration.xml"/>
                 <include path="NewEcomAI_ShopSmart::system/catalog_sync.xml"/>
                 <include path="NewEcomAI_ShopSmart::system/product_attribute_mapping.xml"/>
-                <include path="NewEcomAI_ShopSmart::system/search_popup_config.xml"/>
             </group>
         </section>
     </system>

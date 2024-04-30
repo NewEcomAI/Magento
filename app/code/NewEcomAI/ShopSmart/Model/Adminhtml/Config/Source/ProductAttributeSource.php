@@ -6,6 +6,9 @@ use Magento\Eav\Api\AttributeRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Data\OptionSourceInterface;
 
+/**
+ * Get All Product Attribute
+ */
 class ProductAttributeSource implements OptionSourceInterface
 {
 
