@@ -22,10 +22,9 @@
     height: 100%;
     margin: auto;
     max-height: initial;
-    max-width: 800px;
+    max-width: 100%;
     overflow: scroll;
     padding: 0;
-    padding: 20px;
     position: relative;
     width: 100%;
 
@@ -56,7 +55,8 @@
 
     &__inner {
       margin: 20px auto;
-      max-width: 86%;
+      max-width: 85%;
+      padding: 10px;
       text-align: center;
     }
 
@@ -360,10 +360,11 @@
 @media (min-width: @screen__s) {
   .NewEcomAi {
     &__popup-content {
-      width: 50%;
-      max-height: 80vh;
-      overflow: scroll;
       height: auto;
+      max-height: 80vh;
+      max-width: 800px;
+      overflow: scroll;
+      width: 50%;
 
       &__input {
         width: 85%;
@@ -387,7 +388,11 @@
       }
 
       &__svg {
-        height: unset;
+        height: 39px;
+      }
+
+      &__inner {
+        padding: 0;
       }
     }
 
