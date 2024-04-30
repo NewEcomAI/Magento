@@ -17,6 +17,7 @@ class Data extends AbstractHelper
 {
 
     const MODULE_ENABLE = 'shop_smart/general_account_configuration/enable';
+
     const SHOP_SMART_MODE = 'shop_smart/general_account_configuration/shop_smart_mode';
     const SHOP_SMART_USER_ID = 'shop_smart/general_account_configuration/user_id<';
     const SHOP_SMART_USER_NAME = 'shop_smart/general_account_configuration/user_name';
