@@ -4,18 +4,19 @@ namespace NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source;
 
 class Mode
 {
-    const STAGING = 'staging';
-    const PRODUCTION = 'production';
+
+    const STAGING_URL = 'staging';
+    const PRODUCTION_URL = 'production';
 
     public function toOptionArray()
     {
         return [
             [
-                'value' => Mode::STAGING,
+                'value' => Mode::STAGING_URL,
                 'label' => __('Staging')
             ],
             [
-                'value' => Mode::PRODUCTION,
+                'value' => Mode::PRODUCTION_URL,
                 'label' => __('Production')
             ],
         ];
