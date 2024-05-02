@@ -2,6 +2,7 @@
 
 namespace NewEcomAI\ShopSmart\Helper;
 
+use Magecrafts\Log\Model\Log;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -17,7 +18,7 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
-use Magento\CatalogInventory\Model\Stock\StockItemRepository;
+use Magento\CatalogInventory\Api\StockStateInterface;
 
 class Data extends AbstractHelper
 {
@@ -84,9 +85,9 @@ class Data extends AbstractHelper
     private CategoryFactory $categoryFactory;
 
     /**
-     * @var StockItemRepository
+     * @var StockStateInterface
      */
-    private StockItemRepository $stockItemRepository;
+    private StockStateInterface $stockStateInterface;
 
 
     /**
@@ -100,7 +101,7 @@ class Data extends AbstractHelper
      * @param PricingHelper $priceHelper
      * @param CategoryRepositoryInterface $categoryRepository
      * @param CategoryFactory $categoryFactory
-     * @param StockItemRepository $stockItemRepository
+     * @param StockStateInterface $stockStateInterface
      * @param Context $context
      */
     public function __construct(
@@ -114,7 +115,7 @@ class Data extends AbstractHelper
         PricingHelper               $priceHelper,
         CategoryRepositoryInterface $categoryRepository,
         CategoryFactory             $categoryFactory,
-        StockItemRepository         $stockItemRepository,
+        StockStateInterface         $stockStateInterface,
         Context                     $context
     ) {
         $this->logger = $logger;
@@ -127,7 +128,7 @@ class Data extends AbstractHelper
         $this->priceHelper = $priceHelper;
         $this->categoryRepository = $categoryRepository;
         $this->categoryFactory = $categoryFactory;
-        $this->stockItemRepository = $stockItemRepository;
+        $this->stockStateInterface = $stockStateInterface;
         parent::__construct($context);
     }
 
@@ -244,13 +245,30 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $productId
-     * @return StockItemInterface
+     * @param $sku
+     * @return mixed
      * @throws NoSuchEntityException
      */
-    public function getStockItem($productId)
+    public function getProductImageUrl($sku)
     {
-        return $this->stockItemRepository->get($productId);
+        $url = [];
+        $product= $this->productRepository->getById($sku);
+        $productimages = $product->getMediaGalleryImages();
+        foreach($productimages as $productimage)
+        {
+            $url = $productimage['url'];
+        }
+        return $url;
+    }
+
+    /**
+     * @param $productId
+     * @param null $websiteId
+     * @return StockStateInterface
+     */
+    public function getStockItem($productId, $websiteId = null): StockStateInterface
+    {
+        return $this->stockStateInterface->getStockQty($productId, $websiteId);
     }
 
     /**
@@ -267,6 +285,11 @@ class Data extends AbstractHelper
         return $categoryNames;
     }
 
+
+    /**
+     * @param $sku
+     * @return array|void
+     */
     public function getProductAttributeMapping($sku)
     {
         try {
@@ -280,27 +303,27 @@ class Data extends AbstractHelper
                 $this->getCategoryName($product->getCategoryIds()),
                 $product->getRelatedProductCollection(),
                 $product->getStatus()
-
             ];
             $products['Price'] = $this->priceHelper->currency($product->getPrice(), true, false);
             $products['ProductType'] = $product->getTypeId();
             $products['Category'] = $this->getCategoryName($product->getCategoryIds());
             $products['Vendor'] = $product->getQty();
-            $products['Inventory'] = $this->getStockItem($product->getId())->getQty();
+            $products['Inventory'] = $this->getStockItem($product->getId(), $product->getStore()->getWebsiteId());
             $products['Gender'] = $product->getData('gender');
             $products['Color'] = 'color';
             $products['Size'] = 'Small Size';
             $products['CustomProduct'] = "true";
             $products['ProductInfo'] = $this->getProduct($sku);
-            $products['Images'] = $product->getData('swatch_image');
+            $products['Images'] = $this->getProductImageUrl($product->getId());
 
             return $products;
         } catch (\Exception $e) {
-            throw new InvalidArgumentException(
-                __($e->getMessage())
-            );
+            $this->logger->critical($e->getMessage());
         }
     }
+
+
+
 
 }
 
