@@ -2,6 +2,9 @@
 
 namespace NewEcomAI\ShopSmart\Helper;
 
+use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\CatalogInventory\Api\Data\StockItemInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Psr\Log\LoggerInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Checkout\Model\Session as CheckoutSession;
@@ -12,6 +15,9 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Catalog\Model\CategoryFactory;
+use Magento\Framework\Pricing\Helper\Data as PricingHelper;
+use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 
 class Data extends AbstractHelper
 {
@@ -63,6 +69,27 @@ class Data extends AbstractHelper
     private RedirectInterface $redirect;
 
     /**
+     * @var PricingHelper
+     */
+    private PricingHelper $priceHelper;
+
+    /**
+     * @var CategoryRepositoryInterface
+     */
+    private CategoryRepositoryInterface $categoryRepository;
+
+    /**
+     * @var CategoryFactory
+     */
+    private CategoryFactory $categoryFactory;
+
+    /**
+     * @var StockItemRepository
+     */
+    private StockItemRepository $stockItemRepository;
+
+
+    /**
      * @param LoggerInterface $logger
      * @param RedirectInterface $redirect
      * @param StoreManagerInterface $storeManager
@@ -70,19 +97,26 @@ class Data extends AbstractHelper
      * @param CheckoutSession $checkoutSession
      * @param ProductRepository $productRepository
      * @param ScopeConfigInterface $scopeConfigInterface
+     * @param PricingHelper $priceHelper
+     * @param CategoryRepositoryInterface $categoryRepository
+     * @param CategoryFactory $categoryFactory
+     * @param StockItemRepository $stockItemRepository
      * @param Context $context
      */
     public function __construct(
-        LoggerInterface       $logger,
-        RedirectInterface     $redirect,
-        StoreManagerInterface $storeManager,
-        Session               $customerSession,
-        CheckoutSession       $checkoutSession,
-        ProductRepository     $productRepository,
-        ScopeConfigInterface  $scopeConfigInterface,
-        Context               $context
-    )
-    {
+        LoggerInterface             $logger,
+        RedirectInterface           $redirect,
+        StoreManagerInterface       $storeManager,
+        Session                     $customerSession,
+        CheckoutSession             $checkoutSession,
+        ProductRepository           $productRepository,
+        ScopeConfigInterface        $scopeConfigInterface,
+        PricingHelper               $priceHelper,
+        CategoryRepositoryInterface $categoryRepository,
+        CategoryFactory             $categoryFactory,
+        StockItemRepository         $stockItemRepository,
+        Context                     $context
+    ) {
         $this->logger = $logger;
         $this->redirect = $redirect;
         $this->storeManager = $storeManager;
@@ -90,6 +124,10 @@ class Data extends AbstractHelper
         $this->customerSession = $customerSession;
         $this->productRepository = $productRepository;
         $this->scopeConfigInterface = $scopeConfigInterface;
+        $this->priceHelper = $priceHelper;
+        $this->categoryRepository = $categoryRepository;
+        $this->categoryFactory = $categoryFactory;
+        $this->stockItemRepository = $stockItemRepository;
         parent::__construct($context);
     }
 
@@ -191,6 +229,76 @@ class Data extends AbstractHelper
             );
         } catch (\Exception $e) {
             $this->logger->critical('Config value: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws NoSuchEntityException
+     */
+    public function getProduct($sku)
+    {
+        if (is_int($sku)) {
+            return $this->productRepository->getById($sku);
+        }
+        return $this->productRepository->get($sku);
+    }
+
+    /**
+     * @param $productId
+     * @return StockItemInterface
+     * @throws NoSuchEntityException
+     */
+    public function getStockItem($productId)
+    {
+        return $this->stockItemRepository->get($productId);
+    }
+
+    /**
+     * @param array $categoryIds
+     * @return array|string
+     */
+    public function getCategoryName(array $categoryIds)
+    {
+        $categoryNames = [];
+        foreach ($categoryIds as $key => $categoryId) {
+            $category = $this->categoryFactory->create()->load($categoryId);
+            $categoryNames = $category->getName();
+        }
+        return $categoryNames;
+    }
+
+    public function getProductAttributeMapping($sku)
+    {
+        try {
+            $product = $this->getProduct($sku);
+            $products = [];
+            $products['Id'] = $sku;
+            $products['Description'] = $product->getDescription();
+            $products['Name'] = ucfirst($product->getData('name'));
+            $products['Tags'] = [
+                $product->getStockQty(),
+                $this->getCategoryName($product->getCategoryIds()),
+                $product->getRelatedProductCollection(),
+                $product->getStatus()
+
+            ];
+            $products['Price'] = $this->priceHelper->currency($product->getPrice(), true, false);
+            $products['ProductType'] = $product->getTypeId();
+            $products['Category'] = $this->getCategoryName($product->getCategoryIds());
+            $products['Vendor'] = $product->getQty();
+            $products['Inventory'] = $this->getStockItem($product->getId())->getQty();
+            $products['Gender'] = $product->getData('gender');
+            $products['Color'] = 'color';
+            $products['Size'] = 'Small Size';
+            $products['CustomProduct'] = "true";
+            $products['ProductInfo'] = $this->getProduct($sku);
+            $products['Images'] = $product->getData('swatch_image');
+
+            return $products;
+        } catch (\Exception $e) {
+            throw new InvalidArgumentException(
+                __($e->getMessage())
+            );
         }
     }
 
