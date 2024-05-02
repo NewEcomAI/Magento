@@ -2,7 +2,6 @@
 
 namespace NewEcomAI\ShopSmart\Helper;
 
-use Magecrafts\Log\Model\Log;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
