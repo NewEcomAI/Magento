@@ -19,9 +19,20 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\CatalogInventory\Api\StockStateInterface;
+use Magento\Framework\Session\Generic;
+use Magento\Framework\HTTP\Client\Curl;
 
 class Data extends AbstractHelper
 {
+    /**
+     * @var string NewCommAI authentication token
+     */
+    private $token;
+
+    /**
+     * @var bool Allow Retry?
+     */
+    private $allowRetry;
 
     const MODULE_ENABLE = 'shop_smart/general_account_configuration/enable';
 
@@ -91,6 +102,21 @@ class Data extends AbstractHelper
 
 
     /**
+     * @var Generic
+     */
+    private Generic $session;
+
+    /**
+     * @var Curl
+     */
+    private Curl $httpClient;
+
+    /**
+     * @var mixed NewcommAI response
+     */
+    private $response;
+
+    /**
      * @param LoggerInterface $logger
      * @param RedirectInterface $redirect
      * @param StoreManagerInterface $storeManager
@@ -103,6 +129,8 @@ class Data extends AbstractHelper
      * @param CategoryFactory $categoryFactory
      * @param StockStateInterface $stockStateInterface
      * @param Context $context
+     * @param Generic $session
+     * @param Curl $httpClient
      */
     public function __construct(
         LoggerInterface             $logger,
@@ -116,7 +144,9 @@ class Data extends AbstractHelper
         CategoryRepositoryInterface $categoryRepository,
         CategoryFactory             $categoryFactory,
         StockStateInterface         $stockStateInterface,
-        Context                     $context
+        Context                     $context,
+        Generic                    $session,
+        Curl                       $httpClient
     ) {
         $this->logger = $logger;
         $this->redirect = $redirect;
@@ -125,6 +155,8 @@ class Data extends AbstractHelper
         $this->customerSession = $customerSession;
         $this->productRepository = $productRepository;
         $this->scopeConfigInterface = $scopeConfigInterface;
+        $this->session = $session;
+        $this->httpClient = $httpClient;
         $this->priceHelper = $priceHelper;
         $this->categoryRepository = $categoryRepository;
         $this->categoryFactory = $categoryFactory;
@@ -290,31 +322,32 @@ class Data extends AbstractHelper
      * @param $sku
      * @return array|void
      */
-    public function getProductAttributeMapping($sku)
+    public function getProductAttributeMapping($product)
     {
         try {
-            $product = $this->getProduct($sku);
             $products = [];
-            $products['Id'] = $sku;
+            $products['Id'] = $product->getId();
             $products['Description'] = $product->getDescription();
             $products['Name'] = ucfirst($product->getData('name'));
             $products['Tags'] = [
-                $product->getStockQty(),
-                $this->getCategoryName($product->getCategoryIds()),
-                $product->getRelatedProductCollection(),
-                $product->getStatus()
+                "red",
+                "Bags",
+                "medium",
+                "1"
             ];
             $products['Price'] = $this->priceHelper->currency($product->getPrice(), true, false);
-            $products['ProductType'] = $product->getTypeId();
+            $products['ProdutType'] = $product->getTypeId();
             $products['Category'] = $this->getCategoryName($product->getCategoryIds());
-            $products['Vendor'] = $product->getQty();
-            $products['Inventory'] = $this->getStockItem($product->getId(), $product->getStore()->getWebsiteId());
-            $products['Gender'] = $product->getData('gender');
+            $products['Vendor'] = "1";
+            $products['Inventory'] = "";
+            $products['GoogleProductCategory'] = "apparel & accessories > jewelry > bracelets";
+            $products['AgeGroup'] = "adult";
+            $products['Gender'] = "female";
             $products['Color'] = 'color';
             $products['Size'] = 'Small Size';
             $products['CustomProduct'] = "true";
-            $products['ProductInfo'] = $this->getProduct($sku);
-            $products['Images'] = $this->getProductImageUrl($product->getId());
+            $products['ProductInfo'] = "abc";
+            $products['Images'] = "http://local.magento2-2.4.6.com/media/catalog/product/m/b/mb04-black-0_alt1.jpg";
 
             return $products;
         } catch (\Exception $e) {
@@ -325,6 +358,69 @@ class Data extends AbstractHelper
 
 
 
+    /**
+     * @return mixed|null
+     */
+    public function getPopUpPosition()
+    {
+        return $this->getConfigValue('shop_smart/general/popup');
+    }
+
+    /**
+     * Get Token.
+     *
+     * Returns an existing token or refreshes the token and returns the new token
+     *
+     * @param bool $refresh
+     *
+     * @return string
+     */
+    public function getToken($refresh = true)
+    {
+        $accessToken = "";
+        if (!$refresh) {
+            if (strlen($this->token)) {
+                return $this->token;
+            } else if (!empty($this->session->getData('NewCommAISession'))) {
+                $this->token = $this->session->getData('NewCommAISession');
+                return $this->token;
+            } else {
+                $refresh = true;
+            }
+        }
+        if ($refresh) {
+            $accessToken = self::getAccessToken();
+            if (is_string($accessToken['token'])) {
+                if (!empty($accessToken['token'])) {
+                    $this->session->setData('NewCommAISession', $accessToken['token']);
+                }
+            }
+        }
+        return $accessToken['token'];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccessToken()
+    {
+        $url = 'https://newecomenginestaging.azurewebsites.net/api/oauth/v1/token';
+        $postData = json_encode([
+            'username' => 'NewEcom-43987766-aadb-407e-a7d5-b3a491046560',
+            'password' => '0.uq05bxxmgx',
+            'userId' => '662fae5277c08cce935f1aaa'
+        ]);
+
+        $this->httpClient->addHeader('Content-Type', 'application/json');
+        $this->httpClient->post($url, $postData);
+
+        $response = $this->httpClient->getBody();
+
+        // Handle the response here
+
+        return json_decode($response, true);
+
+    }
 }
 
 
