@@ -6,6 +6,7 @@ use Magecrafts\Log\Model\Log;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source\Mode;
 use Psr\Log\LoggerInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Checkout\Model\Session as CheckoutSession;
@@ -29,15 +30,10 @@ class Data extends AbstractHelper
      */
     private $token;
 
-    /**
-     * @var bool Allow Retry?
-     */
-    private $allowRetry;
-
     const MODULE_ENABLE = 'shop_smart/general_account_configuration/enable';
 
     const SHOP_SMART_MODE = 'shop_smart/general_account_configuration/shop_smart_mode';
-    const SHOP_SMART_USER_ID = 'shop_smart/general_account_configuration/user_id<';
+    const SHOP_SMART_USER_ID = 'shop_smart/general_account_configuration/user_id';
     const SHOP_SMART_USER_NAME = 'shop_smart/general_account_configuration/user_name';
     const SHOP_SMART_USER_PASSWORD = 'shop_smart/general_account_configuration/user_password';
     const SHOP_SMART_AB_TESTING = 'shop_smart/general_account_configuration/ab_testing';
@@ -180,7 +176,8 @@ class Data extends AbstractHelper
      */
     public function getShopSmartMode($storeId = null)
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_MODE, $storeId);
+        return $this->scopeConfig->getValue(self::SHOP_SMART_MODE,  ScopeInterface::SCOPE_STORE,
+            $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -189,7 +186,8 @@ class Data extends AbstractHelper
      */
     public function getShopSmartUserId($storeId = null)
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_USER_ID, $storeId);
+        return $this->scopeConfig->getValue(self::SHOP_SMART_USER_ID,  ScopeInterface::SCOPE_STORE,
+            $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -198,7 +196,8 @@ class Data extends AbstractHelper
      */
     public function getShopSmartUserName($storeId = null)
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_USER_NAME, $storeId);
+        return $this->scopeConfig->getValue(self::SHOP_SMART_USER_NAME,  ScopeInterface::SCOPE_STORE,
+            $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -207,7 +206,8 @@ class Data extends AbstractHelper
      */
     public function getShopSmartUserPassword($storeId = null)
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_USER_PASSWORD, $storeId);
+        return $this->scopeConfig->getValue(self::SHOP_SMART_USER_PASSWORD,  ScopeInterface::SCOPE_STORE,
+            $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -246,6 +246,13 @@ class Data extends AbstractHelper
         return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_BUTTON, $storeId);
     }
 
+    /**
+     * @return mixed|null
+     */
+    public function getPopUpPosition()
+    {
+        return $this->getConfigValue('shop_smart/general/popup');
+    }
     /**
      * Get Admin Configuration Values
      *
@@ -322,48 +329,28 @@ class Data extends AbstractHelper
      * @param $sku
      * @return array|void
      */
-    public function getProductAttributeMapping($product)
+    public function getProductAttributeMapping($id,$description,$name,$tags,$price,$productType,$category,$vendor,$inventory,$googleProductCategory,$ageGroup,$gender,$color,$customProduct)
     {
         try {
             $products = [];
-            $products['Id'] = $product->getId();
-            $products['Description'] = $product->getDescription();
-            $products['Name'] = ucfirst($product->getData('name'));
-            $products['Tags'] = [
-                "red",
-                "Bags",
-                "medium",
-                "1"
-            ];
-            $products['Price'] = $this->priceHelper->currency($product->getPrice(), true, false);
-            $products['ProdutType'] = $product->getTypeId();
-            $products['Category'] = $this->getCategoryName($product->getCategoryIds());
-            $products['Vendor'] = "1";
-            $products['Inventory'] = "";
-            $products['GoogleProductCategory'] = "apparel & accessories > jewelry > bracelets";
-            $products['AgeGroup'] = "adult";
-            $products['Gender'] = "female";
-            $products['Color'] = 'color';
-            $products['Size'] = 'Small Size';
-            $products['CustomProduct'] = "true";
-            $products['ProductInfo'] = "abc";
-            $products['Images'] = "http://local.magento2-2.4.6.com/media/catalog/product/m/b/mb04-black-0_alt1.jpg";
-
+            $products['Id'] = $id;
+            $products['Description'] = $description;
+            $products['Name'] = $name;
+            $products['Tags'] = $tags;
+            $products['Price'] = $price;
+            $products['ProdutType'] = $productType;
+            $products['Category'] = $category;
+            $products['Vendor'] = $vendor;
+            $products['Inventory'] = $inventory;
+            $products['GoogleProductCategory'] = $googleProductCategory;
+            $products['AgeGroup'] = $ageGroup;
+            $products['Gender'] = $gender;
+            $products['Color'] = $color;
+            $products['CustomProduct'] = $customProduct;
             return $products;
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
         }
-    }
-
-
-
-
-    /**
-     * @return mixed|null
-     */
-    public function getPopUpPosition()
-    {
-        return $this->getConfigValue('shop_smart/general/popup');
     }
 
     /**
@@ -404,23 +391,57 @@ class Data extends AbstractHelper
      */
     public function getAccessToken()
     {
-        $url = 'https://newecomenginestaging.azurewebsites.net/api/oauth/v1/token';
+
+        $endpoint = "api/oauth/v1/token";
         $postData = json_encode([
-            'username' => 'NewEcom-43987766-aadb-407e-a7d5-b3a491046560',
-            'password' => '0.uq05bxxmgx',
-            'userId' => '662fae5277c08cce935f1aaa'
+            'username' => $this->getShopSmartUserName(),
+            'password' => $this->getShopSmartUserPassword(),
+            'userId' => $this->getShopSmartUserId()
         ]);
-
-        $this->httpClient->addHeader('Content-Type', 'application/json');
-        $this->httpClient->post($url, $postData);
-
-        $response = $this->httpClient->getBody();
-
-        // Handle the response here
-
+        $headerName = "Content-Type";
+        $headerValue = "application/json";
+       $response = $this->sendApiRequest($endpoint,"POST", $postData,$headerName,$headerValue);
         return json_decode($response, true);
 
     }
+
+    /**
+     * @param $url
+     * @param $method
+     * @param $data
+     * @param $headerName
+     * @param $headerValue
+     * @return string
+     */
+    public function sendApiRequest($endpoint, $method, $data = [], $headerName = null, $headerValue = null) {
+        $mode = $this->getShopSmartMode();
+        $url = '';
+        if($mode === '0') {
+            $url = Mode::STAGING_URL.$endpoint;
+        } elseif($mode === '1') {
+            $url = Mode::PRODUCTION_URL.$endpoint;
+        }
+        // Add header if provided
+        if ($headerName !== null && $headerValue !== null) {
+            $this->httpClient->addHeader($headerName, $headerValue);
+        }
+        // If method is POST, set the data
+        if(strtoupper($method) === 'POST') {
+            $this->httpClient->post($url, $data);
+        } elseif(strtoupper($method) === 'GET') {
+            $this->httpClient->get($url);
+        }
+//        else {
+//             Handle other HTTP methods if needed
+//             throw new Exception('Unsupported HTTP method');
+//        }
+
+        // Execute request
+        $response = $this->httpClient->getBody();
+
+        return $response;
+    }
+
 }
 
 

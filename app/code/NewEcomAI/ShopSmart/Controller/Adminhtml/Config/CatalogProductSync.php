@@ -70,47 +70,31 @@ class CatalogProductSync extends Action
                 $resultJson = $this->resultJsonFactory->create();
                 $token = $this->helperData->getToken();
                 $productCollection = $this->productCollection->addAttributeToSelect('*');
-                $productCollection->setPageSize(3);
-                // Array to store products for upload
-//                $productData = [];
-//                foreach ($productCollection as $product) {
-//                    $products = [];
-//                    $products['Id'] = $product->getId();
-//                    $products['Description'] = $product->getDescription();
-//                    $products['Name'] = ucfirst($product->getData('name'));
-//                    $products['Tags'] = [
-//                        $product->getStockQty(),
-//                        "",
-//                        $product->getRelatedProductCollection(),
-//                        $product->getStatus()
-//
-//                    ];
-//                    $products['Price'] = "";
-//                    $products['ProductType'] = $product->getTypeId();
-//                    $products['Category'] = "";
-//                    $products['Vendor'] = $product->getQty();
-//                    $products['Inventory'] = "";
-//                    $products['Gender'] = $product->getData('gender');
-//                    $products['Color'] = 'color';
-//                    $products['Size'] = 'Small Size';
-//                    $products['CustomProduct'] = "true";
-//                    $products['ProductInfo'] = "";
-//                    $products['Images'] = $product->getData('swatch_image');
-////                    $productData = [
-////                        "Id" => $product->getSku(),
-////                        "Description" => $product->getDescription(),
-////                        "Name" => $product->getName(),
-////                        // Add other fields as required
-////                    ];
-//
-//                    // Add product data to array
-//                    $productData[] = $products;
-//                }
+                $productCollection->setPageSize(100);
 
                 $productData = [];
 
                 foreach ($productCollection as $product) {
-                    $productData[] = $this->helperData->getProductAttributeMapping($product);
+                    $id = $product->getId();
+                    $description = $product->getDescription() ?? "";
+                    $name = $product->getName() ?? "";
+                    $stockQty = $product->getStockQty() ?? "";
+                    $categoryIds = $product->getCategoryIds() ?? [];
+                    $categoryName = !empty($categoryIds) ? $this->helperData->getCategoryName($categoryIds) : "";
+                    $relatedProducts = $product->getRelatedProductCollection() ?? "";
+                    $status = $product->getStatus() ?? "";
+                    $tags = [$stockQty, $categoryName, $relatedProducts, $status];
+                    $price = $product->getPrice();
+                    $productType = $product->getTypeId();
+                    $category = $this->helperData->getCategoryName($categoryIds) ?? "";
+                    $vendor = "magento";
+                    $inventory = $product->getStockQty() ?? "";
+                    $googleProductCategory = "TestCategory";
+                    $ageGroup = "Test Data Adult";
+                    $gender = "Test Data Women";
+                    $color = "Test Data red";
+                    $customProduct = "Test Data true";
+                    $productData[] = $this->helperData->getProductAttributeMapping($id,$description,$name,$tags,$price,$productType,$category,$vendor,$inventory,$googleProductCategory,$ageGroup,$gender,$color,$customProduct);
                 }
                 $productChunks = array_chunk($productData, 20);
                 foreach ($productChunks as $chunk) {
@@ -119,40 +103,18 @@ class CatalogProductSync extends Action
                         "catalog" => $chunk
                     ];
 
-                    $ch = curl_init("https://newecomenginestaging.azurewebsites.net/api/catalog/upload");
-                    $authorization = "Authorization: Bearer ".$token; // Prepare the authorisation token
-
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                        'Content-Type: application/json',
-                        'Accept: application/json', $authorization
-                    ]);
-
-
-                    $response = curl_exec($ch);
-                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-                    if ($httpCode == 200) {
-                        $responseData = json_decode($response, true);
-                        if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
-                            echo "Catalog uploaded successfully.\n";
-                        } else {
-                            echo "Error uploading catalog: " . $responseData['response']['message'] . "\n";
-                        }
+                    $endpoint = "api/catalog/upload";
+                    $headerName = "Authorization: Bearer "; // Prepare the authorisation token
+                    $headerValue = $token;
+                    $response = $this->helperData->sendApiRequest($endpoint,"POST", $data, $headerName, $headerValue);
+                    $responseData = json_decode($response, true);
+                    if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
+                        echo "Catalog uploaded successfully.\n";
                     } else {
-                        echo "Error: HTTP $httpCode\n";
+                        echo "Error uploading catalog: " . $responseData['response']['message'] . "\n";
                     }
-
-                    curl_close($ch);
-
-                    // Add some delay between requests (optional)
                     sleep(1); // Sleep for 1 second
                 }
-
-
-
                 return $resultJson->setData(['status' => true, 'message' => "catalog Sync Successfully"]);
             } catch (\Exception $exception) {
                 /** @var JsonFactory $resultJson */
