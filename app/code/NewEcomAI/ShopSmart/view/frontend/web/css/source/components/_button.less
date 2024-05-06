@@ -5,18 +5,18 @@
         &__button {
             display: block;
             margin: auto;
-            background-color: @popup-button-color;
+            background-color: @popup-button-bg-color;
             border: 1px solid transparent;
-            border-radius: 3px;
+            border-radius: 0;
             box-shadow: @popup-btn-box-shadow;
             box-sizing: border-box;
-            color: @white;
+            color: @popup-button-color;
             cursor: pointer;
             font-size: 13px;
             font-weight: @font-weight-regular;
             line-height: 1.15385;
             outline: none;
-            padding: 8px .8em;
+            padding: 12px 0.8em;
             position: relative;
             text-align: center;
             text-decoration: none;
@@ -27,12 +27,13 @@
             white-space: nowrap;
             min-width: 100px;
             width: 100%;
+            margin: 0;
             margin-top: 5px;
 
             &:hover,
             &:focus,
             &:active {
-                background-color: @popup-button-color;
+                background-color: @popup-button-bg-color;
                 color: @white;
                 border: 1px solid transparent;
             }
@@ -49,7 +50,7 @@
         &__popup-content {
             &__button {
                 width: 10%;
-                margin-top: 0;
+                margin: 0;
             }
         }
     }
