@@ -6,11 +6,10 @@ use Magento\Framework\Data\OptionSourceInterface;
 
 class PopupLayout implements OptionSourceInterface
 {
-    const POPUP = 'popup';
-    const POPUP_SECTION = 'section';
-    const POPUP_LEFT_SIDE = 'left_side';
-    const POPUP_RIGHT_SIDE = 'right_side';
-    const POPUP_PRODUCT_GRID = 'product_grid';
+    const POPUP = 'new_ecom_popup';
+    const POPUP_LEFT_SIDE = 'new_ecom_sticky_on_left';
+    const POPUP_RIGHT_SIDE = 'new_ecom_sticky_on_right';
+    const POPUP_PRODUCT_GRID = 'new_ecom_product_grid';
 
 
     /**
@@ -18,7 +17,6 @@ class PopupLayout implements OptionSourceInterface
      */
     public static array $popupLayout = [
         self::POPUP,
-        self::POPUP_SECTION,
         self::POPUP_LEFT_SIDE,
         self::POPUP_RIGHT_SIDE,
         self::POPUP_PRODUCT_GRID

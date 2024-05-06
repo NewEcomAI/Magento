@@ -6,6 +6,7 @@ use Magento\Cms\Api\BlockRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Api\FilterBuilder;
 
 class CmsBlocks implements OptionSourceInterface
 {
@@ -17,6 +18,7 @@ class CmsBlocks implements OptionSourceInterface
      * @var SearchCriteriaBuilder
      */
     protected SearchCriteriaBuilder $searchCriteriaBuilder;
+    private FilterBuilder $filterBuilder;
 
     /**
      * CmsBlocks constructor.
@@ -25,10 +27,12 @@ class CmsBlocks implements OptionSourceInterface
      */
     public function __construct(
         BlockRepositoryInterface $blockRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        FilterBuilder           $filterBuilder
     ) {
         $this->blockRepository = $blockRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->filterBuilder = $filterBuilder;
     }
 
     /**
@@ -39,11 +43,20 @@ class CmsBlocks implements OptionSourceInterface
      */
     public function toOptionArray(): array
     {
+        $filters = [];
+        $blocks = PopupLayout::$popupLayout;
+        foreach ($blocks as $block) {
+            $filters[] = $this->filterBuilder
+                ->setField('identifier')
+                ->setConditionType('eq')
+                ->setValue($block)
+                ->create();
+
+        }
+        $this->searchCriteriaBuilder->addFilters($filters);
         $searchCriteria = $this->searchCriteriaBuilder->create();
         $cmsBlocks = $this->blockRepository->getList($searchCriteria)->getItems();
-
         $arrResult = [];
-
         foreach ($cmsBlocks as $block) {
             $arrResult[] = ['value' => $block->getIdentifier(), 'label' => $block->getTitle()];
         }
