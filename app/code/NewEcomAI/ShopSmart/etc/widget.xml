@@ -5,8 +5,8 @@
         <label>NewEcomAI</label>
         <description>Shop Smart</description>
         <parameters>
-            <parameter name="static_block_txt" xsi:type="select" visible="true" sort_order="10"
-                       source_model="NewEcomAI\ShopSmart\Model\Config\Source\CmsBlocks">
+            <parameter name="new_ecom_static_block" xsi:type="select" visible="true" sort_order="10"
+                       source_model="NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout">
                 <label translate="true">Layout</label>
             </parameter>
             <parameter name="layout_product_grid" xsi:type="select" visible="true" sort_order="30"
@@ -39,6 +39,9 @@
             <parameter name="destination_status" xsi:type="select" visible="true" sort_order="110"
                        source_model="NewEcomAI\ShopSmart\Model\Config\Source\Status">
                 <label translate="true">Destination Status</label>
+            </parameter>
+            <parameter name="shopsmart_custom_css" xsi:type="text" visible="true" sort_order="120">
+                <label translate="true">Custom CSS</label>
             </parameter>
         </parameters>
     </widget>

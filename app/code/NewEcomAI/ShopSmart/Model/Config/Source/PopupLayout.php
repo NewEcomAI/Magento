@@ -6,6 +6,7 @@ use Magento\Framework\Data\OptionSourceInterface;
 
 class PopupLayout implements OptionSourceInterface
 {
+
     const POPUP = 'new_ecom_popup';
     const POPUP_LEFT_SIDE = 'new_ecom_sticky_on_left';
     const POPUP_RIGHT_SIDE = 'new_ecom_sticky_on_right';
@@ -38,11 +39,20 @@ class PopupLayout implements OptionSourceInterface
     public function toOptionArray(): array
     {
         $opts = [];
-        foreach (self::getOptionArray() as $key => $value) {
-
+        $label = '';
+        foreach (self::getOptionArray() as $value) {
+            if ($value == self::POPUP) {
+                $label = "NewEcom Popup";
+            } elseif ($value == self::POPUP_LEFT_SIDE) {
+                $label = "NewEcom Sticky on Left Side";
+            } elseif ($value == self::POPUP_RIGHT_SIDE) {
+                $label = "NewEcom Sticky on Right Side";
+            } elseif ($value == self::POPUP_PRODUCT_GRID) {
+                $label = "NewEcom Product Grid";
+            }
             $opts[] = [
-                'label' => __($value),
-                'value' => $key,
+                'label' => __($label),
+                'value' => $value,
             ];
         }
         return $opts;
