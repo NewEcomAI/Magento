@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget class="NewEcomAI\ShopSmart\Block\Adminhtml\Widget\PopupPosition" id="newecomai_discover_popup">
+        <label>NewEcomAI</label>
+        <description>Shop Smart</description>
+        <parameters>
+            <parameter name="new_ecom_static_block" xsi:type="select" visible="true" sort_order="10"
+                       source_model="NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout">
+                <label translate="true">Layout</label>
+            </parameter>
+            <parameter name="layout_product_grid" xsi:type="select" visible="true" sort_order="30"
+                       source_model="NewEcomAI\ShopSmart\Model\Config\Source\ProductGrid">
+                <label translate="true">Layout: Product Grid</label>
+            </parameter>
+            <parameter name="shop_smart_heading" xsi:type="text" visible="true" sort_order="40">
+                <label translate="true">Heading</label>
+            </parameter>
+            <parameter name="button_color" xsi:type="block" visible="true" sort_order="50">
+                <label translate="true">Select Text Color</label>
+                <block class="NewEcomAI\ShopSmart\Block\Adminhtml\Widget\ColorPicker"/>
+            </parameter>
+            <parameter name="image_recognition" xsi:type="select" visible="true" sort_order="60"
+                       source_model="NewEcomAI\ShopSmart\Model\Config\Source\Status">
+                <label translate="true">Image Recognition</label>
+            </parameter>
+            <parameter name="example_query_1" xsi:type="text" visible="true" sort_order="70">
+                <label translate="true">Example query 1</label>
+            </parameter>
+            <parameter name="example_query_2" xsi:type="text" visible="true" sort_order="80">
+                <label translate="true">Example query 2</label>
+            </parameter>
+            <parameter name="example_query_3" xsi:type="text" visible="true" sort_order="90">
+                <label translate="true">Example query 3</label>
+            </parameter>
+            <parameter name="example_query_4" xsi:type="text" visible="true" sort_order="100">
+                <label translate="true">Example query 4</label>
+            </parameter>
+            <parameter name="destination_status" xsi:type="select" visible="true" sort_order="110"
+                       source_model="NewEcomAI\ShopSmart\Model\Config\Source\Status">
+                <label translate="true">Destination Status</label>
+            </parameter>
+            <parameter name="shopsmart_custom_css" xsi:type="text" visible="true" sort_order="120">
+                <label translate="true">Custom CSS</label>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>
+
