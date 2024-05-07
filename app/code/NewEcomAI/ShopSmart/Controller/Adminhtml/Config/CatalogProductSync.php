@@ -70,7 +70,7 @@ class CatalogProductSync extends Action
                 $resultJson = $this->resultJsonFactory->create();
                 $token = $this->helperData->getToken();
                 $productCollection = $this->productCollection->addAttributeToSelect('*');
-                $productCollection->setPageSize(100);
+                $productCollection->setPageSize(10);
 
                 $productData = [];
 
@@ -83,7 +83,7 @@ class CatalogProductSync extends Action
                     $categoryName = !empty($categoryIds) ? $this->helperData->getCategoryName($categoryIds) : "";
                     $relatedProducts = $product->getRelatedProductCollection() ?? "";
                     $status = $product->getStatus() ?? "";
-                    $tags = [$stockQty, $categoryName, $relatedProducts, $status];
+                    $tags = [ $categoryName, $status];
                     $price = $product->getPrice();
                     $productType = $product->getTypeId();
                     $category = $this->helperData->getCategoryName($categoryIds) ?? "";
@@ -99,23 +99,22 @@ class CatalogProductSync extends Action
                 $productChunks = array_chunk($productData, 20);
                 foreach ($productChunks as $chunk) {
                     $data = [
-                        "userId" => "662faf9377c08cce935f1aad",
+                        "userId" => $this->helperData->getShopSmartUserId(),
                         "catalog" => $chunk
                     ];
 
                     $endpoint = "api/catalog/upload";
-                    $headerName = "Authorization: Bearer "; // Prepare the authorisation token
-                    $headerValue = $token;
-                    $response = $this->helperData->sendApiRequest($endpoint,"POST", $data, $headerName, $headerValue);
+                    $headers = [
+                        'Authorization' => 'Bearer ' . $token,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json'
+                    ];
+                    $response = $this->helperData->sendApiRequest($endpoint,"POST", json_encode($data), null,null,$headers);
                     $responseData = json_decode($response, true);
                     if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
-                        echo "Catalog uploaded successfully.\n";
-                    } else {
-                        echo "Error uploading catalog: " . $responseData['response']['message'] . "\n";
+                        return $resultJson->setData(['status' => true, 'message' => "catalog Sync Successfully"]);
                     }
-                    sleep(1); // Sleep for 1 second
                 }
-                return $resultJson->setData(['status' => true, 'message' => "catalog Sync Successfully"]);
             } catch (\Exception $exception) {
                 /** @var JsonFactory $resultJson */
                 return $resultJson->setData(['status' => false, 'message' => $exception->getMessage()]);

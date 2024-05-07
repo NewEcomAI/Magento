@@ -400,7 +400,7 @@ class Data extends AbstractHelper
         ]);
         $headerName = "Content-Type";
         $headerValue = "application/json";
-       $response = $this->sendApiRequest($endpoint,"POST", $postData,$headerName,$headerValue);
+        $response = $this->sendApiRequest($endpoint,"POST", $postData,$headerName,$headerValue);
         return json_decode($response, true);
 
     }
@@ -413,7 +413,7 @@ class Data extends AbstractHelper
      * @param $headerValue
      * @return string
      */
-    public function sendApiRequest($endpoint, $method, $data = [], $headerName = null, $headerValue = null) {
+    public function sendApiRequest($endpoint, $method, $data = [], $headerName = null, $headerValue = null, $headers = []) {
         $mode = $this->getShopSmartMode();
         $url = '';
         if($mode === '0') {
@@ -421,24 +421,17 @@ class Data extends AbstractHelper
         } elseif($mode === '1') {
             $url = Mode::PRODUCTION_URL.$endpoint;
         }
-        // Add header if provided
         if ($headerName !== null && $headerValue !== null) {
             $this->httpClient->addHeader($headerName, $headerValue);
+        } elseif (!empty($headers)) {
+            $this->httpClient->setHeaders($headers);
         }
-        // If method is POST, set the data
         if(strtoupper($method) === 'POST') {
             $this->httpClient->post($url, $data);
         } elseif(strtoupper($method) === 'GET') {
             $this->httpClient->get($url);
         }
-//        else {
-//             Handle other HTTP methods if needed
-//             throw new Exception('Unsupported HTTP method');
-//        }
-
-        // Execute request
         $response = $this->httpClient->getBody();
-
         return $response;
     }
 

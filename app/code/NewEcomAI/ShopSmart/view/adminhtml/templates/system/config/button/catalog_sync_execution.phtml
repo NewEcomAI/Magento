@@ -1,6 +1,9 @@
 <?php
 
 use NewEcomAi\ShopSmart\Block\System\Config\Button\CatalogSyncExecution;
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$objDate = $objectManager->create('Magento\Framework\Stdlib\DateTime\DateTime');
+$date = $objDate->gmtDate();
 
 /** @var CatalogSyncExecution $block */
 
@@ -9,6 +12,8 @@ use NewEcomAi\ShopSmart\Block\System\Config\Button\CatalogSyncExecution;
     <button id="catalog_sync_button">
         <span><span><span><?= $block->escapeHtml($block->getButtonLabel()); ?></span></span></span>
     </button>
+    <br><br>
+    <span id="lastSynced" style="display: none"><?= __('Catalog last synced at : ') ?></span>
     <div id="overlay" class="success_msg" style="display: none">
         <div id="popup">
             <header class="modal-header">
@@ -55,7 +60,9 @@ use NewEcomAi\ShopSmart\Block\System\Config\Button\CatalogSyncExecution;
             $(document).ready(function ($) {
                 $("#catalog_sync_button").on("click", function (e) {
                     e.preventDefault();
-                    $('.custom_error').text('')
+                    $('.custom_error').text('');
+                    $('.dateTime').html('');
+                    $('#catalog_sync #lastSynced').hide();
                     $.ajax({
                         url: "<?= $block->getUrl('newecomai/config/catalogproductsync'); ?>",
                         data: {form_key: window.FORM_KEY},
@@ -64,6 +71,16 @@ use NewEcomAi\ShopSmart\Block\System\Config\Button\CatalogSyncExecution;
                         success: function (response, status) {
                             if (response.status) {
                                 $('#catalog_sync .success_msg').show();
+                                $('#catalog_sync #lastSynced').show();
+                                 currentdate = new Date();
+                                 datetime = currentdate.getDate() + "/"
+                                    + (currentdate.getMonth()+1)  + "/"
+                                    + currentdate.getFullYear() + "  "
+                                    + currentdate.getHours() + ":"
+                                    + currentdate.getMinutes() + ":"
+                                    + currentdate.getSeconds();
+                                $("#catalog_sync #lastSynced").append("<span class='dateTime'><strong>"+datetime+'</strong></span>');
+
                             } else {
                                 $('#catalog_sync .custom_error').text(response.message)
                                 $('#catalog_sync .error_msg').show();
