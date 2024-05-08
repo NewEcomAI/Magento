@@ -49,7 +49,6 @@
             <depends>
                 <field id="shop_smart/general/account_configuration/enable">1</field>
             </depends>
-            <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
             <config_path>shop_smart/general_account_configuration/user_password</config_path>
         </field>
 
