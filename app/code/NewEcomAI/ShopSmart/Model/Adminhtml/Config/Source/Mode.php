@@ -10,7 +10,7 @@ use Magento\Framework\Data\OptionSourceInterface;
 class Mode implements OptionSourceInterface
 {
 
-    const STAGING_URL = 'staging';
+    const STAGING_URL = 'https://newecomenginestaging.azurewebsites.net/';
     const PRODUCTION_URL = 'production';
 
     /**
