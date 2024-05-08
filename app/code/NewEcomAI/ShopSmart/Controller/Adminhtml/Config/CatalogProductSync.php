@@ -9,6 +9,8 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
+use NewEcomAI\ShopSmart\Helper\Data;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 
 /**
  * Product Attribute Sync
@@ -26,17 +28,33 @@ class CatalogProductSync extends Action
     private JsonFactory $resultJsonFactory;
 
     /**
+     * @var Data
+     */
+    private Data $helperData;
+
+    /**
+     * @var ProductCollection
+     */
+    private ProductCollection $productCollection;
+
+    /**
      * @param Http $http
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
+     * @param Data $helperData
+     * @param ProductCollection $productCollection
      */
     public function __construct(
-        Http        $http,
-        Context     $context,
-        JsonFactory $resultJsonFactory
+        Http                    $http,
+        Context                 $context,
+        JsonFactory             $resultJsonFactory,
+        Data                    $helperData,
+        ProductCollection       $productCollection
     ) {
         $this->http = $http;
         $this->resultJsonFactory = $resultJsonFactory;
+        $this->helperData = $helperData;
+        $this->productCollection = $productCollection;
         parent::__construct($context);
     }
 
@@ -48,8 +66,34 @@ class CatalogProductSync extends Action
     public function execute()
     {
         if ($this->http->isAjax()) {
-            $resultJson = $this->resultJsonFactory->create();
-            return $resultJson->setData(['status' => true, 'message' => "catalog Sync Successfully"]);
+            try {
+                $resultJson = $this->resultJsonFactory->create();
+                $productCollection = $this->productCollection->addAttributeToSelect('*');
+                $productCollection->setPageSize(3);
+                $productData = [];
+                foreach ($productCollection as $product) {
+                    $productData[] = $this->helperData->getProductAttributeMapping($product->getData());
+                }
+                $productData = array_filter($productData);
+                $productChunks = array_chunk($productData, 20);
+                foreach ($productChunks as $chunk) {
+                    $data = [
+                        "userId" => $this->helperData->getShopSmartUserId(),
+                        "catalog" => $chunk
+                    ];
+
+                    $endpoint = "api/catalog/upload";
+
+                    $response = $this->helperData->sendApiRequest($endpoint,"POST", true, json_encode($data));
+                    $responseData = json_decode($response, true);
+                    if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
+                        return $resultJson->setData(['status' => true, 'message' => "catalog Sync Successfully"]);
+                    }
+                }
+            } catch (\Exception $exception) {
+                /** @var JsonFactory $resultJson */
+                return $resultJson->setData(['status' => false, 'message' => $exception->getMessage()]);
+            }
         }
     }
 }
