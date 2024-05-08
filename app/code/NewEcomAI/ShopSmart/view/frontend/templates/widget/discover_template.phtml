@@ -3,29 +3,34 @@
 use NewEcomAI\ShopSmart\Block\Adminhtml\Widget\PopupPosition;
 
 /** @var PopupPosition $block */
-$cmsBlock = $block->getData('new_ecom_static_block');
-if ($cmsBlock):
-    if ($cmsBlock == 'new_ecom_sticky_on_left') {
-        $popupPosition = 'newcomLeftSide';
-    } elseif ($cmsBlock == 'new_ecom_sticky_on_right') {
-        $popupPosition = 'newcomRightSide';
-    } elseif ($cmsBlock == 'new_ecom_product_grid') {
-        $popupPosition = 'newcomProductGrid';
-    } else {
-        $popupPosition = '';
-    }
-    ?>
+$popupPosition = $block->getPopupPosition();
+$heading = $block->getHeading();
+$placeHolder = $block->getMessagePlaceholder();
+$buttonText = $block->getButtonText();
+$buttonBackgroundColor = $block->getButtonBackgroundColor();
+$sectionBackgroundColor = $block->getSectionBackgroundColor();
+$imageRecognition = $block->getImageRecognition();
+$exampleQueryOne = $block->getExampleQueryOne();
+$exampleQueryTwo = $block->getExampleQueryTwo();
+$exampleQueryThree = $block->getExampleQueryThree();
+$exampleQueryFour = $block->getExampleQueryFour();
+$exampleQueryFive = $block->getExampleQueryFive();
+$destinationStatus = $block->getDestinaltionStatus();
+
+if ($popupPosition):?>
     <div class="NewEcomAi newSmartShopDiscover <?= $popupPosition ?>">
         <div id="newcom-popup" class="popup NewEcomAi__popup">
-            <div class="popup-content NewEcomAi__popup-content">
+            <div class="popup-content NewEcomAi__popup-content" style="background-color: <?= $sectionBackgroundColor;?>">
                 <span class="close NewEcomAi__close" id="newComclose">&times;</span>
                 <div class="NewEcomAi__popup-content__inner">
-                    <h2 class="NewEcomAi__popup-content__heading">AI‑Powered Shopping Assistant – What are you looking
-                        for?</h2>
+                    <h2 class="NewEcomAi__popup-content__heading">
+                        <?= $heading ? $heading : __('AI‑Powered Shopping Assistant – What are you looking for?')?>
+                    </h2>
                     <div class="NewEcomAi__popup-content__search-box">
                         <input class="NewEcomAi__popup-content__input" rows="2" name="NewEcomAi-question"
                                id="NewEcomAi-question" alt=""
-                               placeholder="Tell us what you are looking for, I am here to help!">
+                               placeholder="<?= $placeHolder ? $placeHolder : __('Tell us what you are looking for, I am here to help!'); ?>">
+                        <?php if($imageRecognition == 1) :?>
                         <label class="NewEcomAi__popup-content__upload">
                             <svg class="NewEcomAi__popup-content__svg" xmlns="http://www.w3.org/2000/svg"
                                  xmlns:xlink="http://www.w3.org/1999/xlink" width="35" zoomAndPan="magnify"
@@ -52,18 +57,29 @@ if ($cmsBlock):
                             </svg>
                             <input class="NewEcomAi__popup-content__file" type="file" id="fileInput" name="fileInput">
                         </label>
-                        <button class="NewEcomAi__popup-content__button">Discover</button>
+                        <?php endif;?>
+                        <button class="NewEcomAi__popup-content__button" style="background-color: <?=$buttonBackgroundColor?>"><?= $buttonText ? $buttonText : __('Discover'); ?></button>
                     </div>
                     <div class="NewEcomAi__popup-content__examples">
-                        <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
-                            <span class="NewEcomAi__popup-content__examples__query__text">I am looking for a new dress for this summer</span>
+                            <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryOne ? $exampleQueryOne : __("I am looking for a new dress for this summer");?></span>
                         </div>
                         <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
-                            <span class="NewEcomAi__popup-content__examples__query__text">I am looking for a shirt to go with my black jean</span>
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryTwo ? $exampleQueryTwo : __("I am looking for a shirt to go with my black jean");?></span>
                         </div>
                         <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
-                            <span class="NewEcomAi__popup-content__examples__query__text">I am looking for a formal jacket in sustainable materials</span>
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryThree ? $exampleQueryThree : __("I am looking for a formal jacket in sustainable materials");?></span>
                         </div>
+                        <?php if ($exampleQueryFour):?>
+                         <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryFour;?></span>
+                        </div>
+                        <?php endif;?>
+                        <?php if ($exampleQueryFive):?>
+                         <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryFive;?></span>
+                        </div>
+                        <?php endif;?>
                     </div>
                 </div>
             </div>
