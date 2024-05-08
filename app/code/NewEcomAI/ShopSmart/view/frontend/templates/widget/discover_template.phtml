@@ -61,21 +61,15 @@ if ($popupPosition):?>
                         <button class="NewEcomAi__popup-content__button" style="background-color: <?=$buttonBackgroundColor?>"><?= $buttonText ? $buttonText : __('Discover'); ?></button>
                     </div>
                     <div class="NewEcomAi__popup-content__examples">
-                        <?php if ($exampleQueryOne):?>
                             <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
-                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryOne;?></span>
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryOne ? $exampleQueryOne : __("I am looking for a new dress for this summer");?></span>
                         </div>
-                        <?php endif;?>
-                        <?php if ($exampleQueryTwo):?>
                         <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
-                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryTwo;?></span>
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryTwo ? $exampleQueryTwo : __("I am looking for a shirt to go with my black jean");?></span>
                         </div>
-                        <?php endif;?>
-                        <?php if ($exampleQueryThree):?>
                         <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
-                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryThree;?></span>
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryThree ? $exampleQueryThree : __("I am looking for a formal jacket in sustainable materials");?></span>
                         </div>
-                        <?php endif;?>
                         <?php if ($exampleQueryFour):?>
                          <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
                             <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryFour;?></span>
