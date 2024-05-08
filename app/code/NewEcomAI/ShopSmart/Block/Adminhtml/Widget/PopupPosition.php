@@ -11,6 +11,22 @@ use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
  */
 class PopupPosition extends Template implements BlockInterface
 {
+    const LEFT_SIDE_CLASS = 'newcomLeftSide';
+    const RIGHT_SIDE_CLASS = 'newcomRightSide';
+    const PRODUCT_GRID_CLASS = 'newcomProductGrid';
+    const SHOP_SMART_POPUP_POSITION = 'shop_smart_popup_position';
+    const SHOP_SMART_HEADING = 'shop_smart_heading';
+    const SHOP_SMART_MESSAGE_PLACEHOLDER = 'shop_smart_message_placeholder';
+    const SHOP_SMART_BUTTON_TEXT = 'shop_smart_button_text';
+    const SHOP_SMART_BUTTON_BACKGROUND_COLOR = 'shop_smart_section_button_color';
+    const SHOP_SMART_SECTION_BACKGROUND_COLOR = 'shop_smart_section_button_color';
+    const SHOP_SMART_IMAGE_RECOGNITION = 'shop_smart_image_recognition';
+    const SHOP_SMART_EXAMPLE_QUERY_ONE = 'shop_smart_example_query_one';
+    const SHOP_SMART_EXAMPLE_QUERY_TWO = 'shop_smart_example_query_two';
+    const SHOP_SMART_EXAMPLE_QUERY_THREE = 'shop_smart_example_query_three';
+    const SHOP_SMART_EXAMPLE_QUERY_FOUR = 'shop_smart_example_query_four';
+    const SHOP_SMART_EXAMPLE_QUERY_FIVE = 'shop_smart_example_query_five';
+    const SHOP_SMART_DESTINATION_STATUS = 'shop_smart_destination_status';
 
     /**
      * Popup Template
@@ -25,13 +41,13 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getPopupPosition()
     {
-        $popupPosition = $this->getData('shop_smart_popup_position');
+        $popupPosition = $this->getData(self::SHOP_SMART_POPUP_POSITION);
         if ( $popupPosition ==  PopupLayout::POPUP_LEFT_SIDE) {
-            $popupPosition = 'newcomLeftSide';
+            $popupPosition = self::LEFT_SIDE_CLASS;
         } elseif ($popupPosition == PopupLayout::POPUP_RIGHT_SIDE) {
-            $popupPosition = 'newcomRightSide';
+            $popupPosition = self::RIGHT_SIDE_CLASS;
         } elseif ($popupPosition == PopupLayout::POPUP_PRODUCT_GRID) {
-            $popupPosition = 'newcomProductGrid';
+            $popupPosition = self::PRODUCT_GRID_CLASS;
         } else {
             $popupPosition = '';
         }
@@ -43,7 +59,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getHeading()
     {
-        return $this->getData('shop_smart_heading');
+        return $this->getData(self::SHOP_SMART_HEADING);
     }
 
     /**
@@ -51,7 +67,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getMessagePlaceholder()
     {
-        return $this->getData('shop_smart_message_placeholder');
+        return $this->getData(self::SHOP_SMART_MESSAGE_PLACEHOLDER);
     }
 
     /**
@@ -59,7 +75,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getButtonText()
     {
-        return $this->getData('shop_smart_button_text');
+        return $this->getData(self::SHOP_SMART_BUTTON_TEXT);
     }
 
     /**
@@ -67,7 +83,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getButtonBackgroundColor()
     {
-        return $this->getData('shop_smart_button_background_color');
+        return $this->getData(self::SHOP_SMART_BUTTON_BACKGROUND_COLOR);
     }
 
     /**
@@ -75,7 +91,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getSectionBackgroundColor()
     {
-        return $this->getData('shop_smart_section_button_color');
+        return $this->getData(self::SHOP_SMART_SECTION_BACKGROUND_COLOR);
     }
 
     /**
@@ -83,7 +99,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getImageRecognition()
     {
-        return $this->getData('shop_smart_image_recognition');
+        return $this->getData(self::SHOP_SMART_IMAGE_RECOGNITION);
     }
 
     /**
@@ -91,7 +107,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getExampleQueryOne()
     {
-        return $this->getData('shop_smart_example_query_one');
+        return $this->getData(self::SHOP_SMART_EXAMPLE_QUERY_ONE);
     }
 
     /**
@@ -99,7 +115,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getExampleQueryTwo()
     {
-        return $this->getData('shop_smart_example_query_two');
+        return $this->getData(self::SHOP_SMART_EXAMPLE_QUERY_TWO);
     }
 
     /**
@@ -107,7 +123,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getExampleQueryThree()
     {
-        return $this->getData('shop_smart_example_query_three');
+        return $this->getData(self::SHOP_SMART_EXAMPLE_QUERY_THREE);
     }
 
     /**
@@ -115,7 +131,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getExampleQueryFour()
     {
-        return $this->getData('shop_smart_example_query_four');
+        return $this->getData(self::SHOP_SMART_EXAMPLE_QUERY_FOUR);
     }
 
     /**
@@ -123,7 +139,7 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getExampleQueryFive()
     {
-        return $this->getData('shop_smart_example_query_five');
+        return $this->getData(self::SHOP_SMART_EXAMPLE_QUERY_FIVE);
     }
 
     /**
@@ -131,6 +147,6 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getDestinaltionStatus()
     {
-        return $this->getData('shop_smart_destination_status');
+        return $this->getData(self::SHOP_SMART_DESTINATION_STATUS);
     }
 }
