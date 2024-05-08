@@ -4,6 +4,9 @@ namespace NewEcomAI\ShopSmart\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
+/**
+ * Popup position
+ */
 class PopupLayout implements OptionSourceInterface
 {
 
@@ -17,10 +20,10 @@ class PopupLayout implements OptionSourceInterface
      * @var array
      */
     public static array $popupLayout = [
-        self::POPUP,
-        self::POPUP_LEFT_SIDE,
-        self::POPUP_RIGHT_SIDE,
-        self::POPUP_PRODUCT_GRID
+        self::POPUP => 'NewEcom Popup',
+        self::POPUP_LEFT_SIDE => 'NewEcom Sticky on Left Side',
+        self::POPUP_RIGHT_SIDE => 'NewEcom Sticky on Right Side',
+        self::POPUP_PRODUCT_GRID => 'NewEcom Product Grid'
     ];
 
     /**
@@ -39,20 +42,10 @@ class PopupLayout implements OptionSourceInterface
     public function toOptionArray(): array
     {
         $opts = [];
-        $label = '';
-        foreach (self::getOptionArray() as $value) {
-            if ($value == self::POPUP) {
-                $label = "NewEcom Popup";
-            } elseif ($value == self::POPUP_LEFT_SIDE) {
-                $label = "NewEcom Sticky on Left Side";
-            } elseif ($value == self::POPUP_RIGHT_SIDE) {
-                $label = "NewEcom Sticky on Right Side";
-            } elseif ($value == self::POPUP_PRODUCT_GRID) {
-                $label = "NewEcom Product Grid";
-            }
+        foreach (self::getOptionArray() as $key => $value) {
             $opts[] = [
-                'label' => __($label),
-                'value' => $value,
+                'label' => __($value),
+                'value' => $key,
             ];
         }
         return $opts;

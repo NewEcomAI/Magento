@@ -2,23 +2,47 @@
 
 namespace NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source;
 
-class Mode
+use Magento\Framework\Data\OptionSourceInterface;
+
+/**
+ * Check Mode URL
+ */
+class Mode implements OptionSourceInterface
 {
 
     const STAGING_URL = 'staging';
     const PRODUCTION_URL = 'production';
 
-    public function toOptionArray()
+    /**
+     * @var array
+     */
+    public static array $checkModeURL = [
+        self::STAGING_URL => 'Staging',
+        self::PRODUCTION_URL => 'Production'
+    ];
+
+    /**
+     * @return string[]
+     */
+    public static function getOptionArray(): array
     {
-        return [
-            [
-                'value' => Mode::STAGING_URL,
-                'label' => __('Staging')
-            ],
-            [
-                'value' => Mode::PRODUCTION_URL,
-                'label' => __('Production')
-            ],
-        ];
+        return self::$checkModeURL;
+    }
+
+    /**
+     * Return array of options as value-label pairs
+     *
+     * @return array Format: array(array('value' => '<value>', 'label' => '<label>'), ...)
+     */
+    public function toOptionArray(): array
+    {
+        $opts = [];
+        foreach (self::getOptionArray() as $key => $value) {
+            $opts[] = [
+                'label' => __($value),
+                'value' => $key,
+            ];
+        }
+        return $opts;
     }
 }

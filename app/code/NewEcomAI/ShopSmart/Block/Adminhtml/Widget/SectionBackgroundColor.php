@@ -2,30 +2,40 @@
 
 namespace NewEcomAI\ShopSmart\Block\Adminhtml\Widget;
 
+use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\View\Element\Template;
 use Magento\Widget\Block\BlockInterface;
 
-class ColorPicker extends Template implements BlockInterface
+
+/**
+ * Change Popup Background Color
+ */
+class SectionBackgroundColor extends Template implements BlockInterface
 {
-    public function prepareElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+
+    /**
+     * @param AbstractElement $element
+     * @return AbstractElement
+     */
+    public function prepareElementHtml(AbstractElement $element)
     {
-        $defaultColor = "#f6f6f6";
+        $defaultColor = "#FFFFFF";
         $value = $element->getValue() ?: $defaultColor;
         $element->setData('after_element_html', '
                 <input type="text"
                     style="height: 30px; width: 100px;"
                     value="' . $value . '"
-                    id="' . $element->getHtmlId() . '"
+                    id="section_background_color"
                     name="' . $element->getName() . '"
                 >
                 <script type="text/javascript">
                 require(["jquery", "jquery/colorpicker/js/colorpicker"], function ($) {
-                    $currentElement = $("#' . $element->getHtmlId() . '");
-                    $currentElement.css("backgroundColor", "'. $value .'");
-                    $currentElement.ColorPicker({
+                    $currElem = $("#section_background_color");
+                    $currElem.css("backgroundColor", "'. $value .'");
+                    $currElem.ColorPicker({
                         color: "' . $value . '",
                         onChange: function (hsb, hex, rgb) {
-                            $currentElement.css("backgroundColor", "#" + hex).val("#" + hex);
+                            $currElem.css("backgroundColor", "#" + hex).val("#" + hex);
                         }
                     });
                 });
