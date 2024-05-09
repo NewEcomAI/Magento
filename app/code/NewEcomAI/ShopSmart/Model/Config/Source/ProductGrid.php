@@ -4,6 +4,9 @@ namespace NewEcomAI\ShopSmart\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
+/**
+ * Show search product grid in row class
+ */
 class ProductGrid implements OptionSourceInterface
 {
     const ONE_PRODUCTS_ROW = 'one_products_row';
@@ -17,12 +20,12 @@ class ProductGrid implements OptionSourceInterface
      * @var array
      */
     public static array $layoutProductGrid = [
-        self::ONE_PRODUCTS_ROW,
-        self::TWO_PRODUCTS_ROW,
-        self::THREE_PRODUCTS_ROW,
-        self::FOUR_PRODUCTS_ROW,
-        self::FIVE_PRODUCTS_ROW,
-        self::SIX_PRODUCTS_ROW
+        self::ONE_PRODUCTS_ROW => '1 Product/Row',
+        self::TWO_PRODUCTS_ROW => '2 Product/Row',
+        self::THREE_PRODUCTS_ROW => '3 Product/Row',
+        self::FOUR_PRODUCTS_ROW =>  '4 Product/Row',
+        self::FIVE_PRODUCTS_ROW =>  '5 Product/Row',
+        self::SIX_PRODUCTS_ROW =>   '6 Product/Row',
     ];
 
     /**
@@ -43,20 +46,6 @@ class ProductGrid implements OptionSourceInterface
         $opts = [];
         foreach (self::getOptionArray() as $key => $value) {
 
-            if ($value == self::ONE_PRODUCTS_ROW) {
-                $value = "1 Product/Row";
-            } elseif ($value == self::TWO_PRODUCTS_ROW) {
-                $value = "2 Product/Row";
-            } elseif ($value == self::THREE_PRODUCTS_ROW) {
-                $value = "3 Product/Row";
-            } elseif ($value == self::FOUR_PRODUCTS_ROW) {
-                $value = "4 Product/Row";
-            } elseif ($value == self::FIVE_PRODUCTS_ROW) {
-                $value = "5 Product/Row";
-            }
-            elseif ($value == self::SIX_PRODUCTS_ROW) {
-                $value = "6 Product/Row";
-            }
             $opts[] = [
                 'label' => __($value),
                 'value' => $key,
