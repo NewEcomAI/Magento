@@ -20,14 +20,14 @@ $destinationStatus = $block->getDestinaltionStatus();
 if ($popupPosition):?>
     <div class="NewEcomAi newSmartShopDiscover <?= $popupPosition ?>">
         <div id="newcom-popup" class="popup NewEcomAi__popup">
-            <div class="popup-content NewEcomAi__popup-content" style="background-color: <?= $sectionBackgroundColor;?>">
+            <div class="popup-content NewEcomAi__popup-content js-newcom-popup-content" style="background-color: <?= $sectionBackgroundColor;?>">
                 <span class="close NewEcomAi__close" id="newComclose">&times;</span>
-                <div class="NewEcomAi__popup-content__inner">
-                    <h2 class="NewEcomAi__popup-content__heading">
+                <div class="NewEcomAi__popup-content__inner js-newcom-popup-content-inner">
+                    <h2 class="NewEcomAi__popup-content__heading js-newcom-heading">
                         <?= $heading ? $heading : __('AI‑Powered Shopping Assistant – What are you looking for?')?>
                     </h2>
                     <div class="NewEcomAi__popup-content__search-box">
-                        <input class="NewEcomAi__popup-content__input" rows="2" name="NewEcomAi-question"
+                        <input class="NewEcomAi__popup-content__input js-newcom-input" rows="2" name="NewEcomAi-question"
                                id="NewEcomAi-question" alt=""
                                placeholder="<?= $placeHolder ? $placeHolder : __('Tell us what you are looking for, I am here to help!'); ?>">
                         <?php if($imageRecognition == 1) :?>
@@ -57,8 +57,17 @@ if ($popupPosition):?>
                             </svg>
                             <input class="NewEcomAi__popup-content__file" type="file" id="fileInput" name="fileInput">
                         </label>
+                        <div class="NewEcomAi__popup-content__reset" id="NewEcomAi-reset-button">
+                            <svg class="NewEcomAi__popup-content__reset__svg" fill="#000000" width="800px" height="800px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M960 0v213.333c411.627 0 746.667 334.934 746.667 746.667S1371.627 1706.667 960 1706.667 213.333 1371.733 213.333 960c0-197.013 78.4-382.507 213.334-520.747v254.08H640V106.667H53.333V320h191.04C88.64 494.08 0 720.96 0 960c0 529.28 430.613 960 960 960s960-430.72 960-960S1489.387 0 960 0" fill-rule="evenodd"></path>
+                            </svg>
+                        </div>
                         <?php endif;?>
-                        <button class="NewEcomAi__popup-content__button" style="background-color: <?=$buttonBackgroundColor?>"><?= $buttonText ? $buttonText : __('Discover'); ?></button>
+                        <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button js-newcom-search" style="background-color: <?=$buttonBackgroundColor?>"><?= $buttonText ? $buttonText : __('Discover'); ?></button>
+                    </div>
+                    <div class="NewEcomAi__product-box">
+                        <div id="stackedQuestion" class="NewEcomAi__product-box__stackedQuestion"></div>
+                        <div id="stackedList" class="NewEcomAi__product-box__stackedList"></div>
                     </div>
                     <div class="NewEcomAi__popup-content__examples">
                             <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
@@ -104,6 +113,10 @@ if ($popupPosition):?>
     <script>
         require(['jquery', 'customNewcom'], function ($, customNewcom) {
             customNewcom();
+        });
+
+        require(['jquery', 'productGridNewcom'], function ($, productGridNewcom) {
+            productGridNewcom();
         });
     </script>
 <?php endif; ?>
