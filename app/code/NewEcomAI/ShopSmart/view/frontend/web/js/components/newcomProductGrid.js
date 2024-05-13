@@ -7,38 +7,14 @@ define([
     return function productGridNewcom() {
         // Function to fetch products
         function getRelatedProducts(searchQuery) {
-            // Example implementation: return some hardcoded related products
+            // Example implementation:
             return [
-                { 
-                    title: 'Austin Shirt', 
-                    imageUrl: 'https://cdn.shopify.com/s/files/1/0825/7709/6985/products/2014-09-26_Spencer_Look_04_01_72d7948d-362a-4f63-8816-464ae8930b89.jpg?v=1694516502',
-                    price: 168.00,
-                    colors: ['Black', 'Blue', 'Grey'],
-                    sizes: ['Small', 'Medium', 'Large'],
-                    quantity: 1
-                },
-                { 
-                    title: 'Poplin Blouse', 
-                    imageUrl: 'https://cdn.shopify.com/s/files/1/0825/7709/6985/products/2014-08-02_Lana_Look_31_713.jpg?v=1694515793',
-                    price: 328.00,
-                    colors: ['Black', 'White'],
-                    sizes: ['Small', 'Medium', 'Large'],
-                    quantity: 1
-                },
-                { 
-                    title: 'Pau Shirt', 
-                    imageUrl: 'https://cdn.shopify.com/s/files/1/0825/7709/6985/products/2014-09-30_Ashley_Look_26_8757.jpg?v=1694516713',
-                    price: 14.99,
-                    colors: ['Yellow', 'Purple'],
-                    sizes: ['Small','Medium', 'Large'],
-                    quantity: 1
-                },
-                { 
-                    title: 'Contrast Shirt', 
-                    imageUrl: 'https://cdn.shopify.com/s/files/1/0825/7709/6985/products/2015-07-02_Ashley_26_50326_23941.jpg?v=1694521421',
-                    price: 14.99,
-                    colors: ['Black', 'Blue'],
-                    sizes: ['Small','Medium', 'Large'],
+                {
+                    title: '',
+                    imageUrl: '',
+                    price: 0.00,
+                    colors: ['', ''],
+                    sizes: ['', ''],
                     quantity: 1
                 }
             ];
