@@ -28,10 +28,40 @@
     position: relative;
     width: 100%;
 
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &.newcom-full-width {
+      width: 95%;
+    }
+
+    &__reset {
+      border: 0;
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 0;
+
+      &__svg {
+        box-sizing: border-box;
+        cursor: pointer;
+        height: 38px;
+        padding: 9px;
+        width: 50px;
+      }
+
+      &:hover {
+        background-color: @reset-button-hover-color;
+      }
+    }
+
     &__upload {
       border-left: 1px solid;
       border-color: @popup-input-border-color;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
       height: 40px;
       position: absolute;
       right: 0;
@@ -58,7 +88,33 @@
       margin: 20px auto;
       max-width: 85%;
       padding: 10px;
-      text-align: center;
+
+      &.newcom-post-search {
+        max-width: 95%;
+        .NewEcomAi {
+          &__popup-content {
+            &__upload {
+              display: none;
+            }
+
+            &__reset {
+              display: flex;
+            }
+
+            &__examples {
+              display: none;
+            }
+
+            &__heading {
+              text-align: left;
+            }
+          }
+
+          &__product-box {
+            display: block;
+          }
+        }
+      }
     }
 
     &__heading {
@@ -69,6 +125,7 @@
       letter-spacing: calc(@font-heading-scale * .06rem);
       margin-bottom: 19px;
       margin-top: 0;
+      text-align: center;
       word-break: break-word;
     }
 
@@ -84,8 +141,12 @@
       resize: vertical;
       width: 100%;
 
-      &:focus {
-        box-shadow: none;
+      &:focus,
+      &:active,
+      &:hover,
+      &:focus-visible {
+        box-shadow: none !important;
+        outline: none;
       }
     }
 
@@ -96,6 +157,7 @@
     }
 
     &__examples {
+      display: block;
       text-align: left;
 
       &__query {
@@ -174,18 +236,35 @@
 
         &__upload {
             border-left: 1px solid;
+            border-color: @popup-example-border-color;
+            display: block;
             height: 41px;
             position: absolute;
-            border-color: @popup-example-border-color;
             right: 0;
             text-align: center;
             top: 0;
             width: 50px;
         }
 
+        &__reset {
+          &__svg {
+            height: 41px;
+          }
+        }
+
         &__inner {
           max-width: 100%;
           padding: 10px 20px;
+
+          &.newcom-post-search {
+            .NewEcomAi {
+              &__popup-content {
+                &__upload {
+                  display: none;
+                }
+              }
+            }
+          }
         }
 
         &__file {
@@ -240,6 +319,18 @@
           }
         }
       }
+
+      &__product-box {
+        &__add-cart {
+          .NewEcomAi {
+            &__popup-content {
+              &__button {
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
     }
   }
 
@@ -280,7 +371,8 @@
     }
   }
 
-  &.newSmartShopDiscover {
+  &.newSmartShopDiscover,
+  &.newcomPopup {
     .NewEcomAi {
       &__btn {
         display: none;
@@ -356,7 +448,11 @@
     font-size: 16px;
     background-color: @sticky-btn-bg-color;
   }
+  &__product-box {
+    display: none;
+  }
 }
+
 
 //
 //  Mobile (style-l.css)
@@ -400,6 +496,17 @@
       &__inner {
         padding: 0;
       }
+
+      &__reset {
+        align-items: center;
+        border-image: initial;
+        border-left: none;
+        border: 1px solid;
+        border-left: 0;
+        border-color: @popup-input-border-color;
+        justify-content: center;
+        position: unset;
+      }
     }
 
     &.newcomProductGrid {
@@ -427,7 +534,7 @@
               &__input {
                   min-height: 41px;
                   padding-right: 0px;
-                  width: 75%;
+                  width: 100%;
               }
 
               &__search-box {
