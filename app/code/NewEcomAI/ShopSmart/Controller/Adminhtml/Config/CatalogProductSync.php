@@ -11,6 +11,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use NewEcomAI\ShopSmart\Model\Log;
 
 /**
  * Product Attribute Sync
@@ -69,27 +70,31 @@ class CatalogProductSync extends Action
             try {
                 $resultJson = $this->resultJsonFactory->create();
                 $productCollection = $this->productCollection->addAttributeToSelect('*');
-                $productCollection->setPageSize(3);
+
+                $productCollection->setPageSize(20);
+                $pages = $productCollection->getLastPageNumber();
                 $productData = [];
-                foreach ($productCollection as $product) {
-                    $productData[] = $this->helperData->getProductAttributeMapping($product->getData());
-                }
-                $productData = array_filter($productData);
-                $productChunks = array_chunk($productData, 20);
-                foreach ($productChunks as $chunk) {
+                for ($pageNum = 1; $pageNum<=$pages; $pageNum++) {
+                    $productCollection->setCurPage($pageNum);
+                    foreach ($productCollection as $key => $product) {
+                        $productData[] = $this->helperData->getProductAttributeMapping($product->getData());
+                    }
+
                     $data = [
                         "userId" => $this->helperData->getShopSmartUserId(),
-                        "catalog" => $chunk
+                        "catalog" => $productData
                     ];
-
-                    $endpoint = "api/catalog/upload";
-
+                    $endpoint = "api/catalog/update";
                     $response = $this->helperData->sendApiRequest($endpoint,"POST", true, json_encode($data));
                     $responseData = json_decode($response, true);
                     if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
-                        return $resultJson->setData(['status' => true, 'message' => "catalog Sync Successfully"]);
+                        Log::Info($responseData['response']['status']);
                     }
+                    $productData = [];
+                    $productCollection->clear();
                 }
+
+                return $resultJson->setData(['status' => true, 'message' => "catalog Sync Successfully"]);
             } catch (\Exception $exception) {
                 /** @var JsonFactory $resultJson */
                 return $resultJson->setData(['status' => false, 'message' => $exception->getMessage()]);

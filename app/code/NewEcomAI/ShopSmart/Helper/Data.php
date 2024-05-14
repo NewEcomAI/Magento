@@ -20,13 +20,14 @@ use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\Framework\Session\Generic;
 use Magento\Framework\HTTP\Client\Curl;
+use function PHPUnit\Framework\isEmpty;
 
 class Data extends AbstractHelper
 {
     /**
      * @var string NewCommAI authentication token
      */
-    private $token;
+    protected $token;
 
     const MODULE_ENABLE = 'shop_smart/general_account_configuration/enable';
 
@@ -287,10 +288,10 @@ class Data extends AbstractHelper
      * @return mixed
      * @throws NoSuchEntityException
      */
-    public function getProductImageUrl($sku)
+    public function getProductImageUrl($id)
     {
         $url = [];
-        $product= $this->productRepository->getById($sku);
+        $product= $this->productRepository->getById($id);
         $productimages = $product->getMediaGalleryImages();
         foreach($productimages as $productimage)
         {
@@ -323,18 +324,29 @@ class Data extends AbstractHelper
         return $categoryNames;
     }
 
+    /**
+     * @param int $id
+     * @param null $storeId
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    protected function getCategoryNameById($id, $storeId = null)
+    {
+        $categoryInstance = $this->categoryRepository->get($id, $this->storeManager->getStore()->getId());
+
+        return $categoryInstance->getName();
+    }
+
 
     /**
      * @param $sku
      * @return array|void
      */
-//    public function getProductAttributeMapping($id,$description,$name,$tags,$price,$productType,$category,$vendor,$inventory,$googleProductCategory,$ageGroup,$gender,$color,$customProduct)
-    public function getProductAttributeMapping($data)
+    public function  getProductAttributeMapping($data)
     {
         try {
             $productAttributes = $this->getShopSmartProductAttribute();
             $attributesArray = explode(',', $productAttributes);
-// Step 2: Get values for each attribute and create the desired string
             $valuesString = '';
             $valuesArray = [];
             foreach ($attributesArray as $attribute) {
@@ -343,30 +355,23 @@ class Data extends AbstractHelper
                     $valuesArray[] = $data[$attribute];
                 }
             }
-
             $valuesString = rtrim($valuesString, '-');
-
             $keyValueString = '';
             foreach ($data as $key => $value) {
                 if (in_array($key, $attributesArray)) {
                     $keyValueString .= "$key - $value | ";
                 }
             }
-
             $keyValueString = rtrim($keyValueString, " | ");
             $products = [];
             $products['Id'] = $data['entity_id'];
-
-            $products['Description'] = $data['description'];
-            $products['Name'] = $data['name'];
-            $categoryIds = $data['category_ids'] ?? [];
-            $categoryName = !empty($categoryIds) ? $this->getCategoryName($categoryIds) : "";
-            $status = $data['status'];
-            $tags = [ $categoryName, $status];
-
-            $products['Tags'] = $tags;
+            $products['Description'] = $data['description'].$keyValueString;
+            $products['Name'] = $valuesString;
+            $categoryIds = $this->productRepository->getById($data['entity_id'])->getCategoryIds();
+            $categoryName = $this->getCategoryName($categoryIds) ?? "";
+            $products['Tags'] = $valuesArray;
             $products['Price'] = $data['price'];
-            $products['ProdutType'] = $data['type_id'];
+            $products['ProductType'] = $data['type_id'];
             $products['Category'] = $categoryName;
             $products['Vendor'] = "magento";
             $products['Inventory'] = "100";
@@ -375,6 +380,8 @@ class Data extends AbstractHelper
             $products['Gender'] = "Test Gender";
             $products['Color'] = "Test Color";
             $products['CustomProduct'] = "Test Data True";
+            $products['ProductInfo'] = $keyValueString;
+            $products['Images'] = $this->getProductImageUrl($data['entity_id']);
             return $products;
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
@@ -390,28 +397,19 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getToken($refresh = true)
+    public function getToken()
     {
-        $accessToken = "";
-        if (!$refresh) {
-            if (strlen($this->token)) {
-                return $this->token;
-            } else if (!empty($this->session->getData('NewCommAISession'))) {
-                $this->token = $this->session->getData('NewCommAISession');
-                return $this->token;
-            } else {
-                $refresh = true;
-            }
-        }
-        if ($refresh) {
-            $accessToken = self::getAccessToken();
-            if (is_string($accessToken['token'])) {
+        if (!isset($this->token) || empty($this->token)) { // Check if token is not set or empty
+            $this->token = $this->session->getData('NewCommAISession');
+            if (empty($this->token)) {
+                $accessToken = self::getAccessToken();
                 if (!empty($accessToken['token'])) {
-                    $this->session->setData('NewCommAISession', $accessToken['token']);
+                    $this->token = $accessToken['token'];
+                    $this->session->setData('NewCommAISession', $this->token);
                 }
             }
         }
-        return $accessToken['token'];
+        return $this->token;
     }
 
     /**
@@ -450,9 +448,9 @@ class Data extends AbstractHelper
         }
         $this->httpClient->addHeader("Content-Type", "application/json");
         if($requireOAuth) {
-            $token = $this->getToken();
+            $outhToken = $this->getToken();
             $headers = [
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer ' . $outhToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
             ];
