@@ -22,12 +22,15 @@ class PopupPosition extends Template implements BlockInterface
     const SHOP_SMART_BUTTON_BACKGROUND_COLOR = 'shop_smart_button_background_color';
     const SHOP_SMART_SECTION_BACKGROUND_COLOR = 'shop_smart_section_button_color';
     const SHOP_SMART_IMAGE_RECOGNITION = 'shop_smart_image_recognition';
+    const SHOP_SMART_LAYOUT_TEXT = 'shop_smart_layout_text';
+    const SHOP_SMART_LAYOUT_DESCRIPTION_TEXT = 'shop_smart_layout_description_text';
     const SHOP_SMART_EXAMPLE_QUERY_ONE = 'shop_smart_example_query_one';
     const SHOP_SMART_EXAMPLE_QUERY_TWO = 'shop_smart_example_query_two';
     const SHOP_SMART_EXAMPLE_QUERY_THREE = 'shop_smart_example_query_three';
     const SHOP_SMART_EXAMPLE_QUERY_FOUR = 'shop_smart_example_query_four';
     const SHOP_SMART_EXAMPLE_QUERY_FIVE = 'shop_smart_example_query_five';
     const SHOP_SMART_DESTINATION_STATUS = 'shop_smart_destination_status';
+    const SHOP_SMART_CUSTOM_CSS = 'shop_smart_custom_css';
 
     /**
      * Popup Template
@@ -106,6 +109,22 @@ class PopupPosition extends Template implements BlockInterface
     /**
      * @return array|mixed|null
      */
+    public function getLayoutText()
+    {
+        return $this->getData(self::SHOP_SMART_LAYOUT_TEXT);
+    }
+
+    /**
+     * @return array|mixed|null
+     */
+    public function getLayoutDescriptionText()
+    {
+        return $this->getData(self::SHOP_SMART_LAYOUT_DESCRIPTION_TEXT);
+    }
+
+    /**
+     * @return array|mixed|null
+     */
     public function getExampleQueryOne()
     {
         return $this->getData(self::SHOP_SMART_EXAMPLE_QUERY_ONE);
@@ -149,5 +168,13 @@ class PopupPosition extends Template implements BlockInterface
     public function getDestinaltionStatus()
     {
         return $this->getData(self::SHOP_SMART_DESTINATION_STATUS);
+    }
+
+    /**
+     * @return array|mixed|null
+     */
+    public function getCustomCss()
+    {
+        return $this->getData(self::SHOP_SMART_CUSTOM_CSS);
     }
 }

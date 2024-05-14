@@ -10,14 +10,17 @@ $buttonText = $block->getButtonText();
 $buttonBackgroundColor = $block->getButtonBackgroundColor();
 $sectionBackgroundColor = $block->getSectionBackgroundColor();
 $imageRecognition = $block->getImageRecognition();
+$layoutText = $block->getLayoutText();
+$layoutDescriptionText = $block->getLayoutDescriptionText();
 $exampleQueryOne = $block->getExampleQueryOne();
 $exampleQueryTwo = $block->getExampleQueryTwo();
 $exampleQueryThree = $block->getExampleQueryThree();
 $exampleQueryFour = $block->getExampleQueryFour();
 $exampleQueryFive = $block->getExampleQueryFive();
 $destinationStatus = $block->getDestinaltionStatus();
-
+$customCss = $block->getCustomCss();
 if ($popupPosition):?>
+<?= $customCss ? $customCss : "";?>
     <div class="NewEcomAi newSmartShopDiscover <?= $popupPosition ?>">
         <div id="newcom-popup" class="popup NewEcomAi__popup">
             <div class="popup-content NewEcomAi__popup-content js-newcom-popup-content" style="background-color: <?= $sectionBackgroundColor;?>">
@@ -95,18 +98,18 @@ if ($popupPosition):?>
         </div>
         <div class="NewEcomAi__right NewEcomAi__btn" id="newcomRightBtn">
             <div class="NewEcomAi__right__text">
-                ShopSmart-AI
+                <?= $layoutText ? $layoutText : __('ShopSmart-AI');?>
             </div>
             <div class="NewEcomAi__right__desc">
-                AI‑Powered Shopping Assistant
+                <?= $layoutDescriptionText ? $layoutDescriptionText : __('AI‑Powered Shopping Assistant');?>
             </div>
         </div>
         <div class="NewEcomAi__left NewEcomAi__btn" id="newcomLeftBtn">
             <div class="NewEcomAi__left__desc">
-                AI‑Powered Shopping Assistant
+                <?= $layoutDescriptionText ? $layoutDescriptionText : __('AI‑Powered Shopping Assistant');?>
             </div>
             <div class="NewEcomAi__left__text">
-                ShopSmart-AI
+                <?= $layoutText ? $layoutText : __('ShopSmart-AI');?>
             </div>
         </div>
     </div>
