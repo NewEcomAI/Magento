@@ -1,6 +1,6 @@
 <?php
 
-namespace NewEcomAI\ShopSmart\Model;
+namespace NewEcomAI\ShopSmart\Model\Log;
 
 class Log
 {
