@@ -48,6 +48,7 @@ class TextAreaField extends Template
         }
 
         $element->setData('after_element_html', $input->getElementHtml());
+        $element->setValue(null);
         return $element;
     }
 
