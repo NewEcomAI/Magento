@@ -1,0 +1,48 @@
+<div class="NewEcomAi newSmartShopDecide newcomLeftSide">
+    <div id="newcom-popup" class="popup NewEcomAi__popup">
+        <div class="popup-content NewEcomAi__popup-content js-newcom-popup-content">
+            <span class="close NewEcomAi__close" id="newComclose">&times;</span>
+            <div class="NewEcomAi__popup-content__inner">
+                <h2 class="NewEcomAi__popup-content__heading">Ask me anything you want about this product in Natural Language.</h2>
+                <div class="NewEcomAi__popup-content__search-box">
+                    <input class="NewEcomAi__popup-content__input" rows="2" name="NewEcomAi-question" id="NewEcomAi-question" alt="" placeholder="Can I wear this product for a formal diner?">
+                    <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button">Tell me</button>
+                </div>
+
+                <div class="NewEcomAi__popup-content__examples">
+                    <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                        <span class="NewEcomAi__popup-content__examples__query__text">What are the materials?</span>
+                    </div>
+                </div>
+            </div>
+            <div id="NewEcomAi-search-result" class="NewEcomAi__popup-content__response"></div>
+        </div>
+    </div>
+    <div class="NewEcomAi__right NewEcomAi__btn" id="newcomRightBtn">
+        <div class="NewEcomAi__right__text">
+            Shop Smart
+        </div>
+        <div class="NewEcomAi__right__desc">
+            AI Powered Shopping Assistant
+        </div>
+    </div>
+    <div class="NewEcomAi__left NewEcomAi__btn" id="newcomLeftBtn">
+        <div class="NewEcomAi__left__desc">
+            AI Powered Shopping Assistant
+        </div>
+        <div class="NewEcomAi__left__text">
+            Shop Smart
+        </div>
+    </div>
+</div>
+
+<script>
+    require(['jquery', 'customNewcom'], function ($, customNewcom) {
+            customNewcom();
+    });
+    
+    require(['jquery', 'decideTemplateNewcom'], function ($, decideTemplateNewcom) {
+        decideTemplateNewcom();
+    });
+</script>
+

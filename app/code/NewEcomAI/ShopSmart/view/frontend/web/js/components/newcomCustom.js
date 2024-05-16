@@ -9,16 +9,17 @@ define([
               var newEcomClickedText = $(this).text().trim(); 
               $('#NewEcomAi-question').val(newEcomClickedText);
           });
+
           //  JS condition for discover template postion
-          if ($('.newSmartShopDiscover').hasClass('newcomLeftSide')) {
+          if ($('.newSmartShopDiscover, .newSmartShopDecide').hasClass('newcomLeftSide')) {
               $('#newcomLeftBtn').on('click', function() {
                 $('#newcom-popup').css('display', 'block');
               });
-          } else if ($('.newSmartShopDiscover').hasClass('newcomRightSide')) {
+          } else if ($('.newSmartShopDiscover, .newSmartShopDecide').hasClass('newcomRightSide')) {
             $('#newcomRightBtn').on('click', function() {
               $('#newcom-popup').css('display', 'block');
             });
-          } else if ($('.newSmartShopDiscover').hasClass('newcomProductGrid')) {
+          } else if ($('.newSmartShopDiscover, .newSmartShopDecide').hasClass('newcomProductGrid')) {
             $('#newcom-popup').css('display', 'block');
           } else {
             $('#newcom-popup').css('display', 'block');
@@ -27,6 +28,32 @@ define([
           $('#newComclose').click(function() {
             $('#newcom-popup').css('display', 'none');
           });
+
+          // Function to show the scrollbar when the content is greater than popup container
+          function newcomCheckOverflow() {
+            var $container = $('.js-newcom-popup-content');
+            if ($container[0].scrollHeight > $container.innerHeight()) {
+                $container.addClass('show-scrollbar');
+            } else {
+                $container.removeClass('show-scrollbar');
+            }
+          }
+
+          newcomCheckOverflow(); // Initial check on document ready
+          $(window).resize(newcomCheckOverflow); // Check on window resize
+
+          // MutationObserver to detect changes in the container
+          var observer = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                newcomCheckOverflow();
+              });
+          });
+
+          // Configuration of the observer
+          var config = { childList: true, subtree: true, characterData: true };
+
+          // Pass in the target node, as well as the observer options
+          observer.observe(document.querySelector('.js-newcom-popup-content'), config);
       });
     }
 });
