@@ -19,6 +19,8 @@ $exampleQueryFour = $block->getExampleQueryFour();
 $exampleQueryFive = $block->getExampleQueryFive();
 $destinationStatus = $block->getDestinaltionStatus();
 $customCss = $block->getCustomCss();
+$dataHelper = $block->getDataHelper();
+$showProductGrid = $block->getProductGrid();
 if ($popupPosition):?>
 <?= $customCss ? $customCss : "";?>
     <div class="NewEcomAi newSmartShopDiscover <?= $popupPosition ?>">
@@ -29,9 +31,9 @@ if ($popupPosition):?>
                     <h2 class="NewEcomAi__popup-content__heading js-newcom-heading">
                         <?= $heading ? $heading : __('AI‑Powered Shopping Assistant – What are you looking for?')?>
                     </h2>
-                    <div class="NewEcomAi__popup-content__search-box">
+                    <form id="NewEcomAi_popup_discover_search_form" class="NewEcomAi__popup-content__search-box" action="<?= $block->getDiscoverFormUrl();?>" method="post">
                         <input class="NewEcomAi__popup-content__input js-newcom-input" rows="2" name="NewEcomAi-question"
-                               id="NewEcomAi-question" alt=""
+                               id="NewEcomAi-discover-question" alt=""
                                placeholder="<?= $placeHolder ? $placeHolder : __('Tell us what you are looking for, I am here to help!'); ?>">
                         <?php if($imageRecognition == 1) :?>
                         <label class="NewEcomAi__popup-content__upload">
@@ -67,7 +69,7 @@ if ($popupPosition):?>
                         </div>
                         <?php endif;?>
                         <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button js-newcom-search" style="background-color: <?=$buttonBackgroundColor?>"><?= $buttonText ? $buttonText : __('Discover'); ?></button>
-                    </div>
+                    </form>
                     <div class="NewEcomAi__product-box">
                         <div id="stackedQuestion" class="NewEcomAi__product-box__stackedQuestion"></div>
                         <div id="stackedList" class="NewEcomAi__product-box__stackedList"></div>
@@ -113,13 +115,19 @@ if ($popupPosition):?>
             </div>
         </div>
     </div>
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "discoverSearchNewEcom": {
+                    "discoverUrl": "<?= $block->getDiscoverFormUrl();?>",
+                    "productGridLayout": "<?= $showProductGrid;?>"
+                }
+            }
+        }
+    </script>
     <script>
         require(['jquery', 'customNewcom'], function ($, customNewcom) {
             customNewcom();
-        });
-
-        require(['jquery', 'productGridNewcom'], function ($, productGridNewcom) {
-            productGridNewcom();
         });
     </script>
 <?php endif; ?>

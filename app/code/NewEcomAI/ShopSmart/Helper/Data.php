@@ -140,7 +140,7 @@ class Data extends AbstractHelper
         StockStateInterface         $stockStateInterface,
         Context                     $context,
         Generic                    $session,
-        Curl                       $httpClient
+        Curl                       $httpClient,
     ) {
         $this->logger = $logger;
         $this->redirect = $redirect;
