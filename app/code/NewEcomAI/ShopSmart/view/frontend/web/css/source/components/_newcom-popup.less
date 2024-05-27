@@ -23,17 +23,13 @@
     margin: auto;
     max-height: initial;
     max-width: 100%;
-    overflow: scroll;
+    overflow: auto;
     padding: 0;
     position: relative;
     width: 100%;
 
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
     &.newcom-full-width {
-      width: 95%;
+      width: 100%;
     }
 
     &__reset {
@@ -372,7 +368,8 @@
   }
 
   &.newSmartShopDiscover,
-  &.newcomPopup {
+  &.newcomPopup,
+  &.newSmartShopDecide {
     .NewEcomAi {
       &__btn {
         display: none;
@@ -451,6 +448,33 @@
   &__product-box {
     display: none;
   }
+  
+  &.newSmartShopDecide {
+    .NewEcomAi {
+      &__popup-content {
+        background-color: @decide-popup-bg-color;
+        border-radius: 20px;
+
+        &__inner {
+          margin: 20px auto 10px;
+          padding-bottom: 0;
+        }
+      }
+    }
+
+    &.newcomProductGrid {
+      margin-top: 30px;
+
+      .NewEcomAi {
+        &__popup-content {
+          &__inner {
+            margin: 0 auto;
+            padding-top: 20px;
+          }
+        }
+      }
+    }
+  }
 }
 
 
@@ -467,8 +491,18 @@
     &__popup-content {
       height: auto;
       max-height: 80vh;
-      overflow: scroll;
+      overflow: hidden;
       width: 60%;
+
+      &.js-newcom-popup-content {
+        &.show-scrollbar {
+          overflow-y: auto;
+        }
+      }
+
+      &.newcom-full-width {
+        width: 95%;
+      }
 
       &__search-box {
         position: unset;
@@ -542,6 +576,35 @@
                   flex-direction: row;
               }
           }
+      }
+    }
+
+    &.newSmartShopDecide {
+      .NewEcomAi {
+        &__popup-content {
+          &__inner {
+            margin: 20px auto;
+            padding-bottom: 10px;
+          }
+        }
+      }
+
+      &.newcomProductGrid {
+        .NewEcomAi {
+          &__popup-content {
+            &__inner {
+              margin: 0 auto 20px;
+            }
+
+            &__search-box {
+              flex-direction: column;
+            }
+
+            &__button {
+              width: 100%;
+            }
+          }
+        }
       }
     }
   }
