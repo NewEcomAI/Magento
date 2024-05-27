@@ -117,33 +117,60 @@ class Discover extends Action
         $params = $this->getRequest()->getParams();
         $searchKey = $params['searchKey'];
         $questionId = $params['questionId'];
+        $contextId = $params['contextId'] ?? "";
+        $userId = $this->dataHelper->getShopSmartUserId();
         if ($this->http->isAjax()) {
             $resultJson = $this->resultJsonFactory->create();
-            $data = [
-                "userId" => $this->dataHelper->getShopSmartUserId(),
-                "id" => [$questionId],
-                "listQuestions" => [$searchKey]
-            ];
+            if (empty($questionId)) {
+                $data = [
+                    "userId" => $userId,
+                    "listQuestions" => [$searchKey]
+                ];
+            }
+            elseif (!empty($contextId)) {
+                $data = [
+                    "userId" => $userId,
+                    "contextId" => $contextId,
+                    "listQuestions" => [$searchKey]
+                ];
+            }
+            else {
+                $data = [
+                    "userId" => $userId,
+                    "questionId" => $questionId,
+                    "listQuestions" => [$searchKey]
+                ];
+            }
+
             $endpoint = "api/recommendations/discovery";
             $response = $this->dataHelper->sendApiRequest($endpoint, "POST", true, json_encode($data));
             $responseData = json_decode($response, true);
-            if ($responseData['bestProducts'][0]['product']['productId'])
-            {
-                $product = $this->productRepository->getById($responseData['bestProducts'][0]['product']['productId']);
-                $productTitle = $product->getName();
-                $colorOptions = $this->getColorNameByProductId($product);
-                $sizeOptions = $this->getSizeByProductId($product);
-                $productPrice = number_format((float)$product->getData('price'), 2);
-                $productImageUrl = $this->getProductMediaUrl($product);
-                $productUrl = $this->productUrl->getUrl($product);
-                $productQty = $this->getProductQtyById($product->getId());
-                if (isset($responseData['id'])) {
-                    return $resultJson->setData(['response' => $responseData, 'title' => $productTitle, 'color' => $colorOptions, 'size' => $sizeOptions, 'price' => $productPrice, 'imageUrl' => $productImageUrl, 'productUrl' => $productUrl,'quantity' => $productQty]);
-                }
+
+            if ($responseData['bestProducts']) {
+                  foreach ($responseData['bestProducts'] as $product) {
+                      $productSku = $product['product']['productId'];
+                      $product = $this->productRepository->get($productSku);
+                      $productDetails = $this->loadProductDetails($product);
+                      $productInfoArray[] = $productDetails;
+                  }
+                  return $resultJson->setData(['response' => $responseData, 'products' =>$productInfoArray]);
             } else {
                 return $resultJson->setData(["error" => "No product found"]);
             }
         }
+    }
+
+    public function loadProductDetails($product)
+    {
+        return [
+            'title' => $product->getName(),
+            'color' => $this->getColorNameByProductId($product),
+            'size' => $this->getSizeByProductId($product),
+            'price' => number_format((float)$product->getData('price'), 2),
+            'imageUrl' => $this->getProductMediaUrl($product),
+            'productUrl' =>  $this->productUrl->getUrl($product),
+            'quantity' => $this->getProductQtyById($product->getId())
+        ];
     }
 
     /**
@@ -212,7 +239,8 @@ class Discover extends Action
                     }
                 }
             }
-            return array_unique($sizeNames);
+            Log::Info(array_values(array_unique($sizeNames)));
+            return array_unique(array_values($sizeNames));
         } else {
             $attribute = $this->attributeRepository->get($attributeCode);
             $sizeValue = $product->getData($attributeCode);

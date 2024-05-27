@@ -31,7 +31,7 @@ if ($popupPosition):?>
                     <h2 class="NewEcomAi__popup-content__heading js-newcom-heading">
                         <?= $heading ? $heading : __('AI‑Powered Shopping Assistant – What are you looking for?')?>
                     </h2>
-                    <form id="NewEcomAi_popup_discover_search_form" class="NewEcomAi__popup-content__search-box" action="<?= $block->getDiscoverFormUrl();?>" method="post">
+                    <div id="NewEcomAi_popup_discover_search_form" class="NewEcomAi__popup-content__search-box">
                         <input class="NewEcomAi__popup-content__input js-newcom-input" rows="2" name="NewEcomAi-question"
                                id="NewEcomAi-discover-question" alt=""
                                placeholder="<?= $placeHolder ? $placeHolder : __('Tell us what you are looking for, I am here to help!'); ?>">
@@ -69,7 +69,7 @@ if ($popupPosition):?>
                         </div>
                         <?php endif;?>
                         <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button js-newcom-search" style="background-color: <?=$buttonBackgroundColor?>"><?= $buttonText ? $buttonText : __('Discover'); ?></button>
-                    </form>
+                    </div>
                     <div class="NewEcomAi__product-box">
                         <div id="stackedQuestion" class="NewEcomAi__product-box__stackedQuestion"></div>
                         <div id="stackedList" class="NewEcomAi__product-box__stackedList"></div>
