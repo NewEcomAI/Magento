@@ -9,9 +9,10 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\App\Config\Storage\WriterInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use NewEcomAI\ShopSmart\Model\Log;
+use NewEcomAI\ShopSmart\Model\Log\Log;
 
 /**
  * Product Attribute Sync
@@ -29,6 +30,11 @@ class CatalogProductSync extends Action
     private JsonFactory $resultJsonFactory;
 
     /**
+     * @var WriterInterface
+     */
+    private WriterInterface $writer;
+
+    /**
      * @var Data
      */
     private Data $helperData;
@@ -37,25 +43,27 @@ class CatalogProductSync extends Action
      * @var ProductCollection
      */
     private ProductCollection $productCollection;
-
     /**
      * @param Http $http
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param Data $helperData
      * @param ProductCollection $productCollection
+     * @param WriterInterface $writer
      */
     public function __construct(
         Http                    $http,
         Context                 $context,
         JsonFactory             $resultJsonFactory,
         Data                    $helperData,
-        ProductCollection       $productCollection
+        ProductCollection       $productCollection,
+        WriterInterface         $writer
     ) {
         $this->http = $http;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->helperData = $helperData;
         $this->productCollection = $productCollection;
+        $this->writer = $writer;
         parent::__construct($context);
     }
 
@@ -69,6 +77,10 @@ class CatalogProductSync extends Action
         if ($this->http->isAjax()) {
             try {
                 $resultJson = $this->resultJsonFactory->create();
+                $catalogSynced = $this->getRequest()->getParam("buttonClicked");
+                if($catalogSynced == true){
+                    $this->writer->save("shop_smart/general_catalog_sync/catalog_sync_button", true);
+                }
                 $productCollection = $this->productCollection->addAttributeToSelect('*');
 
                 $productCollection->setPageSize(20);
@@ -93,8 +105,7 @@ class CatalogProductSync extends Action
                     $productData = [];
                     $productCollection->clear();
                 }
-
-                return $resultJson->setData(['status' => true, 'message' => "catalog Sync Successfully"]);
+                return $resultJson->setData(['status' => true, 'message' => "Catalog Syncing has been started in the background."]);
             } catch (\Exception $exception) {
                 /** @var JsonFactory $resultJson */
                 return $resultJson->setData(['status' => false, 'message' => $exception->getMessage()]);

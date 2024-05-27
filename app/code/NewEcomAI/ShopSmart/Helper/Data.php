@@ -2,25 +2,18 @@
 
 namespace NewEcomAI\ShopSmart\Helper;
 
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source\Mode;
 use Psr\Log\LoggerInterface;
 use Magento\Catalog\Model\ProductRepository;
-use Magento\Checkout\Model\Session as CheckoutSession;
-use Magento\Customer\Model\Session;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\CategoryFactory;
-use Magento\Framework\Pricing\Helper\Data as PricingHelper;
-use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\Framework\Session\Generic;
 use Magento\Framework\HTTP\Client\Curl;
-use function PHPUnit\Framework\isEmpty;
 
 class Data extends AbstractHelper
 {
@@ -36,7 +29,6 @@ class Data extends AbstractHelper
     const SHOP_SMART_USER_NAME = 'shop_smart/general_account_configuration/user_name';
     const SHOP_SMART_USER_PASSWORD = 'shop_smart/general_account_configuration/user_password';
     const SHOP_SMART_AB_TESTING = 'shop_smart/general_account_configuration/ab_testing';
-    const SHOP_SMART_CATALOG_SYNC_DATE = 'shop_smart/general_catalog_sync/catalog_sync_date';
     const SHOP_SMART_CATALOG_SYNC_BUTTON = 'shop_smart/general_catalog_sync/catalog_sync_button';
     const SHOP_SMART_MAPPING = 'shop_smart/general_product_attribute_mapping/mapping';
 
@@ -51,19 +43,9 @@ class Data extends AbstractHelper
     private StoreManagerInterface $storeManager;
 
     /**
-     * @var Session
-     */
-    private Session $customerSession;
-
-    /**
      * @var ScopeConfigInterface
      */
     private ScopeConfigInterface $scopeConfigInterface;
-
-    /**
-     * @var CheckoutSession
-     */
-    private CheckoutSession $checkoutSession;
 
     /**
      * @var ProductRepository
@@ -71,30 +53,9 @@ class Data extends AbstractHelper
     private ProductRepository $productRepository;
 
     /**
-     * @var RedirectInterface
-     */
-    private RedirectInterface $redirect;
-
-    /**
-     * @var PricingHelper
-     */
-    private PricingHelper $priceHelper;
-
-    /**
-     * @var CategoryRepositoryInterface
-     */
-    private CategoryRepositoryInterface $categoryRepository;
-
-    /**
      * @var CategoryFactory
      */
     private CategoryFactory $categoryFactory;
-
-    /**
-     * @var StockStateInterface
-     */
-    private StockStateInterface $stockStateInterface;
-
 
     /**
      * @var Generic
@@ -107,55 +68,32 @@ class Data extends AbstractHelper
     private Curl $httpClient;
 
     /**
-     * @var mixed NewcommAI response
-     */
-    private $response;
-
-    /**
      * @param LoggerInterface $logger
-     * @param RedirectInterface $redirect
      * @param StoreManagerInterface $storeManager
-     * @param Session $customerSession
-     * @param CheckoutSession $checkoutSession
      * @param ProductRepository $productRepository
      * @param ScopeConfigInterface $scopeConfigInterface
-     * @param PricingHelper $priceHelper
-     * @param CategoryRepositoryInterface $categoryRepository
      * @param CategoryFactory $categoryFactory
-     * @param StockStateInterface $stockStateInterface
      * @param Context $context
      * @param Generic $session
      * @param Curl $httpClient
      */
     public function __construct(
         LoggerInterface             $logger,
-        RedirectInterface           $redirect,
         StoreManagerInterface       $storeManager,
-        Session                     $customerSession,
-        CheckoutSession             $checkoutSession,
         ProductRepository           $productRepository,
         ScopeConfigInterface        $scopeConfigInterface,
-        PricingHelper               $priceHelper,
-        CategoryRepositoryInterface $categoryRepository,
         CategoryFactory             $categoryFactory,
-        StockStateInterface         $stockStateInterface,
         Context                     $context,
         Generic                    $session,
         Curl                       $httpClient
     ) {
         $this->logger = $logger;
-        $this->redirect = $redirect;
         $this->storeManager = $storeManager;
-        $this->checkoutSession = $checkoutSession;
-        $this->customerSession = $customerSession;
         $this->productRepository = $productRepository;
         $this->scopeConfigInterface = $scopeConfigInterface;
         $this->session = $session;
         $this->httpClient = $httpClient;
-        $this->priceHelper = $priceHelper;
-        $this->categoryRepository = $categoryRepository;
         $this->categoryFactory = $categoryFactory;
-        $this->stockStateInterface = $stockStateInterface;
         parent::__construct($context);
     }
 
@@ -218,14 +156,6 @@ class Data extends AbstractHelper
         return $this->scopeConfig->getValue(self::SHOP_SMART_AB_TESTING, $storeId);
     }
 
-    /**
-     * @param $storeId
-     * @return mixed
-     */
-    public function getShopSmartCatalogSyncDate($storeId = null)
-    {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_DATE, $storeId);
-    }
 
     /**
      * @param $storeId
@@ -240,10 +170,12 @@ class Data extends AbstractHelper
     /**
      * @param $storeId
      * @return mixed
+     * @throws NoSuchEntityException
      */
-    public function getShopSmartCatalogSync($storeId = null)
+    public function getShopSmartCatalogSyncButton($storeId = null)
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_BUTTON, $storeId);
+        return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_BUTTON,  ScopeInterface::SCOPE_STORE,
+            $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -301,16 +233,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $productId
-     * @param null $websiteId
-     * @return StockStateInterface
-     */
-    public function getStockItem($productId, $websiteId = null): StockStateInterface
-    {
-        return $this->stockStateInterface->getStockQty($productId, $websiteId);
-    }
-
-    /**
      * @param array $categoryIds
      * @return array|string
      */
@@ -322,19 +244,6 @@ class Data extends AbstractHelper
             $categoryNames = $category->getName();
         }
         return $categoryNames;
-    }
-
-    /**
-     * @param int $id
-     * @param null $storeId
-     * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    protected function getCategoryNameById($id, $storeId = null)
-    {
-        $categoryInstance = $this->categoryRepository->get($id, $this->storeManager->getStore()->getId());
-
-        return $categoryInstance->getName();
     }
 
 
@@ -364,24 +273,16 @@ class Data extends AbstractHelper
             }
             $keyValueString = rtrim($keyValueString, " | ");
             $products = [];
-            $products['Id'] = $data['entity_id'];
+            $products['Id'] = $data['sku'];
             $products['Description'] = $data['description'].$keyValueString;
             $products['Name'] = $valuesString;
             $categoryIds = $this->productRepository->getById($data['entity_id'])->getCategoryIds();
             $categoryName = $this->getCategoryName($categoryIds) ?? "";
             $products['Tags'] = $valuesArray;
-            $products['Price'] = $data['price'];
-            $products['ProductType'] = $data['type_id'];
-            $products['Category'] = $categoryName;
+            $products['Price'] = $data['price'] ?? "";
+            $products['ProductType'] = $data['type_id'] ?? "";
+            $products['Category'] = $categoryName ?? "";
             $products['Vendor'] = "magento";
-            $products['Inventory'] = "100";
-            $products['GoogleProductCategory'] = "TestGoogleProductCategory";
-            $products['AgeGroup'] = "Test Adults";
-            $products['Gender'] = "Test Gender";
-            $products['Color'] = "Test Color";
-            $products['CustomProduct'] = "Test Data True";
-            $products['ProductInfo'] = $keyValueString;
-            $products['Images'] = $this->getProductImageUrl($data['entity_id']);
             return $products;
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
@@ -397,19 +298,36 @@ class Data extends AbstractHelper
      *
      * @return string
      */
+
     public function getToken()
     {
-        if (!isset($this->token) || empty($this->token)) { // Check if token is not set or empty
-            $this->token = $this->session->getData('NewCommAISession');
-            if (empty($this->token)) {
-                $accessToken = self::getAccessToken();
-                if (!empty($accessToken['token'])) {
-                    $this->token = $accessToken['token'];
-                    $this->session->setData('NewCommAISession', $this->token);
-                }
+        $authToken = "";
+        $tokenData = $this->session->getData('NewCommAISession');
+
+        if (isset($tokenData['token']) && !empty($tokenData['token']) && isset($tokenData['expiresIn'])) {
+            // Check if the token has expired
+            if (time() < $tokenData['expiresAt']) {
+                $authToken = $tokenData['token'];
+            } else {
+                // Token has expired, unset the session value
+                $this->session->unsetData('NewCommAISession');
             }
         }
-        return $this->token;
+
+        if (empty($authToken)) {
+            $accessTokenData = self::getAccessToken();
+            if (!empty($accessTokenData['token'])) {
+                $authToken = $accessTokenData['token'];
+                $expiresAt = time() + $accessTokenData['expiresIn'];
+                $this->session->setData('NewCommAISession', [
+                    'token' => $authToken,
+                    'expiresIn' => $accessTokenData['expiresIn'],
+                    'expiresAt' => $expiresAt
+                ]);
+            }
+        }
+
+        return $authToken;
     }
 
     /**
