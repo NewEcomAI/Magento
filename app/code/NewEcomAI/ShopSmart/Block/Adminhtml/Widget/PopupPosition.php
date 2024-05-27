@@ -4,6 +4,7 @@ namespace NewEcomAI\ShopSmart\Block\Adminhtml\Widget;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Widget\Block\BlockInterface;
+use NewEcomAI\ShopSmart\Helper\Data as dataHelper;
 use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
 
 /**
@@ -16,6 +17,7 @@ class PopupPosition extends Template implements BlockInterface
     const RIGHT_SIDE_CLASS = 'newcomRightSide';
     const PRODUCT_GRID_CLASS = 'newcomProductGrid';
     const SHOP_SMART_POPUP_POSITION = 'shop_smart_popup_position';
+    const SHOP_SMART_LAYOUT_PRODUCT_GRID = 'shop_smart_layout_product_grid';
     const SHOP_SMART_HEADING = 'shop_smart_heading';
     const SHOP_SMART_MESSAGE_PLACEHOLDER = 'shop_smart_message_placeholder';
     const SHOP_SMART_BUTTON_TEXT = 'shop_smart_button_text';
@@ -39,6 +41,42 @@ class PopupPosition extends Template implements BlockInterface
     protected $_template = "NewEcomAI_ShopSmart::widget/discover_template.phtml";
 
     /**
+     * @var dataHelper
+     */
+    protected dataHelper $helperData;
+
+    /**
+     * @param Template\Context $context
+     * @param dataHelper $helperData
+     * @param array $data
+     */
+    public function __construct(
+        Template\Context $context,
+        dataHelper       $helperData,
+        array            $data = []
+    ) {
+        $this->helperData = $helperData;
+        $this->data = $data;
+        parent::__construct($context);
+    }
+
+    /**
+     * @return dataHelper
+     */
+    public function getDatahelper()
+    {
+        return $this->helperData;
+    }
+
+    /**
+     * @return array|mixed|null
+     */
+    public function getProductGrid()
+    {
+        return $this->getData(self::SHOP_SMART_LAYOUT_PRODUCT_GRID);
+    }
+
+    /**
      * Get Popup Position in widget
      *
      * @return string
@@ -46,7 +84,7 @@ class PopupPosition extends Template implements BlockInterface
     public function getPopupPosition()
     {
         $popupPosition = $this->getData(self::SHOP_SMART_POPUP_POSITION);
-        if ($popupPosition ==  PopupLayout::POPUP_LEFT_SIDE) {
+        if ($popupPosition == PopupLayout::POPUP_LEFT_SIDE) {
             $popupPosition = self::LEFT_SIDE_CLASS;
         } elseif ($popupPosition == PopupLayout::POPUP_RIGHT_SIDE) {
             $popupPosition = self::RIGHT_SIDE_CLASS;
@@ -64,6 +102,14 @@ class PopupPosition extends Template implements BlockInterface
     public function getHeading()
     {
         return $this->getData(self::SHOP_SMART_HEADING);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDiscoverFormUrl()
+    {
+        return $this->getUrl('newecomai/recommendations/discover');
     }
 
     /**
