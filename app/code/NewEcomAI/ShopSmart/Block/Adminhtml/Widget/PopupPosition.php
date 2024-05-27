@@ -4,7 +4,7 @@ namespace NewEcomAI\ShopSmart\Block\Adminhtml\Widget;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Widget\Block\BlockInterface;
-use NewEcomAI\ShopSmart\Helper\Data as dataHelper;
+use NewEcomAI\ShopSmart\Helper\Data;
 use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
 
 /**
@@ -41,18 +41,18 @@ class PopupPosition extends Template implements BlockInterface
     protected $_template = "NewEcomAI_ShopSmart::widget/discover_template.phtml";
 
     /**
-     * @var dataHelper
+     * @var Data
      */
-    protected dataHelper $helperData;
+    protected Data $helperData;
 
     /**
      * @param Template\Context $context
-     * @param dataHelper $helperData
+     * @param Data $helperData
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
-        dataHelper       $helperData,
+        Data             $helperData,
         array            $data = []
     ) {
         $this->helperData = $helperData;
@@ -61,7 +61,7 @@ class PopupPosition extends Template implements BlockInterface
     }
 
     /**
-     * @return dataHelper
+     * @return Data
      */
     public function getDatahelper()
     {

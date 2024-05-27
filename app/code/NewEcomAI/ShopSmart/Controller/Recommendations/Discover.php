@@ -155,7 +155,7 @@ class Discover extends Action
                   }
                   return $resultJson->setData(['response' => $responseData, 'products' =>$productInfoArray]);
             } else {
-                return $resultJson->setData(["error" => "No product found"]);
+                return $resultJson->setData(["error" => "No product found", 'feedback' => $responseData['feedback']]);
             }
         }
     }
