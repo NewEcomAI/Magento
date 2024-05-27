@@ -1,0 +1,89 @@
+@import "../core/_variables.less";
+@import "../_typography.less";
+
+.NewEcomAi {
+    &__popup-content {
+        &__response {
+            .newcom-search-history {
+                padding: 0 20px 20px;
+            }
+
+            .newcom-search-query {
+                margin-bottom: 10px;
+                text-align: right;
+                
+                span {
+                    background-color: @decide-search-bg-color;
+                    border-radius: 10px;
+                    color: @white;
+                    display: inline-block;
+                    margin-left: auto;
+                    max-width: 90%;
+                    padding: 10px;
+                    text-align: right;
+                }
+            }
+
+            .newcom-query-response {
+                border-radius: 10px;
+                display: block;
+                font-size: 15px;
+                margin-bottom: 10px;
+                max-width: 90%;
+                padding: 10px;
+                text-align: left;
+
+                .lists {
+                    .item {
+                        margin-bottom: 0;
+                    }
+
+                    .link {
+                        color: @decide-search-link-color;
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            .newcom-icons-container {
+                text-align: left;
+            }
+
+            .newcom-like-icon,
+            .newcom-dislike-icon {
+                background: transparent;
+                border-radius: 10px;
+                border: 0;
+                cursor: pointer;
+                display: inline;
+                margin-top: 10px;
+                padding: 10px;
+
+                &:hover {
+                    background: @decide-feedback-icon-hover-color;
+                }
+            }
+
+            .newcom-feedback-text {
+                margin-top: 14px;
+                padding: 10px;
+            }
+        }
+    }
+}
+
+//
+//  Desktop (style-l.css)
+//  _____________________________________________
+
+@media (min-width: @screen__s) { 
+    .NewEcomAi {
+        &__popup-content {
+            &__response {
+                .newcom-query-response {
+                    font-size: 16px;
+                }
+            }
+        }
+    }
+}
