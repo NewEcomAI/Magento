@@ -140,9 +140,12 @@ define([
                 $('#stackedQuestion').slick('slickAdd', carouselSlide, true);
                 const productCount = $('<div class="NewEcomAi__product-box__product-count">').text("0");
                 carouselSlide.append(productCount);
-                const feedbackLine = $('<div class="NewEcomAi__product-box__feedback"></div>').text(response.feedback);
+                const feedbackLine = $('<div class="NewEcomAi__product-box__feedback"></div>').text(response.error);
                 stackedSlide.append(feedbackLine,questionItems);
                 $('#stackedList').slick('slickAdd', stackedSlide, true);
+
+                updateSliderSettings(); // Call on page load
+                $(window).on('resize', updateSliderSettings); // Call on window resize
 
                 questionItems.slick({
                     slidesToShow: productGridLayout,
@@ -191,7 +194,7 @@ define([
                     let sizes = [];
                     if ($.isArray(product.color)) {
                         for (const [key, value] of Object.entries(product.color)) {
-                            colors.push(value)
+                            colors.push(value);
                         }
                     } else {
                         colors = product.color;
@@ -217,11 +220,11 @@ define([
                              <strong>${product.color}</strong>
                              </div>
                            </div>`;
-
                     var sizesArray = [];
                     $.each(sizes, function(index, value) {
                         sizesArray.push(value);
                     });
+
                     productSizes = ($.isArray(sizesArray) && sizesArray.length > 0)
                         ? `<div class="NewEcomAi__product-box__variant__type product-variant-size obj">
                              <label>Size</label>
@@ -245,7 +248,11 @@ define([
                     <div class="products-item">
                         <div class="NewEcomAi__product-box__info product-info">
                             <div class="NewEcomAi__product-box__details product-details">
-                                <div class="NewEcomAi__product-box__image product-image"><a href="${product.productUrl}" target="_blank"><img loading="lazy" src="${product.imageUrl}" alt="${product.title}"></a></div>
+                                <div class="NewEcomAi__product-box__image product-image">
+                                    <a href="${product.productUrl}" target="_blank">
+                                        <img loading="lazy" src="${product.imageUrl}" alt="${product.title}">
+                                    </a>
+                                </div>
                                 <div class="NewEcomAi__product-box__title product-title">
                                     <div class="title">
                                         <a href="${product.productUrl}" target="_blank">${product.title}</a>
@@ -253,13 +260,19 @@ define([
                                 </div>
                                 <div class="NewEcomAi__product-box__price product-price">$${product.price}</div>
                                 <div class="NewEcomAi__product-box__variant product-variant-container">
-                                ${productColors}
-                                ${productSizes}
+                                    ${productColors}
+                                    ${productSizes}
                                 </div>
+                                <div class="NewEcomAi__product-box__quantity">
+                                    <input class="item-qty" type="number" value="1" name="quantity" min="1">
+                            </div>
                             </div>
                             <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
-                            <div class="NewEcomAi__product-box__add-cart">
-                                <button class="NewEcomAi__popup-content__button" onclick="addToCart('${product.title}', ${product.price})">Add to cart</button>
+                                </div>
+                            <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
+                                <div class="NewEcomAi__product-box__add-cart">
+                                    <button class="NewEcomAi__popup-content__button" onclick="addToCart('${product.title}', ${product.price})">Add to cart</button>
+                                </div>
                             </div>
                         </div>
                     </div>`);
@@ -269,6 +282,9 @@ define([
                 stackedSlide.append(feedbackLine, questionItems);
                 $('#stackedList').slick('slickAdd', stackedSlide, true);
                 $('#stackedList').slick('slickGoTo', $('#stackedList').slick('slickCurrentSlide') - 1);
+
+                updateSliderSettings(); // Call on page load
+                $(window).on('resize', updateSliderSettings); // Call on window resize
 
                 // Initialize slick carousel for newly added question items
                 questionItems.slick({
@@ -295,20 +311,19 @@ define([
         }
 
 
-        function appendProductsToExistingSlide(response) {
-            if(response.error === undefined) {
-                var responseData = response.products;
+        function appendProductsToExistingSlide(responseData) {
+            if(responseData !== "undefined" ){
                 let totalProductCount = responseData.length;
                 $(".NewEcomAi__product-box__product-count").text(totalProductCount);
-                // Create new product items from the response data
-                const newProductItems = createProductItems(response);
-
-                // Iterate over each new product item and add it as a new slide
-                newProductItems.each(function() {
-                    const newSlide = $('<div></div>').addClass('products-item slick-slide').append($(this).html());
-                    $('#productList').slick('slickAdd', newSlide);
-                });
             }
+            // Create new product items from the response data
+            const newProductItems = createProductItems(responseData);
+
+            // Iterate over each new product item and add it as a new slide
+            newProductItems.each(function() {
+                const newSlide = $('<div></div>').addClass('products-item slick-slide').append($(this).html());
+                $('#productList').slick('slickAdd', newSlide);
+            });
         }
 
         function createProductItems(response) {
@@ -321,14 +336,14 @@ define([
                 let sizes = [];
                 if ($.isArray(product.color)) {
                     for (const [key, value] of Object.entries(product.color)) {
-                        colors.push(value)
+                        colors.push(value);
                     }
                 } else {
                     colors = product.color;
                 }
                 if ($.isArray(product.size)) {
                     for (const [key, value] of Object.entries(product.size)) {
-                        sizes.push(value)
+                        sizes.push(value);
                     }
                 } else {
                     sizes = product.size;
@@ -336,62 +351,71 @@ define([
 
                 productColors = ($.isArray(colors) && colors.length > 0)
                     ? `<div class="NewEcomAi__product-box__variant__type product-variant-color">
-                 <label>Color</label>
-                 <select name="color" class="NewEcomAi__product-box__color-select-box">
-                   ${colors.map(color => `<option value="${color}">${color}</option>`).join('')}
-                 </select>
-               </div>`
+                            <label>Color</label>
+                            <select name="color" class="NewEcomAi__product-box__color-select-box">
+                            ${colors.map(color => `<option value="${color}">${color}</option>`).join('')}
+                            </select>
+                        </div>`
                     : `<div class="NewEcomAi__product-box__variant__type product-variant-color">
                  <label>Color</label>
                  <div class="NewEcomAi__product-box__color-select-box">
                  <strong>${product.color}</strong>
                  </div>
                </div>`;
-
                 var sizesArray = [];
                 $.each(sizes, function(index, value) {
                     sizesArray.push(value);
                 });
 
-                 productSizes = ($.isArray(sizesArray) && sizesArray.length > 0)
-                    ? `<div class="NewEcomAi__product-box__variant__type product-variant-size obj">
-                 <label>Size</label>
-                 <select name="size" class="NewEcomAi__product-box__size-select-box">
-                 ${sizesArray.map(size => `<option value="${size}">${size}</option>`).join('')}
-                 </select>
-               </div>`
-                    : `<div class="NewEcomAi__product-box__variant__type product-variant-size simple">
-                 <label>Size</label>
-                 <div class="NewEcomAi__product-box__color-select-box">
-                 <strong>${product.size}</strong>
-                 </div>
-               </div>`;
+                productSizes = ($.isArray(sizesArray) && sizesArray.length > 0)
+                    ? `<div class="NewEcomAi__product-box__variant__type product-variant-size">
+                            <label>Size</label>
+                            <select name="size" class="NewEcomAi__product-box__size-select-box">
+                            ${sizesArray.map(size => `<option value="${size}">${size}</option>`).join('')}
+                            </select>
+                        </div>`
+                    : `<div class="NewEcomAi__product-box__variant__type product-variant-size">
+                            <label>Size</label>
+                            <div class="NewEcomAi__product-box__color-select-box">
+                            <strong>${product.size}</strong>
+                            </div>
+                        </div>`;
                 if (colors === null || colors === undefined) {
                     productColors = "";
                 }
                 if (sizes === null || sizes === undefined) {
                     productSizes = "";
                 }
-                const productText = $(`
-            <div class="products-item">
-                <div class="NewEcomAi__product-box__info product-info">
-                    <div class="NewEcomAi__product-box__details product-details">
-                        <div class="NewEcomAi__product-box__image product-image"><a href="${product.productUrl}" target="_blank"><img loading="lazy" src="${product.imageUrl}" alt="${product.title}"></a></div>
-                        <div class="NewEcomAi__product-box__title product-title">
-                            <div class="title">
-                                <a href="${product.productUrl}" target="_blank">${product.title}</a>
+                const productText = $(`<div class="products-item">
+                    <div class="NewEcomAi__product-box__info product-info">
+                        <div class="NewEcomAi__product-box__details product-details">
+                            <div class="NewEcomAi__product-box__image product-image">
+                                <a href="${product.productUrl}" target="_blank">
+                                    <img loading="lazy" src="${product.imageUrl}" alt="${product.title}">
+                                </a>
                             </div>
-                        </div>
-                        <div class="NewEcomAi__product-box__price product-price">$${product.price}</div>
-                        <div class="NewEcomAi__product-box__variant product-variant-container">
-                        ${productColors === null ? "" : productColors}
-                        ${productSizes === null ? "" : productSizes}
-                        </div>
+                            <div class="NewEcomAi__product-box__title product-title">
+                                <div class="title">
+                                    <a href="${product.productUrl}" target="_blank">${product.title}</a>
+                                </div>
+                            </div>
+                            <div class="NewEcomAi__product-box__price product-price">$${product.price}</div>
+                            <div class="NewEcomAi__product-box__variant product-variant-container">
+                                ${productColors}
+                                ${productSizes}
+                            </div>
+                            <div class="NewEcomAi__product-box__quantity">
+                                <input class="item-qty" type="number" value="1" name="quantity" min="1">
+                    </div>
                     </div>
                     <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
-                    <div class="NewEcomAi__product-box__add-cart">
-                        <button class="NewEcomAi__popup-content__button" onclick="addToCart('${product.title}', ${product.price})">Add to cart</button>
-                    </div>
+                            </div>
+                    <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
+                            <div class="NewEcomAi__product-box__add-cart">
+                                <button class="NewEcomAi__popup-content__button" onclick="addToCart('${product.title}', ${product.price})">Add to cart</button>
+                            </div>
+                        </div>
+                   </div>
                 </div>
             </div>`);
                 productItems.append(productText);
@@ -399,6 +423,7 @@ define([
 
             return productItems.children(); // Return the individual product items
         }
+
 
         // Function for slick Initialization
         function initializeSlick() {

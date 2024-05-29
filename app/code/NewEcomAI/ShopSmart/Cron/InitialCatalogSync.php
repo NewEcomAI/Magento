@@ -2,6 +2,8 @@
 
 namespace NewEcomAI\ShopSmart\Cron;
 
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use NewEcomAI\ShopSmart\Helper\Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
@@ -42,49 +44,48 @@ class InitialCatalogSync
         Log::Info($isCatalogSyncTriggered);
 
         if($isCatalogSyncTriggered){
-            Log::Info("In the if condition");
 
             $productCollection = $this->productCollection->addAttributeToSelect('*');
-            Log::Info("1");
+            $productCollection->addAttributeToFilter('status', Status::STATUS_ENABLED);
+            $productCollection->addAttributeToFilter('type_id', ['in' => [Type::TYPE_SIMPLE, "configurable"]]);
 
-            $productCollection->setPageSize(20);
-            Log::Info("2");
+            // Initialize the configurable product resource model
+            $connection = $productCollection->getConnection();
 
+            // Create a subquery to find all child product IDs of configurable products
+            $subSelect = $connection->select()
+                ->from(
+                    ['link_table' => $productCollection->getTable('catalog_product_super_link')],
+                    ['product_id']
+                );
+
+            // Exclude the simple products that are part of configurable products
+            $productCollection->getSelect()->where('e.entity_id NOT IN (?)', $subSelect);
+
+            // Load the collection
+            $products = $productCollection->load();
+
+            $products->setPageSize(20);
             $pages = $productCollection->getLastPageNumber();
-            Log::Info("3");
-
             $productData = [];
             for ($pageNum = 1; $pageNum<=$pages; $pageNum++) {
-                Log::Info("4");
-
                 $productCollection->setCurPage($pageNum);
                 foreach ($productCollection as $key => $product) {
                     $productData[] = $this->helperData->getProductAttributeMapping($product->getData());
                 }
-                Log::Info("5");
 
                 $data = [
                     "userId" => $this->helperData->getShopSmartUserId(),
                     "catalog" => $productData
                 ];
-                Log::Info("6");
-
                 $endpoint = "api/catalog/update";
-                Log::Info("7");
-
-                $response = $this->helperData->sendApiRequest($endpoint,"POST", true, json_encode($data));
-                Log::Info("8");
-
+                $response = $this->helperData->sendApiRequest($endpoint, "POST", true, json_encode($data));
                 $responseData = json_decode($response, true);
-                Log::Info("9");
-
                 if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
                     Log::Info($responseData['response']['status']);
                 }
                 $productData = [];
                 $productCollection->clear();
-                Log::Info("10");
-
             }
             Log::Info("Catalog Sync Completed");
         }

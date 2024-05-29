@@ -13,6 +13,10 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use NewEcomAI\ShopSmart\Model\Log\Log;
+use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResource;
+
 
 /**
  * Product Attribute Sync
@@ -43,6 +47,8 @@ class CatalogProductSync extends Action
      * @var ProductCollection
      */
     private ProductCollection $productCollection;
+    private ConfigurableResource $configurableResource;
+
     /**
      * @param Http $http
      * @param Context $context
@@ -57,13 +63,15 @@ class CatalogProductSync extends Action
         JsonFactory             $resultJsonFactory,
         Data                    $helperData,
         ProductCollection       $productCollection,
-        WriterInterface         $writer
+        WriterInterface         $writer,
+        ConfigurableResource    $configurableResource
     ) {
         $this->http = $http;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->helperData = $helperData;
         $this->productCollection = $productCollection;
         $this->writer = $writer;
+        $this->configurableResource = $configurableResource;
         parent::__construct($context);
     }
 
@@ -80,30 +88,6 @@ class CatalogProductSync extends Action
                 $catalogSynced = $this->getRequest()->getParam("buttonClicked");
                 if($catalogSynced == true){
                     $this->writer->save("shop_smart/general_catalog_sync/catalog_sync_button", true);
-                }
-                $productCollection = $this->productCollection->addAttributeToSelect('*');
-
-                $productCollection->setPageSize(20);
-                $pages = $productCollection->getLastPageNumber();
-                $productData = [];
-                for ($pageNum = 1; $pageNum<=$pages; $pageNum++) {
-                    $productCollection->setCurPage($pageNum);
-                    foreach ($productCollection as $key => $product) {
-                        $productData[] = $this->helperData->getProductAttributeMapping($product->getData());
-                    }
-
-                    $data = [
-                        "userId" => $this->helperData->getShopSmartUserId(),
-                        "catalog" => $productData
-                    ];
-                    $endpoint = "api/catalog/update";
-                    $response = $this->helperData->sendApiRequest($endpoint,"POST", true, json_encode($data));
-                    $responseData = json_decode($response, true);
-                    if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
-                        Log::Info($responseData['response']['status']);
-                    }
-                    $productData = [];
-                    $productCollection->clear();
                 }
                 return $resultJson->setData(['status' => true, 'message' => "Catalog Syncing has been started in the background."]);
             } catch (\Exception $exception) {
