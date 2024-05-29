@@ -109,9 +109,16 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getDiscoverFormUrl()
     {
-        return $this->getUrl('newecomai/recommendations/discover');
+        return $this->getUrl('newecomai/recommendations/discoversearch');
     }
 
+    /**
+     * @return string
+     */
+    public function getDiscoverUploadImage()
+    {
+        return $this->getUrl('newecomai/recommendations/discoveruploadimage');
+    }
     /**
      * @return array|mixed|null
      */

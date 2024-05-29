@@ -2,115 +2,138 @@
 
 namespace NewEcomAI\ShopSmart\Controller\Recommendations;
 
+use Magento\Catalog\Model\Product\Attribute\Repository as AttributeRepository;
+use Magento\Catalog\Model\Product\Url as ProductUrl;
+use Magento\Catalog\Model\ProductRepository;
+use Magento\CatalogInventory\Model\Stock\StockItemRepository;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\File\UploaderFactory;
 use Magento\Framework\UrlInterface;
+use Magento\Framework\Filesystem;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\CatalogInventory\Model\Stock\StockItemRepository;
+use NewEcomAI\ShopSmart\Helper\Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
-use NewEcomAI\ShopSmart\Helper\Data as DataHelper;
-use Magento\Catalog\Model\Product\Attribute\Repository as AttributeRepository;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Catalog\Model\ProductRepository;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\Catalog\Model\Product\Url as ProductUrl;
 
-class Discover extends Action
+class DiscoverUploadImage extends Action
 {
+    /**
+     * Save image path
+     */
+    const UPLOAD_IMAGE_PATH = "NewEcomAI/ShopSmart/images/";
+
+    /**
+     * Discovery Api Endpoint
+     */
+    const DISCOVER_API_ENDPOINT = "api/recommendations/discovery";
+    /**
+     * @var JsonFactory
+     */
+    private JsonFactory $jsonFactory;
+
+    /**
+     * @var UploaderFactory
+     */
+    private UploaderFactory $uploaderFactory;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    protected StoreManagerInterface $storeManager;
+
+    /**
+     * @var Filesystem
+     */
+    protected Filesystem $filesystem;
+
+    /**
+     * @var Data
+     */
+    protected Data $dataHelper;
+
     /**
      * @var Http
      */
     private Http $http;
 
     /**
-     * @var DataHelper
-     */
-    private DataHelper $dataHelper;
-
-    /**
-     * @var JsonFactory
-     */
-    private JsonFactory $resultJsonFactory;
-
-    /**
      * @var ProductRepository
      */
-    protected ProductRepository $productRepository;
-
-    /**
-     * @var AttributeRepository
-     */
-    protected AttributeRepository $attributeRepository;
-
-    /**
-     * @var SearchCriteriaBuilder
-     */
-    protected SearchCriteriaBuilder $searchCriteriaBuilder;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private StoreManagerInterface $storeManager;
+    private ProductRepository $productRepository;
 
     /**
      * @var StockItemRepository
      */
-    protected StockItemRepository $stockItemRepository;
+    private StockItemRepository $stockItemRepository;
 
     /**
      * @var Configurable
      */
     private Configurable $configurable;
+
+    /**
+     * @var ProductUrl
+     */
     private ProductUrl $productUrl;
 
+    /**
+     * @var AttributeRepository
+     */
+    private AttributeRepository $attributeRepository;
 
     /**
      * @param Context $context
      * @param Http $http
-     * @param JsonFactory $resultJsonFactory
-     * @param DataHelper $dataHelper
+     * @param JsonFactory $jsonFactory
+     * @param UploaderFactory $uploaderFactory
+     * @param Filesystem $filesystem
+     * @param Data $dataHelper
      * @param ProductRepository $productRepository
      * @param AttributeRepository $attributeRepository
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param StoreManagerInterface $storeManager
      * @param StockItemRepository $stockItemRepository
      * @param Configurable $configurable
+     * @param ProductUrl $productUrl
      */
     public function __construct(
-        Context                             $context,
-        Http                                $http,
-        JsonFactory                         $resultJsonFactory,
-        DataHelper                          $dataHelper,
-        ProductRepository                   $productRepository,
-        AttributeRepository                 $attributeRepository,
-        SearchCriteriaBuilder               $searchCriteriaBuilder,
-        StoreManagerInterface               $storeManager,
-        StockItemRepository                 $stockItemRepository,
-        Configurable                        $configurable,
-        ProductUrl                          $productUrl
+        Context               $context,
+        Http                  $http,
+        JsonFactory           $jsonFactory,
+        UploaderFactory       $uploaderFactory,
+        Filesystem            $filesystem,
+        Data                  $dataHelper,
+        ProductRepository     $productRepository,
+        AttributeRepository   $attributeRepository,
+        StoreManagerInterface $storeManager,
+        StockItemRepository   $stockItemRepository,
+        Configurable          $configurable,
+        ProductUrl            $productUrl
     ) {
         $this->http = $http;
-        $this->resultJsonFactory = $resultJsonFactory;
+        $this->jsonFactory = $jsonFactory;
+        $this->uploaderFactory = $uploaderFactory;
+        $this->filesystem = $filesystem;
         $this->dataHelper = $dataHelper;
         $this->productRepository = $productRepository;
         $this->attributeRepository = $attributeRepository;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->storeManager = $storeManager;
         $this->stockItemRepository = $stockItemRepository;
         $this->configurable = $configurable;
         $this->productUrl = $productUrl;
         parent::__construct($context);
+
     }
 
     /**
-     * @return ResponseInterface|Json|ResultInterface|void
-     * @throws NoSuchEntityException
+     * @return ResponseInterface|Json|ResultInterface
      */
     public function execute()
     {
@@ -119,47 +142,73 @@ class Discover extends Action
         $questionId = $params['questionId'];
         $contextId = $params['contextId'] ?? "";
         $userId = $this->dataHelper->getShopSmartUserId();
-        if ($this->http->isAjax()) {
-            $resultJson = $this->resultJsonFactory->create();
-            if (empty($questionId)) {
-                $data = [
-                    "userId" => $userId,
-                    "listQuestions" => [$searchKey]
-                ];
+        try {
+            if ($this->http->isAjax()) {
+                $resultJson = $this->jsonFactory->create();
+                $uploader = $this->uploaderFactory->create(['fileId' => 'image']);
+                $uploader->setAllowedExtensions(['jpg', 'jpeg', 'gif', 'png']);
+                $uploader->setAllowRenameFiles(true);
+                $uploader->setFilesDispersion(false);
+                $mediaDirectory = $this->filesystem
+                    ->getDirectoryRead(DirectoryList::MEDIA)
+                    ->getAbsolutePath(self::UPLOAD_IMAGE_PATH);
+                $result = $uploader->save($mediaDirectory);
+                if (!$result) {
+                    Log::Error(__('File cannot be saved to path: $1', $mediaDirectory));
+                }
+                $filePath = 'custom/images/' . $result['file'];
+                $fileUrl = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $filePath;
+                if (empty($questionId)) {
+                    $data = [
+                        "userId" => $userId,
+                        "listQuestions" => [$searchKey],
+                        "imageUrl" => $fileUrl
+                    ];
+                }
+                elseif (!empty($contextId)) {
+                    $data = [
+                        "userId" => $userId,
+                        "contextId" => $contextId,
+                        "listQuestions" => [$searchKey],
+                        "imageUrl" => $fileUrl
+                    ];
+                }
+                else {
+                    $data = [
+                        "userId" => $userId,
+                        "questionId" => $questionId,
+                        "listQuestions" => [$searchKey],
+                        "imageUrl" => $fileUrl
+                    ];
+                }
+                $endpoint = self::DISCOVER_API_ENDPOINT;
+                $response = $this->dataHelper->sendApiRequest($endpoint, "POST", true, json_encode($data));
+                $responseData = json_decode($response, true);
+                if ($responseData['bestProducts']) {
+                    foreach ($responseData['bestProducts'] as $product) {
+                        $productSku = $product['product']['productId'];
+                        $product = $this->productRepository->get($productSku);
+                        $productDetails = $this->loadProductDetails($product);
+                        $productInfoArray[] = $productDetails;
+                    }
+                    return $resultJson->setData(['response' => $responseData, 'products' => $productInfoArray]);
+                } else {
+                    return $resultJson->setData(["error" => "No product found", 'feedback' => $responseData['feedback']]);
+                }
             }
-            elseif (!empty($contextId)) {
-                $data = [
-                    "userId" => $userId,
-                    "contextId" => $contextId,
-                    "listQuestions" => [$searchKey]
-                ];
-            }
-            else {
-                $data = [
-                    "userId" => $userId,
-                    "questionId" => $questionId,
-                    "listQuestions" => [$searchKey]
-                ];
-            }
-
-            $endpoint = "api/recommendations/discovery";
-            $response = $this->dataHelper->sendApiRequest($endpoint, "POST", true, json_encode($data));
-            $responseData = json_decode($response, true);
-
-            if ($responseData['bestProducts']) {
-                  foreach ($responseData['bestProducts'] as $product) {
-                      $productSku = $product['product']['productId'];
-                      $product = $this->productRepository->get($productSku);
-                      $productDetails = $this->loadProductDetails($product);
-                      $productInfoArray[] = $productDetails;
-                  }
-                  return $resultJson->setData(['response' => $responseData, 'products' =>$productInfoArray]);
-            } else {
-                return $resultJson->setData(["error" => "No product found", 'feedback' => $responseData['feedback']]);
-            }
+        } catch (\Exception $e) {
+            return $resultJson->setData([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 
+    /**
+     * @param $product
+     * @return array
+     * @throws NoSuchEntityException
+     */
     public function loadProductDetails($product)
     {
         return [
@@ -168,7 +217,7 @@ class Discover extends Action
             'size' => $this->getSizeByProductId($product),
             'price' => number_format((float)$product->getData('price'), 2),
             'imageUrl' => $this->getProductMediaUrl($product),
-            'productUrl' =>  $this->productUrl->getUrl($product),
+            'productUrl' => $this->productUrl->getUrl($product),
             'quantity' => $this->getProductQtyById($product->getId())
         ];
     }
@@ -239,7 +288,6 @@ class Discover extends Action
                     }
                 }
             }
-            Log::Info(array_values(array_unique($sizeNames)));
             return array_unique(array_values($sizeNames));
         } else {
             $attribute = $this->attributeRepository->get($attributeCode);
@@ -255,29 +303,6 @@ class Discover extends Action
             }
 
         }
-    }
-
-    /**
-     * @param $product
-     * @param $attributeCode
-     * @return array
-     */
-    protected function getOptionLabels($product, $attributeCode)
-    {
-        $attributeOptions = [];
-        $attribute = $product->getResource()->getAttribute($attributeCode);
-        if ($attribute && $attribute->usesSource()) {
-            $options = $attribute->getSource()->getAllOptions();
-            foreach ($options as $option) {
-                $value = $option['value'];
-                if (!$value) {
-                    continue;
-                }
-                $label = $option['label'];
-                $attributeOptions[$value] = $label;
-            }
-        }
-        return $attributeOptions;
     }
 
     /**
@@ -301,6 +326,4 @@ class Discover extends Action
         $stockItem = $this->stockItemRepository->get($productId);
         return $stockItem->getQty();
     }
-
-
 }
