@@ -146,7 +146,7 @@ class DiscoverUploadImage extends Action
             if ($this->http->isAjax()) {
                 $resultJson = $this->jsonFactory->create();
                 $uploader = $this->uploaderFactory->create(['fileId' => 'image']);
-                $uploader->setAllowedExtensions(['jpg', 'jpeg', 'gif', 'png']);
+                $uploader->setAllowedExtensions(['jpg', 'jpeg', 'gif', 'png', 'webp', 'svg']);
                 $uploader->setAllowRenameFiles(true);
                 $uploader->setFilesDispersion(false);
                 $mediaDirectory = $this->filesystem
@@ -156,7 +156,7 @@ class DiscoverUploadImage extends Action
                 if (!$result) {
                     Log::Error(__('File cannot be saved to path: $1', $mediaDirectory));
                 }
-                $filePath = 'custom/images/' . $result['file'];
+                $filePath = self::UPLOAD_IMAGE_PATH . $result['file'];
                 $fileUrl = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $filePath;
                 if (empty($questionId)) {
                     $data = [
