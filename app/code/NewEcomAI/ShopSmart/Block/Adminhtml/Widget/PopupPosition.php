@@ -12,6 +12,8 @@ use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
  */
 class PopupPosition extends Template implements BlockInterface
 {
+    const DISCOVER_SEARCH_CONTROLLER_PATH = "newecomai/recommendations/discoversearch";
+    const DISCOVER_UPLOAD_IMAGE_CONTROLLER_PATH = "newecomai/recommendations/discoveruploadimage";
     const POPUP_CLASS = 'newcomPopup';
     const LEFT_SIDE_CLASS = 'newcomLeftSide';
     const RIGHT_SIDE_CLASS = 'newcomRightSide';
@@ -33,6 +35,7 @@ class PopupPosition extends Template implements BlockInterface
     const SHOP_SMART_EXAMPLE_QUERY_FIVE = 'shop_smart_example_query_five';
     const SHOP_SMART_DESTINATION_STATUS = 'shop_smart_destination_status';
     const SHOP_SMART_CUSTOM_CSS = 'shop_smart_custom_css';
+
 
     /**
      * Popup Template
@@ -109,9 +112,16 @@ class PopupPosition extends Template implements BlockInterface
      */
     public function getDiscoverFormUrl()
     {
-        return $this->getUrl('newecomai/recommendations/discover');
+        return $this->getUrl(self:: DISCOVER_SEARCH_CONTROLLER_PATH);
     }
 
+    /**
+     * @return string
+     */
+    public function getDiscoverUploadImage()
+    {
+        return $this->getUrl(self::DISCOVER_UPLOAD_IMAGE_CONTROLLER_PATH);
+    }
     /**
      * @return array|mixed|null
      */

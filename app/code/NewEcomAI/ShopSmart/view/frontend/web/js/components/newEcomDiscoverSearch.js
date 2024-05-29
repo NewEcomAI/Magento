@@ -1,13 +1,15 @@
 define([
     'jquery',
     'jquery/ui',
-    'slick'
-], function ($) {
+    'slick',
+    'mage/url',
+    'Magento_Ui/js/modal/alert'
+], function ($,urlBuilder, alert) {
     "use strict";
     var checkShowProduct = 1;
     return function discoverNewEcom(config) {
         var discoverUrl = config.discoverUrl;
-        var discoverUploadImage = config.discoverUploadImage;
+        var discoverImageUpload = config.discoverImageUpload;
         var productGridLayout = config.productGridLayout;
         var questionId = "";
         var contextId = "";
@@ -15,12 +17,23 @@ define([
         let currentSearchQuery = '';
         var questionItems = "";
 
+
         $("#NewEcomAi-search").click(function (e) {
             e.preventDefault();
             currentSearchQuery = "";
-            allProducts = [];
+            let searchImageQuestion = "";
             let searchQuestion = $('#NewEcomAi-discover-question').val();
-            discoverAPICall(searchQuestion,questionId);
+            let checkImage = $('#image-upload').val()
+            allProducts = [];
+            if (checkImage) {
+                let fileInput = $('#image-upload');
+
+                searchImageQuestion = searchQuestion ? searchQuestion : 'I need something similar';
+                discoverImageApi(fileInput, searchImageQuestion, questionId);
+            }
+            if (searchQuestion) {
+                discoverAPICall(searchQuestion, questionId);
+            }
         });
         function discoverAPICall(searchQuestion,questionId) {
             var url = discoverUrl + '?searchKey=' + searchQuestion + '&questionId=' + questionId;
@@ -33,7 +46,7 @@ define([
                 type: "POST",
                 success: function (response) {
                     allProducts = [];
-                    if (response.error === undefined) {
+                    if (response.error == undefined) {
                         response.products.forEach(function(product) {
                             allProducts.push(product);
                         });
@@ -55,26 +68,71 @@ define([
                 }
             })
         }
+
+        // Image upload functionality
+        function discoverImageApi(fileInput, searchImageQuestion, questionId) {
+            var discoverImageUrl = discoverImageUpload + '?searchKey=' + searchImageQuestion + '&questionId=' + questionId;
+            if (contextId !== "") {
+                discoverImageUrl += '&contextId=' + contextId;
+            }
+            var formData = new FormData();
+                formData.append('image', fileInput[0].files[0]);
+            $.ajax({
+                url: discoverImageUrl,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    allProducts = [];
+                    if (response.error === undefined) {
+                        response.products.forEach(function(product) {
+                            allProducts.push(product);
+                        });
+                        getProductGrid(response);
+                        if(response.response.hasNext === true) {
+                            let qId = response.response.id;
+                            discoverImageApi(fileInput, searchImageQuestion, qId);
+                        }
+                        if(response.response.contextId !== undefined) {
+                            contextId = response.response.contextId;
+                        }
+                    } else {
+                        getProductGrid(response);
+                    }
+                },
+                error: function () {
+                    $('.error_msg').show();
+                }
+            });
+        }
+
         function getProductGrid(responseData) {
             const searchInput = $('#NewEcomAi-discover-question').val().trim();
-            if (searchInput !== currentSearchQuery) {
+            let searchImageQuestion = searchInput ? searchInput : 'I need something similar';
+            if (searchImageQuestion !== currentSearchQuery) {
                 // If the search query has changed, create a new slide
-                currentSearchQuery = searchInput;
+                currentSearchQuery = searchImageQuestion;
                 addNewSlide(responseData);
             } else {
-                appendProductsToExistingSlide(responseData.products);
+                appendProductsToExistingSlide(responseData);
             }
         }
 
         function addNewSlide(response) {
-            if(response.error === "No product found" ) {
+            var searchInput = $('#NewEcomAi-discover-question').val().trim();
+            if (!searchInput)
+            {
+                searchInput = 'I need something similar';
+                $('#NewEcomAi-discover-question').val(searchInput);
+            }
+            if(response.error === "No product found") {
                 initializeSlick();
                 $('.js-newcom-popup-content').addClass('newcom-full-width');
                 $('.js-newcom-popup-content-inner').addClass('newcom-post-search');
                 if ($('.js-newcom-popup-content-inner').hasClass('newcom-post-search')) {
                     $(".js-newcom-heading").html("Refine your need");
                 }
-                const searchInput = $('#NewEcomAi-discover-question').val().trim();
                 const carouselSlide = $('<div></div>').addClass('question-item slick-slide').html(`<div class="NewEcomAi__product-box__search-query">${searchInput}</div>`);
                 const stackedSlide = $('<div></div>').addClass('stack-item slick-slide');
                 questionItems = $('<div id="productList" class="NewEcomAi__product-box__productList product-list js-newcom-product-list"></div>');
@@ -108,7 +166,6 @@ define([
                 });
             } else {
                 var responseData = response.products;
-                const searchInput = $('#NewEcomAi-discover-question').val().trim();
                 initializeSlick();
                 $('.js-newcom-popup-content').addClass('newcom-full-width');
                 $('.js-newcom-popup-content-inner').addClass('newcom-post-search');
@@ -140,7 +197,7 @@ define([
                         colors = product.color;
                     }
                     if ($.isArray(product.size)) {
-                        for (const [key, value] of Object.entries(product.size)) {
+                        for (let [key, value] of Object.entries(product.size)) {
                             sizes.push(value)
                         }
                     } else {
@@ -161,11 +218,15 @@ define([
                              </div>
                            </div>`;
 
-                    productSizes = ($.isArray(sizes) && sizes.length > 0)
+                    var sizesArray = [];
+                    $.each(sizes, function(index, value) {
+                        sizesArray.push(value);
+                    });
+                    productSizes = ($.isArray(sizesArray) && sizesArray.length > 0)
                         ? `<div class="NewEcomAi__product-box__variant__type product-variant-size obj">
                              <label>Size</label>
                              <select name="size" class="NewEcomAi__product-box__size-select-box">
-                             ${sizes.map(size => `<option value="${size}">${sizes}</option>`).join('')}
+                             ${sizesArray.map(size => `<option value="${size}">${size}</option>`).join('')}
                              </select>
                            </div>`
                         : `<div class="NewEcomAi__product-box__variant__type product-variant-size simple">
@@ -204,7 +265,7 @@ define([
                     </div>`);
                     questionItems.append(productText);
                 });
-                const feedbackLine = $('<div class="NewEcomAi__product-box__feedback">response.feedback</div>');
+                const feedbackLine = $('<div class="NewEcomAi__product-box__feedback"></div>').text(response.feedback);
                 stackedSlide.append(feedbackLine, questionItems);
                 $('#stackedList').slick('slickAdd', stackedSlide, true);
                 $('#stackedList').slick('slickGoTo', $('#stackedList').slick('slickCurrentSlide') - 1);
@@ -234,20 +295,24 @@ define([
         }
 
 
-        function appendProductsToExistingSlide(responseData) {
-            let totalProductCount = responseData.length;
-            $(".NewEcomAi__product-box__product-count").text(totalProductCount);
-            // Create new product items from the response data
-            const newProductItems = createProductItems(responseData);
+        function appendProductsToExistingSlide(response) {
+            if(response.error === undefined) {
+                var responseData = response.products;
+                let totalProductCount = responseData.length;
+                $(".NewEcomAi__product-box__product-count").text(totalProductCount);
+                // Create new product items from the response data
+                const newProductItems = createProductItems(response);
 
-            // Iterate over each new product item and add it as a new slide
-            newProductItems.each(function() {
-                const newSlide = $('<div></div>').addClass('products-item slick-slide').append($(this).html());
-                $('#productList').slick('slickAdd', newSlide);
-            });
+                // Iterate over each new product item and add it as a new slide
+                newProductItems.each(function() {
+                    const newSlide = $('<div></div>').addClass('products-item slick-slide').append($(this).html());
+                    $('#productList').slick('slickAdd', newSlide);
+                });
+            }
         }
 
-        function createProductItems(responseData) {
+        function createProductItems(response) {
+            var responseData = response.products;
             const productItems = $('<div></div>'); // Create a container for product items
             var productColors;
             var productSizes;
@@ -283,11 +348,16 @@ define([
                  </div>
                </div>`;
 
-                 productSizes = ($.isArray(sizes) && sizes.length > 0)
+                var sizesArray = [];
+                $.each(sizes, function(index, value) {
+                    sizesArray.push(value);
+                });
+
+                 productSizes = ($.isArray(sizesArray) && sizesArray.length > 0)
                     ? `<div class="NewEcomAi__product-box__variant__type product-variant-size obj">
                  <label>Size</label>
                  <select name="size" class="NewEcomAi__product-box__size-select-box">
-                 ${sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
+                 ${sizesArray.map(size => `<option value="${size}">${size}</option>`).join('')}
                  </select>
                </div>`
                     : `<div class="NewEcomAi__product-box__variant__type product-variant-size simple">
