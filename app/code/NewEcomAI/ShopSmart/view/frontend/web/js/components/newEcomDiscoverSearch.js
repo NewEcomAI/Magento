@@ -23,6 +23,9 @@ define([
             currentSearchQuery = "";
             let searchImageQuestion = "";
             let searchQuestion = $('#NewEcomAi-discover-question').val();
+            // Save the new search term to the array
+            previousSearchTerms.push(searchQuestion);
+            discoverAPICall(searchQuestion,questionId);
             let checkImage = $('#image-upload').val()
             allProducts = [];
             if (checkImage) {
@@ -36,7 +39,10 @@ define([
             }
         });
         function discoverAPICall(searchQuestion,questionId) {
-            var url = discoverUrl + '?searchKey=' + searchQuestion + '&questionId=' + questionId;
+            // Convert array to JSON string to send as a parameter
+            let searchQuestions = JSON.stringify(previousSearchTerms);
+
+            var url = discoverUrl + '?searchKeys=' + searchQuestions + '&questionId=' + questionId;
             if (contextId !== "") {
                 url += '&contextId=' + contextId;
             }
@@ -133,6 +139,7 @@ define([
                 if ($('.js-newcom-popup-content-inner').hasClass('newcom-post-search')) {
                     $(".js-newcom-heading").html("Refine your need");
                 }
+                const searchInput = $('#NewEcomAi-discover-question').val().trim();
                 const carouselSlide = $('<div></div>').addClass('question-item slick-slide').html(`<div class="NewEcomAi__product-box__search-query">${searchInput}</div>`);
                 const stackedSlide = $('<div></div>').addClass('stack-item slick-slide');
                 questionItems = $('<div id="productList" class="NewEcomAi__product-box__productList product-list js-newcom-product-list"></div>');
@@ -209,11 +216,11 @@ define([
 
                     productColors = ($.isArray(colors) && colors.length > 0)
                         ? `<div class="NewEcomAi__product-box__variant__type product-variant-color">
-                             <label>Color</label>
-                             <select name="color" class="NewEcomAi__product-box__color-select-box">
-                               ${colors.map(color => `<option value="${color}">${color}</option>`).join('')}
-                             </select>
-                           </div>`
+                                <label>Color</label>
+                                <select name="color" class="NewEcomAi__product-box__color-select-box">
+                                ${colors.map(color => `<option value="${color}">${color}</option>`).join('')}
+                                </select>
+                            </div>`
                         : `<div class="NewEcomAi__product-box__variant__type product-variant-color">
                              <label>Color</label>
                              <div class="NewEcomAi__product-box__color-select-box">
@@ -505,6 +512,7 @@ define([
             $(".js-newcom-heading").html("AI‑Powered Shopping Assistant – What are you looking for?");
             $('#stackedQuestion, #stackedList, #productList').slick('unslick');
             $('#stackedQuestion, #stackedList').empty();
+            $('#NewEcomAi-discover-question').val('');
         });
     }
 });
