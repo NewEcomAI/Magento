@@ -321,7 +321,8 @@ define([
         function appendProductsToExistingSlide(responseData) {
             if(responseData !== "undefined" ){
                 let totalProductCount = responseData.length;
-                $(".NewEcomAi__product-box__product-count").text(totalProductCount);
+                checkShowProduct++;
+                $(".NewEcomAi__product-box__product-count").text(checkShowProduct);
             }
             if (responseData.error !== "No product found") {
                 // Create new product items from the response data
@@ -333,7 +334,6 @@ define([
                     $('#productList').slick('slickAdd', newSlide);
                 });
             }
-
         }
 
         function createProductItems(response) {
