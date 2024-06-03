@@ -8,67 +8,67 @@ define([
             // Array to store search results
             var searchResultsArray = [];
             var decideSearchUrl = config.decideSearchUrl;
+            var decideSearchQuestionRateUrl = config.decideSearchQuestionRateUrl;
             var productGridLayout = config.productGridLayout;
             var currentProductTitle = config.currentProductTitle;
             var currentProductDescription = config.currentProductDescription;
             var questionId = "";
             let currentSearchQuery = '';
             var responseProductInfo = [];
-            console.log("ready------------");
+
             $("#NewEcomAi-search").click(function() {
                 let searchText = $("#NewEcomAi-question").val().trim();
 
                 if (searchText === "") {
                     alert("Write your question");
                 } else {
-                    if (questionId === "")
-                    {
+                    if (questionId === "") {
                         decideSearchAPICall(searchText, questionId, currentProductTitle, currentProductDescription);
                     }
-
                 }
             });
 
             function searchResult(response) {
                 let searchText = $("#NewEcomAi-question").val().trim();
-
+                let searchQuestionId = response.id
                 if (searchText !== currentSearchQuery) {
-                    // If the search query has changed, create a new slide
-                    // currentSearchQuery = searchText;
-                    let searchResponseData = response.response.response;
+                    currentSearchQuery = searchText;
+                    let searchResponseData = response.response;
                     responseProductInfo.push(searchResponseData);
-                    showDecideResponse(responseProductInfo);
+                    showDecideResponse(responseProductInfo, searchQuestionId);
                 } else {
-                    let searchResultsDiv = $("#NewEcomAi-search-result");
-                    showDecideResponse(responseProductInfo);
-                    // Clear previous search results
-                    searchResultsDiv.empty();
+                    showDecideResponse(responseProductInfo, searchQuestionId);
                 }
             }
-            function showDecideResponse(response) {
+
+            function showDecideResponse(response, searchQuestionId) {
                 let searchText = $("#NewEcomAi-question").val().trim();
                 let searchResultsDiv = $("#NewEcomAi-search-result");
-                console.log(response);
-                let additionalInfo = `<div class="container"><p class="paragraph">${response}</p>
-<!--                        <ul class="lists"><li class="item"><a class="link" href="#">Product Link</a></li> <li class="item"><a class="link" href="#">Product Link</a></li></ul>-->
-<!--                        <p class="paragraph">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>-->
-                        </div>`;
 
+                // Append response to the last div if hasNext is false
+                let additionalInfo = `<div class="container"><p class="paragraph">${response}</p></div>`;
 
-                // Store search results in the array
-                let searchResult = {
-                    searchText: searchText,
-                    additionalInfo: additionalInfo,
-                    feedbackGiven: false // Flag to track if feedback has been given
-                };
-                searchResultsArray.push(searchResult);
+                if (response[response.length - 1].hasNext === false && searchResultsArray.length > 0) {
+                    // Append to the last search result
+                    let lastResult = searchResultsArray[searchResultsArray.length - 1];
+                    lastResult.additionalInfo += additionalInfo;
+                } else {
+                    // Store search results in the array
+                    let searchResult = {
+                        searchText: searchText,
+                        additionalInfo: additionalInfo,
+                        feedbackGiven: false // Flag to track if feedback has been given
+                    };
+                    searchResultsArray.push(searchResult);
+                }
 
-
+                // Clear previous search results
+                searchResultsDiv.empty();
 
                 // Display all search results
                 $.each(searchResultsArray, function(index, result) {
                     var resultDiv = $("<div>").addClass("newcom-search-history");
-                    var searchResultNode = $("<p>").addClass("newcom-search-query")
+                    var searchResultNode = $("<p>").addClass("newcom-search-query");
                     var searchResultInner = $("<span>").text(result.searchText);
                     var additionalInfoNode = $("<p>").addClass("newcom-query-response").html(result.additionalInfo);
                     var iconsContainer = $("<div>").addClass("newcom-icons-container");
@@ -88,8 +88,10 @@ define([
                     } else {
                         // If feedback has not been given, add event listeners to the icons
                         likeIcon.click(function() {
-                            // Handle like icon click event
-                            console.log("Like icon clicked");
+                            let score = "like";
+                            // Call rate question score
+                            questionFeedback(score, searchQuestionId);
+
                             result.feedbackGiven = true; // Set feedback given to true
                             var feedbackText = $("<p>").addClass("newcom-feedback-text").text("Thanks for your feedback!");
                             resultDiv.append(feedbackText);
@@ -97,8 +99,9 @@ define([
                         });
 
                         dislikeIcon.click(function() {
-                            // Handle dislike icon click event
-                            console.log("Dislike icon clicked");
+                            let score = "dislike";
+                            // Call rate question score
+                            questionFeedback(score, searchQuestionId);
                             result.feedbackGiven = true; // Set feedback given to true
                             var feedbackText = $("<p>").addClass("newcom-feedback-text").text("Thanks for your feedback!");
                             resultDiv.append(feedbackText);
@@ -112,27 +115,44 @@ define([
                 // Clear the search input field after search
                 $("#NewEcomAi-question").val("");
             }
-            function decideSearchAPICall(searchQuestion , questionId, currentProductTitle, currentProductDescription) {
+
+            function decideSearchAPICall(searchQuestion, questionId, currentProductTitle, currentProductDescription) {
                 var url = decideSearchUrl + '?searchKey=' + searchQuestion + '&questionId=' + questionId + '&currentProductTitle=' + currentProductTitle + '&currentProductDescription=' + currentProductDescription;
                 $.ajax({
                     url: url,
                     type: "POST",
                     success: function (response) {
-                        let responseProductInfo = []
-                        let searchResponseData = response.response.response;
-                        showDecideResponse(searchResponseData);
+                        if (response && response.response) {
+                            let searchResponseData = response.response;
+                            searchResult(searchResponseData);
 
-                        if(response.response.hasNext === true)
-                        {
-                            let qId = response.response.id;
-                            decideSearchAPICall(searchQuestion , qId, currentProductTitle, currentProductDescription);
+                            if (response.response.hasNext) {
+                                let qId = response.response.id;
+                                decideSearchAPICall(searchQuestion, qId, currentProductTitle, currentProductDescription);
+                            }
+                        } else {
+                            $('.error_msg').show().text("Invalid response from the server");
                         }
                     },
                     error: function (error, status) {
-                        $('.error_msg').show();
+                        $('.error_msg').show().text("An error occurred while processing your request");
                     }
-                })
+                });
+            }
+
+            function questionFeedback(score, questionId){
+                var url = decideSearchQuestionRateUrl + '?score=' + score + '&questionId=' + questionId;
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    success: function (response) {
+                        console.log(response.response.status);
+                    },
+                    error: function (error, status) {
+                        $('.error_msg').show().text("An error occurred while processing your request");
+                    }
+                });
             }
         });
-    }
+    };
 });

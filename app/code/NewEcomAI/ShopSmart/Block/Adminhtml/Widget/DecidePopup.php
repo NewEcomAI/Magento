@@ -17,6 +17,7 @@ class DecidePopup extends Template implements BlockInterface
      */
     protected $_template = "NewEcomAI_ShopSmart::widget/decide_template.phtml";
     const DECIDE_SEARCH_CONTROLLER_PATH = "newecomai/productinformation/decidesearch";
+    const DECIDE_RATE_QUESTION_CONTROLLER_PATH = "newecomai/productinformation/ratequestion";
 
     const POPUP_CLASS = 'newcomPopup';
     const LEFT_SIDE_CLASS = 'newcomLeftSide';
@@ -120,6 +121,14 @@ class DecidePopup extends Template implements BlockInterface
     public function getDecideSearchUrl()
     {
         return $this->getUrl(self:: DECIDE_SEARCH_CONTROLLER_PATH);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDecideSearchQuestionRateUrl()
+    {
+        return $this->getUrl(self::DECIDE_RATE_QUESTION_CONTROLLER_PATH);
     }
 
     /**

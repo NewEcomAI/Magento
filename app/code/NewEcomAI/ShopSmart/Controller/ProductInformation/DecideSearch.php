@@ -24,7 +24,7 @@ use NewEcomAI\ShopSmart\Model\Log\Log;
 class DecideSearch extends Action
 {
     /**
-     * Save image path
+     * Decide Product Information API Endpoint
      */
     const DECIDE_API_ENDPOINT = "api/product/decide";
 
@@ -124,7 +124,6 @@ class DecideSearch extends Action
      */
     public function execute()
     {
-        Log::Info("Controller");
         $params = $this->getRequest()->getParams();
         $searchKey = $params['searchKey'];
         $questionId = $params['questionId'];
@@ -133,7 +132,6 @@ class DecideSearch extends Action
         $userId = $this->dataHelper->getShopSmartUserId();
         if ($this->http->isAjax()) {
             $resultJson = $this->resultJsonFactory->create();
-            Log::Info("I'm Here !");
             if (empty($questionId)) {
                 $data = [
                     'userId' => $userId,
@@ -158,7 +156,6 @@ class DecideSearch extends Action
             $endpoint = self::DECIDE_API_ENDPOINT;
             $response = $this->dataHelper->sendApiRequest($endpoint, "POST", true, json_encode($data));
             $responseData = json_decode($response, true);
-            Log::Info($responseData);
 
             return $resultJson->setData(['response' => $responseData]);
 

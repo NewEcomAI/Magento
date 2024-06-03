@@ -23,7 +23,9 @@ $customCss = $block->getCustomCss();
 $dataHelper = $block->getDataHelper();
 $showProductGrid = $block->getProductGrid();
 $currentProduct = $block->getCurrentProduct();
-if ($popupPosition):?>
+$currentProductDatail = preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription())));
+if ($popupPosition):
+    \NewEcomAI\ShopSmart\Model\Log\Log::Info( str_replace("• ", "", $currentProductDatail));?>
 <?= $customCss ? $customCss : "";?>
 <div class="NewEcomAi newSmartShopDecide <?= $popupPosition ?>">
     <div id="newcom-popup" class="popup NewEcomAi__popup">
@@ -88,6 +90,7 @@ if ($popupPosition):?>
             "*": {
                 "decideSearchNewEcom": {
                     "decideSearchUrl": "<?= $block->getDecideSearchUrl();?>",
+                    "decideSearchQuestionRateUrl": "<?= $block->getDecideSearchQuestionRateUrl();?>",
                     "productGridLayout": "<?= $showProductGrid;?>",
                     "currentProductTitle": "<?= $currentProduct->getName();?>",
                     "currentProductDescription": "<?= preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription())));?>"

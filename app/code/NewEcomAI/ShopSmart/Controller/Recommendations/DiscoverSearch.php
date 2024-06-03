@@ -125,7 +125,8 @@ class DiscoverSearch extends Action
     public function execute()
     {
         $params = $this->getRequest()->getParams();
-        $searchKey = $params['searchKey'];
+        $searchKey = $params['searchKeys'];
+        $searchArray = json_decode($searchKey, false);
         $questionId = $params['questionId'];
         $contextId = $params['contextId'] ?? "";
         $userId = $this->dataHelper->getShopSmartUserId();
@@ -134,21 +135,21 @@ class DiscoverSearch extends Action
             if (empty($questionId)) {
                 $data = [
                     "userId" => $userId,
-                    "listQuestions" => [$searchKey]
+                    "listQuestions" => $searchArray
                 ];
             }
             elseif (!empty($contextId)) {
                 $data = [
                     "userId" => $userId,
                     "contextId" => $contextId,
-                    "listQuestions" => [$searchKey]
+                    "listQuestions" => $searchArray
                 ];
             }
             else {
                 $data = [
                     "userId" => $userId,
                     "questionId" => $questionId,
-                    "listQuestions" => [$searchKey]
+                    "listQuestions" => $searchArray
                 ];
             }
 

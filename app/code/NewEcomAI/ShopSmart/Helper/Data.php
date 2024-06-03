@@ -2,22 +2,16 @@
 
 namespace NewEcomAI\ShopSmart\Helper;
 
-use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source\Mode;
 use Psr\Log\LoggerInterface;
 use Magento\Catalog\Model\ProductRepository;
-use Magento\Checkout\Model\Session as CheckoutSession;
-use Magento\Customer\Model\Session;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\CategoryFactory;
-use Magento\Framework\Pricing\Helper\Data as PricingHelper;
-use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\Framework\Session\Generic;
 use Magento\Framework\HTTP\Client\Curl;
 
@@ -26,7 +20,7 @@ class Data extends AbstractHelper
     /**
      * @var string NewCommAI authentication token
      */
-    private $token;
+    protected $token;
 
     const MODULE_ENABLE = 'shop_smart/general_account_configuration/enable';
 
@@ -35,7 +29,6 @@ class Data extends AbstractHelper
     const SHOP_SMART_USER_NAME = 'shop_smart/general_account_configuration/user_name';
     const SHOP_SMART_USER_PASSWORD = 'shop_smart/general_account_configuration/user_password';
     const SHOP_SMART_AB_TESTING = 'shop_smart/general_account_configuration/ab_testing';
-    const SHOP_SMART_CATALOG_SYNC_DATE = 'shop_smart/general_catalog_sync/catalog_sync_date';
     const SHOP_SMART_CATALOG_SYNC_BUTTON = 'shop_smart/general_catalog_sync/catalog_sync_button';
     const SHOP_SMART_MAPPING = 'shop_smart/general_product_attribute_mapping/mapping';
 
@@ -50,19 +43,9 @@ class Data extends AbstractHelper
     private StoreManagerInterface $storeManager;
 
     /**
-     * @var Session
-     */
-    private Session $customerSession;
-
-    /**
      * @var ScopeConfigInterface
      */
     private ScopeConfigInterface $scopeConfigInterface;
-
-    /**
-     * @var CheckoutSession
-     */
-    private CheckoutSession $checkoutSession;
 
     /**
      * @var ProductRepository
@@ -70,30 +53,9 @@ class Data extends AbstractHelper
     private ProductRepository $productRepository;
 
     /**
-     * @var RedirectInterface
-     */
-    private RedirectInterface $redirect;
-
-    /**
-     * @var PricingHelper
-     */
-    private PricingHelper $priceHelper;
-
-    /**
-     * @var CategoryRepositoryInterface
-     */
-    private CategoryRepositoryInterface $categoryRepository;
-
-    /**
      * @var CategoryFactory
      */
     private CategoryFactory $categoryFactory;
-
-    /**
-     * @var StockStateInterface
-     */
-    private StockStateInterface $stockStateInterface;
-
 
     /**
      * @var Generic
@@ -106,55 +68,32 @@ class Data extends AbstractHelper
     private Curl $httpClient;
 
     /**
-     * @var mixed NewcommAI response
-     */
-    private $response;
-
-    /**
      * @param LoggerInterface $logger
-     * @param RedirectInterface $redirect
      * @param StoreManagerInterface $storeManager
-     * @param Session $customerSession
-     * @param CheckoutSession $checkoutSession
      * @param ProductRepository $productRepository
      * @param ScopeConfigInterface $scopeConfigInterface
-     * @param PricingHelper $priceHelper
-     * @param CategoryRepositoryInterface $categoryRepository
      * @param CategoryFactory $categoryFactory
-     * @param StockStateInterface $stockStateInterface
      * @param Context $context
      * @param Generic $session
      * @param Curl $httpClient
      */
     public function __construct(
         LoggerInterface             $logger,
-        RedirectInterface           $redirect,
         StoreManagerInterface       $storeManager,
-        Session                     $customerSession,
-        CheckoutSession             $checkoutSession,
         ProductRepository           $productRepository,
         ScopeConfigInterface        $scopeConfigInterface,
-        PricingHelper               $priceHelper,
-        CategoryRepositoryInterface $categoryRepository,
         CategoryFactory             $categoryFactory,
-        StockStateInterface         $stockStateInterface,
         Context                     $context,
         Generic                    $session,
         Curl                       $httpClient
     ) {
         $this->logger = $logger;
-        $this->redirect = $redirect;
         $this->storeManager = $storeManager;
-        $this->checkoutSession = $checkoutSession;
-        $this->customerSession = $customerSession;
         $this->productRepository = $productRepository;
         $this->scopeConfigInterface = $scopeConfigInterface;
         $this->session = $session;
         $this->httpClient = $httpClient;
-        $this->priceHelper = $priceHelper;
-        $this->categoryRepository = $categoryRepository;
         $this->categoryFactory = $categoryFactory;
-        $this->stockStateInterface = $stockStateInterface;
         parent::__construct($context);
     }
 
@@ -217,14 +156,6 @@ class Data extends AbstractHelper
         return $this->scopeConfig->getValue(self::SHOP_SMART_AB_TESTING, $storeId);
     }
 
-    /**
-     * @param $storeId
-     * @return mixed
-     */
-    public function getShopSmartCatalogSyncDate($storeId = null)
-    {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_DATE, $storeId);
-    }
 
     /**
      * @param $storeId
@@ -239,10 +170,12 @@ class Data extends AbstractHelper
     /**
      * @param $storeId
      * @return mixed
+     * @throws NoSuchEntityException
      */
-    public function getShopSmartCatalogSync($storeId = null)
+    public function getShopSmartCatalogSyncButton($storeId = null)
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_BUTTON, $storeId);
+        return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_BUTTON,  ScopeInterface::SCOPE_STORE,
+            $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -287,26 +220,16 @@ class Data extends AbstractHelper
      * @return mixed
      * @throws NoSuchEntityException
      */
-    public function getProductImageUrl($sku)
+    public function getProductImageUrl($id)
     {
         $url = [];
-        $product= $this->productRepository->getById($sku);
+        $product= $this->productRepository->getById($id);
         $productimages = $product->getMediaGalleryImages();
         foreach($productimages as $productimage)
         {
             $url = $productimage['url'];
         }
         return $url;
-    }
-
-    /**
-     * @param $productId
-     * @param null $websiteId
-     * @return StockStateInterface
-     */
-    public function getStockItem($productId, $websiteId = null): StockStateInterface
-    {
-        return $this->stockStateInterface->getStockQty($productId, $websiteId);
     }
 
     /**
@@ -328,13 +251,11 @@ class Data extends AbstractHelper
      * @param $sku
      * @return array|void
      */
-//    public function getProductAttributeMapping($id,$description,$name,$tags,$price,$productType,$category,$vendor,$inventory,$googleProductCategory,$ageGroup,$gender,$color,$customProduct)
-    public function getProductAttributeMapping($data)
+    public function  getProductAttributeMapping($data)
     {
         try {
             $productAttributes = $this->getShopSmartProductAttribute();
             $attributesArray = explode(',', $productAttributes);
-// Step 2: Get values for each attribute and create the desired string
             $valuesString = '';
             $valuesArray = [];
             foreach ($attributesArray as $attribute) {
@@ -343,38 +264,25 @@ class Data extends AbstractHelper
                     $valuesArray[] = $data[$attribute];
                 }
             }
-
             $valuesString = rtrim($valuesString, '-');
-
             $keyValueString = '';
             foreach ($data as $key => $value) {
                 if (in_array($key, $attributesArray)) {
                     $keyValueString .= "$key - $value | ";
                 }
             }
-
             $keyValueString = rtrim($keyValueString, " | ");
             $products = [];
-            $products['Id'] = $data['entity_id'];
-
-            $products['Description'] = $data['description'];
-            $products['Name'] = $data['name'];
-            $categoryIds = $data['category_ids'] ?? [];
-            $categoryName = !empty($categoryIds) ? $this->getCategoryName($categoryIds) : "";
-            $status = $data['status'];
-            $tags = [ $categoryName, $status];
-
-            $products['Tags'] = $tags;
-            $products['Price'] = $data['price'];
-            $products['ProdutType'] = $data['type_id'];
-            $products['Category'] = $categoryName;
+            $products['Id'] = $data['sku'];
+            $products['Description'] = $data['description'].$keyValueString;
+            $products['Name'] = $valuesString;
+            $categoryIds = $this->productRepository->getById($data['entity_id'])->getCategoryIds();
+            $categoryName = $this->getCategoryName($categoryIds) ?? "";
+            $products['Tags'] = $valuesArray;
+            $products['Price'] = $data['price'] ?? "";
+            $products['ProductType'] = $data['type_id'] ?? "";
+            $products['Category'] = $categoryName ?? "";
             $products['Vendor'] = "magento";
-            $products['Inventory'] = "100";
-            $products['GoogleProductCategory'] = "TestGoogleProductCategory";
-            $products['AgeGroup'] = "Test Adults";
-            $products['Gender'] = "Test Gender";
-            $products['Color'] = "Test Color";
-            $products['CustomProduct'] = "Test Data True";
             return $products;
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage());
@@ -390,28 +298,36 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getToken($refresh = true)
+
+    public function getToken()
     {
-        $accessToken = "";
-        if (!$refresh) {
-            if (strlen($this->token)) {
-                return $this->token;
-            } else if (!empty($this->session->getData('NewCommAISession'))) {
-                $this->token = $this->session->getData('NewCommAISession');
-                return $this->token;
+        $authToken = "";
+        $tokenData = $this->session->getData('NewCommAISession');
+
+        if (isset($tokenData['token']) && !empty($tokenData['token']) && isset($tokenData['expiresIn'])) {
+            // Check if the token has expired
+            if (time() < $tokenData['expiresAt']) {
+                $authToken = $tokenData['token'];
             } else {
-                $refresh = true;
+                // Token has expired, unset the session value
+                $this->session->unsetData('NewCommAISession');
             }
         }
-        if ($refresh) {
-            $accessToken = self::getAccessToken();
-            if (is_string($accessToken['token'])) {
-                if (!empty($accessToken['token'])) {
-                    $this->session->setData('NewCommAISession', $accessToken['token']);
-                }
+
+        if (empty($authToken)) {
+            $accessTokenData = self::getAccessToken();
+            if (!empty($accessTokenData['token'])) {
+                $authToken = $accessTokenData['token'];
+                $expiresAt = time() + $accessTokenData['expiresIn'];
+                $this->session->setData('NewCommAISession', [
+                    'token' => $authToken,
+                    'expiresIn' => $accessTokenData['expiresIn'],
+                    'expiresAt' => $expiresAt
+                ]);
             }
         }
-        return $accessToken['token'];
+
+        return $authToken;
     }
 
     /**
@@ -450,9 +366,9 @@ class Data extends AbstractHelper
         }
         $this->httpClient->addHeader("Content-Type", "application/json");
         if($requireOAuth) {
-            $token = $this->getToken();
+            $outhToken = $this->getToken();
             $headers = [
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer ' . $outhToken,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
             ];
