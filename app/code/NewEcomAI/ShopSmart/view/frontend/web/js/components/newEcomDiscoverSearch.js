@@ -16,7 +16,7 @@ define([
         var allProducts = [];
         let currentSearchQuery = '';
         var questionItems = "";
-
+        var previousSearchTerms = [];
 
         $("#NewEcomAi-search").click(function (e) {
             e.preventDefault();
