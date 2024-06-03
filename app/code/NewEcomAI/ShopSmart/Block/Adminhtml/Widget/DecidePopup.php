@@ -3,17 +3,21 @@
 namespace NewEcomAI\ShopSmart\Block\Adminhtml\Widget;
 
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 use Magento\Widget\Block\BlockInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
 use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
+use Magento\Catalog\Block\Product\View as ProductViewBlock;
 
-/**
- * Get All NewEcomAI Widget Parameters Class
- */
-class PopupPosition extends Template implements BlockInterface
+class DecidePopup extends Template implements BlockInterface
 {
-    const DISCOVER_SEARCH_CONTROLLER_PATH = "newecomai/recommendations/discoversearch";
-    const DISCOVER_UPLOAD_IMAGE_CONTROLLER_PATH = "newecomai/recommendations/discoveruploadimage";
+    /**
+     * Decide Template
+     * @var string
+     */
+    protected $_template = "NewEcomAI_ShopSmart::widget/decide_template.phtml";
+    const DECIDE_SEARCH_CONTROLLER_PATH = "newecomai/productinformation/decidesearch";
+
     const POPUP_CLASS = 'newcomPopup';
     const LEFT_SIDE_CLASS = 'newcomLeftSide';
     const RIGHT_SIDE_CLASS = 'newcomRightSide';
@@ -36,31 +40,34 @@ class PopupPosition extends Template implements BlockInterface
     const SHOP_SMART_DESTINATION_STATUS = 'shop_smart_destination_status';
     const SHOP_SMART_CUSTOM_CSS = 'shop_smart_custom_css';
 
-
-    /**
-     * Popup Template
-     * @var string
-     */
-    protected $_template = "NewEcomAI_ShopSmart::widget/discover_template.phtml";
-
     /**
      * @var Data
      */
     protected Data $helperData;
 
+    protected ProductViewBlock $productViewBlock;
+
     /**
-     * @param Template\Context $context
+     * @param Context $context
      * @param Data $helperData
+     * @param ProductViewBlock $productViewBlock
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
         Data             $helperData,
+        ProductViewBlock $productViewBlock,
         array            $data = []
     ) {
+        $this->productViewBlock = $productViewBlock;
         $this->helperData = $helperData;
         $this->data = $data;
         parent::__construct($context);
+    }
+
+    public function getCurrentProduct()
+    {
+        return $this->productViewBlock->getProduct();
     }
 
     /**
@@ -110,18 +117,11 @@ class PopupPosition extends Template implements BlockInterface
     /**
      * @return string
      */
-    public function getDiscoverSearchUrl()
+    public function getDecideSearchUrl()
     {
-        return $this->getUrl(self:: DISCOVER_SEARCH_CONTROLLER_PATH);
+        return $this->getUrl(self:: DECIDE_SEARCH_CONTROLLER_PATH);
     }
 
-    /**
-     * @return string
-     */
-    public function getDiscoverUploadImage()
-    {
-        return $this->getUrl(self::DISCOVER_UPLOAD_IMAGE_CONTROLLER_PATH);
-    }
     /**
      * @return array|mixed|null
      */
@@ -233,4 +233,5 @@ class PopupPosition extends Template implements BlockInterface
     {
         return $this->getData(self::SHOP_SMART_CUSTOM_CSS);
     }
+
 }

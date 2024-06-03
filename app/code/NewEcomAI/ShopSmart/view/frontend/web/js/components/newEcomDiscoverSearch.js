@@ -138,8 +138,8 @@ define([
                 questionItems = $('<div id="productList" class="NewEcomAi__product-box__productList product-list js-newcom-product-list"></div>');
 
                 $('#stackedQuestion').slick('slickAdd', carouselSlide, true);
-                const productCount = $('<div class="NewEcomAi__product-box__product-count">').text("0");
-                carouselSlide.append(productCount);
+                // const productCount = $('<div class="NewEcomAi__product-box__product-count">').text("0");
+                // carouselSlide.append(productCount);
                 const feedbackLine = $('<div class="NewEcomAi__product-box__feedback"></div>').text(response.feedback);
                 stackedSlide.append(feedbackLine,questionItems);
                 $('#stackedList').slick('slickAdd', stackedSlide, true);
@@ -181,8 +181,8 @@ define([
                 $('#stackedQuestion').slick('slickAdd', carouselSlide, true);
                 $('#stackedQuestion').slick('slickGoTo', $('#stackedQuestion').slick('slickCurrentSlide') - 1);
 
-                const productCount = $('<div class="NewEcomAi__product-box__product-count">').text(checkShowProduct);
-                carouselSlide.append(productCount);
+                // const productCount = $('<div class="NewEcomAi__product-box__product-count">').text(checkShowProduct);
+                // carouselSlide.append(productCount);
 
                 questionItems = $('<div id="productList" class="NewEcomAi__product-box__productList product-list js-newcom-product-list"></div>');
 
@@ -298,8 +298,8 @@ define([
         function appendProductsToExistingSlide(response) {
             if(response.error === undefined) {
                 var responseData = response.products;
-                let totalProductCount = responseData.length;
-                $(".NewEcomAi__product-box__product-count").text(totalProductCount);
+                // let totalProductCount = responseData.length;
+                // $(".NewEcomAi__product-box__product-count").text(totalProductCount);
                 // Create new product items from the response data
                 const newProductItems = createProductItems(response);
 

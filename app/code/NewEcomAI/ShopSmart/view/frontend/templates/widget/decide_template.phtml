@@ -1,18 +1,66 @@
-<div class="NewEcomAi newSmartShopDecide newcomLeftSide">
+<?php
+
+use NewEcomAI\ShopSmart\Block\Adminhtml\Widget\DecidePopup;
+
+/** @var DecidePopup $block */
+
+$popupPosition = $block->getPopupPosition();
+$heading = $block->getHeading();
+$placeHolder = $block->getMessagePlaceholder();
+$buttonText = $block->getButtonText();
+$buttonBackgroundColor = $block->getButtonBackgroundColor();
+$sectionBackgroundColor = $block->getSectionBackgroundColor();
+$imageRecognition = $block->getImageRecognition();
+$layoutText = $block->getLayoutText();
+$layoutDescriptionText = $block->getLayoutDescriptionText();
+$exampleQueryOne = $block->getExampleQueryOne();
+$exampleQueryTwo = $block->getExampleQueryTwo();
+$exampleQueryThree = $block->getExampleQueryThree();
+$exampleQueryFour = $block->getExampleQueryFour();
+$exampleQueryFive = $block->getExampleQueryFive();
+$destinationStatus = $block->getDestinaltionStatus();
+$customCss = $block->getCustomCss();
+$dataHelper = $block->getDataHelper();
+$showProductGrid = $block->getProductGrid();
+$currentProduct = $block->getCurrentProduct();
+if ($popupPosition):?>
+<?= $customCss ? $customCss : "";?>
+<div class="NewEcomAi newSmartShopDecide <?= $popupPosition ?>">
     <div id="newcom-popup" class="popup NewEcomAi__popup">
-        <div class="popup-content NewEcomAi__popup-content js-newcom-popup-content">
+        <div class="popup-content NewEcomAi__popup-content js-newcom-popup-content" style="background-color: <?= $sectionBackgroundColor;?>">
             <span class="close NewEcomAi__close" id="newComclose">&times;</span>
             <div class="NewEcomAi__popup-content__inner">
-                <h2 class="NewEcomAi__popup-content__heading">Ask me anything you want about this product in Natural Language.</h2>
+                <h2 class="NewEcomAi__popup-content__heading">
+                    <?= $heading ? $heading : __('Ask me anything you want about this product in Natural Language.')?></h2>
                 <div class="NewEcomAi__popup-content__search-box">
-                    <input class="NewEcomAi__popup-content__input" rows="2" name="NewEcomAi-question" id="NewEcomAi-question" alt="" placeholder="Can I wear this product for a formal diner?">
-                    <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button">Tell me</button>
+                    <input class="NewEcomAi__popup-content__input" rows="2" name="NewEcomAi-question" id="NewEcomAi-question" alt="" placeholder="<?= $placeHolder ? $placeHolder : __('Can I wear this product for a formal diner?'); ?>">
+                    <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button" style="background-color: <?=$buttonBackgroundColor?>"><?= $buttonText ? $buttonText : __('Tell me'); ?></button>
                 </div>
 
                 <div class="NewEcomAi__popup-content__examples">
                     <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
-                        <span class="NewEcomAi__popup-content__examples__query__text">What are the materials?</span>
+                        <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryOne ? $exampleQueryOne : __("What are the materials?");?></span>
                     </div>
+                    <?php if ($exampleQueryTwo):?>
+                    <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                        <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryTwo;?></span>
+                    </div>
+                    <?php endif;?>
+                    <?php if ($exampleQueryThree):?>
+                    <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                        <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryThree;?></span>
+                    </div>
+                    <?php endif;?>
+                    <?php if ($exampleQueryFour):?>
+                        <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryFour;?></span>
+                        </div>
+                    <?php endif;?>
+                    <?php if ($exampleQueryFive):?>
+                        <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                            <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryFive;?></span>
+                        </div>
+                    <?php endif;?>
                 </div>
             </div>
             <div id="NewEcomAi-search-result" class="NewEcomAi__popup-content__response"></div>
@@ -20,29 +68,36 @@
     </div>
     <div class="NewEcomAi__right NewEcomAi__btn" id="newcomRightBtn">
         <div class="NewEcomAi__right__text">
-            Shop Smart
+            <?= $layoutText ? $layoutText : __('Shop Smart');?>
         </div>
         <div class="NewEcomAi__right__desc">
-            AI Powered Shopping Assistant
+            <?= $layoutDescriptionText ? $layoutDescriptionText : __('AI Powered Shopping Assistant');?>
         </div>
     </div>
     <div class="NewEcomAi__left NewEcomAi__btn" id="newcomLeftBtn">
         <div class="NewEcomAi__left__desc">
-            AI Powered Shopping Assistant
+            <?= $layoutDescriptionText ? $layoutDescriptionText : __('AI Powered Shopping Assistant');?>
         </div>
         <div class="NewEcomAi__left__text">
-            Shop Smart
+            <?= $layoutText ? $layoutText : __('Shop Smart');?>
         </div>
     </div>
 </div>
-
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "decideSearchNewEcom": {
+                    "decideSearchUrl": "<?= $block->getDecideSearchUrl();?>",
+                    "productGridLayout": "<?= $showProductGrid;?>",
+                    "currentProductTitle": "<?= $currentProduct->getName();?>",
+                    "currentProductDescription": "<?= preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription())));?>"
+                }
+            }
+        }
+    </script>
 <script>
     require(['jquery', 'customNewcom'], function ($, customNewcom) {
             customNewcom();
     });
-    
-    require(['jquery', 'decideTemplateNewcom'], function ($, decideTemplateNewcom) {
-        decideTemplateNewcom();
-    });
 </script>
-
+<?php endif; ?>
