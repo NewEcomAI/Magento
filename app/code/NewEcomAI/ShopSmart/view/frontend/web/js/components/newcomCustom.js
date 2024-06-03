@@ -6,8 +6,8 @@ define([
       $(document).ready(function () {
           //  JS for clickable text
           $('.newcomClickableText').click(function() {
-              var newEcomClickedText = $(this).text().trim(); 
-              $('#NewEcomAi-question').val(newEcomClickedText);
+              var newEcomClickedText = $(this).text().trim();
+              $('#NewEcomAi-question, #NewEcomAi-discover-question').val(newEcomClickedText);
           });
 
           //  JS condition for discover template postion

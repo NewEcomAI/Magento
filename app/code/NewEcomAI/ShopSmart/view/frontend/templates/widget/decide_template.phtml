@@ -24,9 +24,9 @@ $dataHelper = $block->getDataHelper();
 $showProductGrid = $block->getProductGrid();
 $currentProduct = $block->getCurrentProduct();
 $currentProductDatail = preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription())));
-if ($popupPosition):
-    \NewEcomAI\ShopSmart\Model\Log\Log::Info( str_replace("• ", "", $currentProductDatail));?>
+if ($popupPosition):?>
 <?= $customCss ? $customCss : "";?>
+ <div id="loader" style="display: none"></div>
 <div class="NewEcomAi newSmartShopDecide <?= $popupPosition ?>">
     <div id="newcom-popup" class="popup NewEcomAi__popup">
         <div class="popup-content NewEcomAi__popup-content js-newcom-popup-content" style="background-color: <?= $sectionBackgroundColor;?>">

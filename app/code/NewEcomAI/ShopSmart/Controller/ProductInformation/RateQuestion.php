@@ -11,7 +11,6 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
-use NewEcomAI\ShopSmart\Model\Log\Log;
 
 class RateQuestion extends Action
 {
@@ -36,14 +35,19 @@ class RateQuestion extends Action
      */
     private Data $dataHelper;
 
+    /**
+     * @param Context $context
+     * @param Http $http
+     * @param JsonFactory $resultJsonFactory
+     * @param Data $dataHelper
+     */
     public function __construct(
         Context     $context,
         Http        $http,
         JsonFactory $resultJsonFactory,
         Data        $dataHelper,
 
-    )
-    {
+    ) {
         $this->http = $http;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->dataHelper = $dataHelper;
@@ -69,7 +73,6 @@ class RateQuestion extends Action
             $endpoint = self::DECIDE_RATE_QUESTION_API_ENDPOINT;
             $response = $this->dataHelper->sendApiRequest($endpoint, "POST", true, json_encode($data));
             $responseData = json_decode($response, true);
-
             return $resultJson->setData(['response' => $responseData]);
         }
     }
