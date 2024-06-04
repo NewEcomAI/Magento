@@ -174,6 +174,7 @@ class DiscoverSearch extends Action
     public function loadProductDetails($product)
     {
         return [
+            'id' => $product->getSku(),
             'title' => $product->getName(),
             'color' => $this->getColorNameByProductId($product),
             'size' => $this->getSizeByProductId($product),

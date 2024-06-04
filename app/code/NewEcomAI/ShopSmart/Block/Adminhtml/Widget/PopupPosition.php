@@ -13,6 +13,7 @@ use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
 class PopupPosition extends Template implements BlockInterface
 {
     const DISCOVER_SEARCH_CONTROLLER_PATH = "newecomai/recommendations/discoversearch";
+    const PRODUCT_ADD_TO_CART_PATH = "newecomai/recommendations/addtocart";
     const DISCOVER_UPLOAD_IMAGE_CONTROLLER_PATH = "newecomai/recommendations/discoveruploadimage";
     const POPUP_CLASS = 'newcomPopup';
     const LEFT_SIDE_CLASS = 'newcomLeftSide';
@@ -114,6 +115,16 @@ class PopupPosition extends Template implements BlockInterface
     {
         return $this->getUrl(self:: DISCOVER_SEARCH_CONTROLLER_PATH);
     }
+
+
+    /**
+     * @return string
+     */
+    public function productAddToCartUrl()
+    {
+        return $this->getUrl(self:: PRODUCT_ADD_TO_CART_PATH);
+    }
+
 
     /**
      * @return string
