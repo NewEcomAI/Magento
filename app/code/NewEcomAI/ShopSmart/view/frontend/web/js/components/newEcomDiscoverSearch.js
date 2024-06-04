@@ -18,6 +18,16 @@ define([
         let currentSearchQuery = '';
         var questionItems = "";
         var previousSearchTerms = [];
+        var imageUploadUrl = "";
+
+        $("#image-upload").change(function (e) {
+            e.preventDefault();
+            let checkImage = $('#image-upload').val()
+            if (checkImage) {
+                let fileInput = $('#image-upload');
+                getUploadImageUrl(fileInput);
+            }
+        });
 
         $("#NewEcomAi-search").click(function (e) {
             e.preventDefault();
@@ -30,15 +40,35 @@ define([
             let checkImage = $('#image-upload').val()
             allProducts = [];
             if (checkImage) {
-                let fileInput = $('#image-upload');
-
                 searchImageQuestion = searchQuestion ? searchQuestion : 'I need something similar';
-                discoverImageApi(fileInput, searchImageQuestion, questionId);
+                discoverImageApi(imageUploadUrl, searchImageQuestion, questionId);
             }
             if (searchQuestion) {
                 discoverAPICall(searchQuestion, questionId);
             }
         });
+
+        // create a url from upload image
+        function getUploadImageUrl(fileInput) {
+            console.log("getUploadImageUrl");
+            var uploadImageUrl = "newecomai/recommendations/uploadimageurl";
+            var formData = new FormData();
+            formData.append('image', fileInput[0].files[0]);
+            $.ajax({
+                url: uploadImageUrl,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log(response.response);
+                    // return response.response;
+                    imageUploadUrl = response.response;
+                    $('.NewEcomAi__popup-content__image-preview__img').attr("src", imageUploadUrl);
+                }
+            });
+        }
+
         function discoverAPICall(searchQuestion,questionId) {
             // Convert array to JSON string to send as a parameter
             let searchQuestions = JSON.stringify(previousSearchTerms);
@@ -47,7 +77,6 @@ define([
             if (contextId !== "") {
                 url += '&contextId=' + contextId;
             }
-
             $.ajax({
                 url: url,
                 type: "POST",
@@ -76,20 +105,16 @@ define([
             })
         }
 
+
         // Image upload functionality
-        function discoverImageApi(fileInput, searchImageQuestion, questionId) {
-            var discoverImageUrl = discoverImageUpload + '?searchKey=' + searchImageQuestion + '&questionId=' + questionId;
+        function discoverImageApi(uploadImageUrl, searchImageQuestion, questionId) {
+            var discoverImageUrl = discoverImageUpload +  '?uploadImageUrl=' + uploadImageUrl + '&searchKey=' + searchImageQuestion + '&questionId=' + questionId;
             if (contextId !== "") {
                 discoverImageUrl += '&contextId=' + contextId;
             }
-            var formData = new FormData();
-                formData.append('image', fileInput[0].files[0]);
             $.ajax({
                 url: discoverImageUrl,
                 type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
                 success: function (response) {
                     allProducts = [];
                     if (response.error === undefined) {
@@ -590,6 +615,14 @@ define([
             $('#stackedQuestion, #stackedList, #productList').slick('unslick');
             $('#stackedQuestion, #stackedList').empty();
             $('#NewEcomAi-discover-question').val('');
+        });
+
+        $('#NewEcomAi-remove-preview').click(function() {
+            $('.js-image-preview').addClass('NewEcomAi-hide-image');
+        });
+        $('.NewEcomAi__popup-content__file').click(function() {
+            $('.js-image-preview').removeClass('NewEcomAi-hide-image');
+            $('.NewEcomAi__popup-content__image-preview__img').attr("src", "");
         });
     }
 });

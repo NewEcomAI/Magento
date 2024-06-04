@@ -227,6 +227,46 @@
                 }
             }
         }
+        &__image-preview {
+            position: relative;
+
+            &__img {
+                width: 64px;
+                margin-right: auto;
+                display: block;
+            }
+
+            #NewEcomAi-remove-preview {
+                position: absolute;
+                top: -4px;
+                left: -5px;
+                background-color: #fff;
+                padding: 5px;
+                cursor: pointer;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                padding: 0;
+                font-size: 13px;
+                display: block;
+            }
+
+            &.NewEcomAi-hide-image {
+                .NewEcomAi {
+                    &__popup-content {
+                        &__image-preview {
+                            &__img {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+
+                #NewEcomAi-remove-preview {
+                    display: none;
+                }
+            }
+        }
     }
 }
 

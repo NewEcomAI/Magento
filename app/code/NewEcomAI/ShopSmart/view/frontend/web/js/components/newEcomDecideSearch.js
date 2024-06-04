@@ -115,7 +115,7 @@ define([
                 searchResultsDiv.prepend(resultDiv);
                 // $("#NewEcomAi-question").val("");
             }
-            function decideSearchAPICall(searchQuestion , questionId, currentProductTitle, currentProductDescription) {
+            function decideSearchAPI3Call(searchQuestion , questionId, currentProductTitle, currentProductDescription) {
                 var url = decideSearchUrl + '?searchKey=' + searchQuestion + '&questionId=' + questionId + '&currentProductTitle=' + currentProductTitle + '&currentProductDescription=' + currentProductDescription;
                 $.ajax({
                     url: url,
@@ -140,6 +140,7 @@ define([
                     url: url,
                     type: "POST",
                     success: function (response) {
+                        console.log(response.response.status);
                     },
                     error: function (error, status) {
                         $('.error_msg').show().text("An error occurred while processing your request");

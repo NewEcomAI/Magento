@@ -138,6 +138,7 @@ class DiscoverUploadImage extends Action
     public function execute()
     {
         $params = $this->getRequest()->getParams();
+        $fileUrl = $params['uploadImageUrl'];
         $searchKey = $params['searchKey'];
         $questionId = $params['questionId'];
         $contextId = $params['contextId'] ?? "";
@@ -145,20 +146,6 @@ class DiscoverUploadImage extends Action
         try {
             if ($this->http->isAjax()) {
                 $resultJson = $this->jsonFactory->create();
-                $uploader = $this->uploaderFactory->create(['fileId' => 'image']);
-                $uploader->setAllowedExtensions(['jpg', 'jpeg', 'gif', 'png', 'webp', 'svg']);
-                $uploader->setAllowRenameFiles(true);
-                $uploader->setFilesDispersion(false);
-                $mediaDirectory = $this->filesystem
-                    ->getDirectoryRead(DirectoryList::MEDIA)
-                    ->getAbsolutePath(self::UPLOAD_IMAGE_PATH);
-                $result = $uploader->save($mediaDirectory);
-                if (!$result) {
-                    Log::Error(__('File cannot be saved to path: $1', $mediaDirectory));
-                }
-                $filePath = self::UPLOAD_IMAGE_PATH . $result['file'];
-                $fileUrl = "https://eliteelevensporting.com/cdn/shop/files/EEAUG2333637.jpg?v=1694395027";
-//                $fileUrl = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $filePath;
                 if (empty($questionId)) {
                     $data = [
                         "userId" => $userId,

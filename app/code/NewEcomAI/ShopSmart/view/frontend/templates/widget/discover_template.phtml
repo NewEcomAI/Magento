@@ -74,6 +74,10 @@ if ($popupPosition):?>
                         <div id="stackedQuestion" class="NewEcomAi__product-box__stackedQuestion"></div>
                         <div id="stackedList" class="NewEcomAi__product-box__stackedList"></div>
                     </div>
+                    <div class="NewEcomAi__popup-content__image-preview js-image-preview NewEcomAi-hide-image">
+                        <img class="NewEcomAi__popup-content__image-preview__img" src="" alt="preview image">
+                        <button id="NewEcomAi-remove-preview" class="hide-image-preview">x</button>
+                    </div>
                     <div class="NewEcomAi__popup-content__examples">
                         <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
                             <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryOne ? $exampleQueryOne : __("I am looking for a new dress for this summer");?></span>
