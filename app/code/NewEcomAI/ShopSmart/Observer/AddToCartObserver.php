@@ -49,10 +49,11 @@ class AddToCartObserver implements ObserverInterface
         $newComProduct = $this->checkoutSession->getNewEcomAiAddToCart(true);
         $quoteId = $this->checkoutSession->getNewEcomAiQuoteId();
         $productId = $this->checkoutSession->getNewEcomAiProductId();
+        $questionId = $this->checkoutSession->getNewEcomAiQuestionId();
         if ($newComProduct && $quoteId && $productId ) {
             $data = [
                 "userId" => $this->helper->getShopSmartUserId(),
-                "questionId"=> "2aaa8fd8-98dd-4610-a39b-1b588d8fa8a5",
+                "questionId"=> $questionId,
                 "productId" => $productId
             ];
             $endpoint = "api/questions/discovery/addtocart";
