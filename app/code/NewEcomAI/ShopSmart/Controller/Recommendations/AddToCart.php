@@ -4,35 +4,89 @@ namespace NewEcomAI\ShopSmart\Controller\Recommendations;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\DataObject;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Customer\Model\Session as CustomerSession;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Checkout\Model\Cart;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Eav\Model\Config;
 use Magento\Checkout\Model\Session as CheckoutSession;
 
-
+/**
+ * Add to cart product on discover search
+ */
 class AddToCart extends Action
 {
-    protected $resultJsonFactory;
-    protected $customerSession;
-    protected $cart;
-    protected $productRepository;
-    protected $cartRepository;
-    protected $quoteFactory;
-    protected $cartManagement;
-    protected $storeManager;
-    protected $config;
+    /**
+     * @var JsonFactory
+     */
+    protected JsonFactory $resultJsonFactory;
+
+    /**
+     * @var CustomerSession
+     */
+    protected CustomerSession $customerSession;
+
+    /**
+     * @var Cart
+     */
+    protected Cart $cart;
+
+    /**
+     * @var ProductRepositoryInterface
+     */
+    protected ProductRepositoryInterface $productRepository;
+
+    /**
+     * @var CartRepositoryInterface
+     */
+    protected CartRepositoryInterface $cartRepository;
+
+    /**
+     * @var QuoteFactory
+     */
+    protected QuoteFactory $quoteFactory;
+
+    /**
+     * @var CartManagementInterface
+     */
+    protected CartManagementInterface $cartManagement;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    protected StoreManagerInterface $storeManager;
+
+    /**
+     * @var Config
+     */
+    protected Config $config;
+
+    /**
+     * @var CheckoutSession
+     */
     private CheckoutSession $checkoutSession;
 
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param CustomerSession $customerSession
+     * @param Cart $cart
+     * @param ProductRepositoryInterface $productRepository
+     * @param CartRepositoryInterface $cartRepository
+     * @param QuoteFactory $quoteFactory
+     * @param CartManagementInterface $cartManagement
+     * @param StoreManagerInterface $storeManager
+     * @param Config $config
+     * @param CheckoutSession $checkoutSession
+     */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
@@ -54,11 +108,14 @@ class AddToCart extends Action
         $this->quoteFactory = $quoteFactory;
         $this->cartManagement = $cartManagement;
         $this->storeManager = $storeManager;
-        parent::__construct($context);
         $this->config = $config;
         $this->checkoutSession = $checkoutSession;
+        parent::__construct($context);
     }
 
+    /**
+     * @return ResponseInterface|Json|ResultInterface
+     */
     public function execute()
     {
         $resultJson = $this->resultJsonFactory->create();
@@ -69,6 +126,7 @@ class AddToCart extends Action
         }
 
         $productId = $data['productId'];
+        $questionId = $data['questionId'];
         $colorOptionLabel = $data['colorOption']['value'];
         $sizeOptionLabel = $data['sizeOption']['value'];
         $qty = isset($data['qty']) ? (int)$data['qty'] : 1;
@@ -113,7 +171,7 @@ class AddToCart extends Action
                 }
             }
 
-            $buyRequest = new \Magento\Framework\DataObject([
+            $buyRequest = new DataObject([
                 'product' => $configurableProduct->getId(),
                 'qty' => $qty,
                 'super_attribute' => $superAttribute
@@ -121,7 +179,7 @@ class AddToCart extends Action
 
             $quote->addProduct($configurableProduct, $buyRequest);
             $quote->collectTotals()->save();
-            $this->setFlag($quote->getId(),$productId);
+            $this->setFlag($quote->getId(),$productId, $questionId);
 
             if (!$this->customerSession->isLoggedIn()) {
                 $this->cartRepository->save($quote);
@@ -137,10 +195,17 @@ class AddToCart extends Action
         }
     }
 
-    protected function setFlag($quoteId, $productId)
+    /**
+     * @param $quoteId
+     * @param $productId
+     * @param $questionId
+     * @return void
+     */
+    protected function setFlag($quoteId, $productId, $questionId)
     {
         $this->checkoutSession->setNewEcomAiAddToCart(true);
         $this->checkoutSession->setNewEcomAiQuoteId($quoteId);
         $this->checkoutSession->setNewEcomAiProductId($productId);
+        $this->checkoutSession->setNewEcomAiQuestionId($questionId);
     }
 }

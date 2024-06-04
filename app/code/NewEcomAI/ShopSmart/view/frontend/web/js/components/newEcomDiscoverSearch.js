@@ -255,6 +255,7 @@ define([
                     const productText = $(`
                     <div class="products-item">
                         <input type="hidden" class="product-id" value="${product.id}">
+                        <input type="hidden" class="question-id" value="${product.questionId}">
                         <div class="NewEcomAi__product-box__info product-info">
                             <div class="NewEcomAi__product-box__details product-details">
                                 <div class="NewEcomAi__product-box__image product-image">
@@ -348,17 +349,19 @@ define([
             console.log("on add to acrt click");
             let productElement = $(this).closest('.products-item');
             let productId = productElement.find('.product-id').val();
+            let questionId = productElement.find('.question-id').val();
             let { colorOption, sizeOption } = getSelectedOptions(productElement);
-            addToCartViaAjax(productId, colorOption, sizeOption);
+            addToCartViaAjax(productId, colorOption, sizeOption,questionId);
         });
 
-        function addToCartViaAjax(productId, colorOption, sizeOption) {
+        function addToCartViaAjax(productId, colorOption, sizeOption,questionId) {
             $.ajax({
                 url: productAddToCartUrl, // URL to your custom controller
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({
                     productId: productId,
+                    questionId: questionId,
                     colorOption: colorOption,
                     sizeOption: sizeOption
                 }),
@@ -466,6 +469,7 @@ define([
                     }
                     const productText = $(`<div class="products-item">
                      <input type="hidden" class="product-id" value="${product.id}">
+                     <input type="hidden" class="question-id" value="${product.questionId}">
                     <div class="NewEcomAi__product-box__info product-info">
                         <div class="NewEcomAi__product-box__details product-details">
                             <div class="NewEcomAi__product-box__image product-image">
