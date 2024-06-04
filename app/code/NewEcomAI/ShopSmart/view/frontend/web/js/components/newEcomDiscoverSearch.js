@@ -321,79 +321,84 @@ define([
         function appendProductsToExistingSlide(responseData) {
             if(responseData !== "undefined" ){
                 let totalProductCount = responseData.length;
-                $(".NewEcomAi__product-box__product-count").text(totalProductCount);
+                checkShowProduct++;
+                $(".NewEcomAi__product-box__product-count").text(checkShowProduct);
             }
-            // Create new product items from the response data
-            const newProductItems = createProductItems(responseData);
+            if (responseData.error !== "No product found") {
+                // Create new product items from the response data
+                const newProductItems = createProductItems(responseData);
 
-            // Iterate over each new product item and add it as a new slide
-            newProductItems.each(function() {
-                const newSlide = $('<div></div>').addClass('products-item slick-slide').append($(this).html());
-                $('#productList').slick('slickAdd', newSlide);
-            });
+                // Iterate over each new product item and add it as a new slide
+                newProductItems.each(function() {
+                    const newSlide = $('<div></div>').addClass('products-item slick-slide').append($(this).html());
+                    $('#productList').slick('slickAdd', newSlide);
+                });
+            }
         }
 
         function createProductItems(response) {
-            var responseData = response.products;
-            const productItems = $('<div></div>'); // Create a container for product items
-            var productColors;
-            var productSizes;
-            responseData.forEach(product => {
-                let colors = [];
-                let sizes = [];
-                if ($.isArray(product.color)) {
-                    for (const [key, value] of Object.entries(product.color)) {
-                        colors.push(value);
+            if (response.error !== "No product found")
+            {
+                var responseData = response.products;
+                const productItems = $('<div></div>'); // Create a container for product items
+                var productColors;
+                var productSizes;
+                responseData.forEach(product => {
+                    let colors = [];
+                    let sizes = [];
+                    if ($.isArray(product.color)) {
+                        for (const [key, value] of Object.entries(product.color)) {
+                            colors.push(value);
+                        }
+                    } else {
+                        colors = product.color;
                     }
-                } else {
-                    colors = product.color;
-                }
-                if ($.isArray(product.size)) {
-                    for (const [key, value] of Object.entries(product.size)) {
-                        sizes.push(value);
+                    if ($.isArray(product.size)) {
+                        for (const [key, value] of Object.entries(product.size)) {
+                            sizes.push(value);
+                        }
+                    } else {
+                        sizes = product.size;
                     }
-                } else {
-                    sizes = product.size;
-                }
 
-                productColors = ($.isArray(colors) && colors.length > 0)
-                    ? `<div class="NewEcomAi__product-box__variant__type product-variant-color">
+                    productColors = ($.isArray(colors) && colors.length > 0)
+                        ? `<div class="NewEcomAi__product-box__variant__type product-variant-color">
                             <label>Color</label>
                             <select name="color" class="NewEcomAi__product-box__color-select-box">
                             ${colors.map(color => `<option value="${color}">${color}</option>`).join('')}
                             </select>
                         </div>`
-                    : `<div class="NewEcomAi__product-box__variant__type product-variant-color">
+                        : `<div class="NewEcomAi__product-box__variant__type product-variant-color">
                  <label>Color</label>
                  <div class="NewEcomAi__product-box__color-select-box">
                  <strong>${product.color}</strong>
                  </div>
                </div>`;
-                var sizesArray = [];
-                $.each(sizes, function(index, value) {
-                    sizesArray.push(value);
-                });
+                    var sizesArray = [];
+                    $.each(sizes, function(index, value) {
+                        sizesArray.push(value);
+                    });
 
-                productSizes = ($.isArray(sizesArray) && sizesArray.length > 0)
-                    ? `<div class="NewEcomAi__product-box__variant__type product-variant-size">
+                    productSizes = ($.isArray(sizesArray) && sizesArray.length > 0)
+                        ? `<div class="NewEcomAi__product-box__variant__type product-variant-size">
                             <label>Size</label>
                             <select name="size" class="NewEcomAi__product-box__size-select-box">
                             ${sizesArray.map(size => `<option value="${size}">${size}</option>`).join('')}
                             </select>
                         </div>`
-                    : `<div class="NewEcomAi__product-box__variant__type product-variant-size">
+                        : `<div class="NewEcomAi__product-box__variant__type product-variant-size">
                             <label>Size</label>
                             <div class="NewEcomAi__product-box__color-select-box">
                             <strong>${product.size}</strong>
                             </div>
                         </div>`;
-                if (colors === null || colors === undefined) {
-                    productColors = "";
-                }
-                if (sizes === null || sizes === undefined) {
-                    productSizes = "";
-                }
-                const productText = $(`<div class="products-item">
+                    if (colors === null || colors === undefined) {
+                        productColors = "";
+                    }
+                    if (sizes === null || sizes === undefined) {
+                        productSizes = "";
+                    }
+                    const productText = $(`<div class="products-item">
                     <div class="NewEcomAi__product-box__info product-info">
                         <div class="NewEcomAi__product-box__details product-details">
                             <div class="NewEcomAi__product-box__image product-image">
@@ -425,10 +430,11 @@ define([
                    </div>
                 </div>
             </div>`);
-                productItems.append(productText);
-            });
+                    productItems.append(productText);
+                });
 
-            return productItems.children(); // Return the individual product items
+                return productItems.children(); // Return the individual product items
+            }
         }
 
 

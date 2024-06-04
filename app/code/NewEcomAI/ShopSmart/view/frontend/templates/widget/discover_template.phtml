@@ -68,14 +68,14 @@ if ($popupPosition):?>
                             </svg>
                         </div>
                         <?php endif;?>
-                        <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button js-newcom-search" style="background-color: <?=$buttonBackgroundColor?>"><?= $buttonText ? $buttonText : __('DiscoverSearch'); ?></button>
+                        <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button js-newcom-search" style="background-color: <?=$buttonBackgroundColor?>"><?= $buttonText ? $buttonText : __('Discover'); ?></button>
                     </div>
                     <div class="NewEcomAi__product-box">
                         <div id="stackedQuestion" class="NewEcomAi__product-box__stackedQuestion"></div>
                         <div id="stackedList" class="NewEcomAi__product-box__stackedList"></div>
                     </div>
                     <div class="NewEcomAi__popup-content__examples">
-                            <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                        <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
                             <span class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryOne ? $exampleQueryOne : __("I am looking for a new dress for this summer");?></span>
                         </div>
                         <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
@@ -119,7 +119,7 @@ if ($popupPosition):?>
         {
             "*": {
                 "discoverSearchNewEcom": {
-                    "discoverUrl": "<?= $block->getDiscoverFormUrl();?>",
+                    "discoverUrl": "<?= $block->getDiscoverSearchUrl();?>",
                     "productGridLayout": "<?= $showProductGrid;?>",
                     "discoverImageUpload": "<?= $block->getDiscoverUploadImage()?>"
                 }
