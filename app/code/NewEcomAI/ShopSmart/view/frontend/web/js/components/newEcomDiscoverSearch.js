@@ -9,6 +9,7 @@ define([
     var checkShowProduct = 1;
     return function discoverNewEcom(config) {
         var discoverUrl = config.discoverUrl;
+        var productAddToCartUrl = config.productAddToCartUrl;
         var discoverImageUpload = config.discoverImageUpload;
         var productGridLayout = config.productGridLayout;
         var questionId = "";
@@ -253,6 +254,7 @@ define([
                     }
                     const productText = $(`
                     <div class="products-item">
+                        <input type="hidden" class="product-id" value="${product.id}">
                         <div class="NewEcomAi__product-box__info product-info">
                             <div class="NewEcomAi__product-box__details product-details">
                                 <div class="NewEcomAi__product-box__image product-image">
@@ -278,7 +280,7 @@ define([
                                 </div>
                             <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
                                 <div class="NewEcomAi__product-box__add-cart">
-                                    <button class="NewEcomAi__popup-content__button" onclick="addToCart('${product.title}', ${product.price})">Add to cart</button>
+                                    <button class="NewEcomAi__popup-content__button NewEcomAi__add-to-cart">Add to cart</button>
                                 </div>
                             </div>
                         </div>
@@ -316,6 +318,70 @@ define([
                 });
             }
         }
+
+// Function to get selected color and size options
+        function getSelectedOptions(productElement) {
+            let color = productElement.find('.NewEcomAi__product-box__color-select-box option:selected').val();
+            let size = productElement.find('.NewEcomAi__product-box__size-select-box option:selected').val();
+
+            let colorOption = null;
+            let sizeOption = null;
+
+            if (color) {
+                colorOption = {
+                    option_id: 'color', // Replace with actual option ID
+                    value: color
+                };
+            }
+
+            if (size) {
+                sizeOption = {
+                    option_id: 'size', // Replace with actual option ID
+                    value: size
+                };
+            }
+
+            return { colorOption, sizeOption };
+        }
+
+        $(document).on('click', '.NewEcomAi__popup-content__button.NewEcomAi__add-to-cart', function() {
+            console.log("on add to acrt click");
+            let productElement = $(this).closest('.products-item');
+            let productId = productElement.find('.product-id').val();
+            let { colorOption, sizeOption } = getSelectedOptions(productElement);
+            addToCartViaAjax(productId, colorOption, sizeOption);
+        });
+
+        function addToCartViaAjax(productId, colorOption, sizeOption) {
+            $.ajax({
+                url: productAddToCartUrl, // URL to your custom controller
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    productId: productId,
+                    colorOption: colorOption,
+                    sizeOption: sizeOption
+                }),
+                success: function(response) {
+                    if (response.success) {
+                        // alert('Product added to cart successfully.');
+                        // Refresh the page to update the mini cart
+                        require(['Magento_Customer/js/customer-data'], function (customerData) {
+                            var sections = ['cart'];
+                            customerData.invalidate(sections);
+                            customerData.reload(sections, true);
+                        });
+                        location.reload();
+                    } else {
+                        console.log('Error adding product to cart: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('An error occurred: ' + error);
+                }
+            });
+        }
+
 
 
         function appendProductsToExistingSlide(responseData) {
@@ -399,6 +465,7 @@ define([
                         productSizes = "";
                     }
                     const productText = $(`<div class="products-item">
+                     <input type="hidden" class="product-id" value="${product.id}">
                     <div class="NewEcomAi__product-box__info product-info">
                         <div class="NewEcomAi__product-box__details product-details">
                             <div class="NewEcomAi__product-box__image product-image">
@@ -424,7 +491,7 @@ define([
                             </div>
                     <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
                             <div class="NewEcomAi__product-box__add-cart">
-                                <button class="NewEcomAi__popup-content__button" onclick="addToCart('${product.title}', ${product.price})">Add to cart</button>
+                                <button class="NewEcomAi__popup-content__button NewEcomAi__add-to-cart">Add to cart</button>
                             </div>
                         </div>
                    </div>
