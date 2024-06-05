@@ -2,11 +2,6 @@
 
 namespace NewEcomAI\ShopSmart\Controller\Recommendations;
 
-use Magento\Catalog\Model\Product\Attribute\Repository as AttributeRepository;
-use Magento\Catalog\Model\Product\Url as ProductUrl;
-use Magento\Catalog\Model\ProductRepository;
-use Magento\CatalogInventory\Model\Stock\StockItemRepository;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Filesystem\DirectoryList;
@@ -15,7 +10,6 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\File\UploaderFactory;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\Filesystem;
@@ -93,7 +87,6 @@ class UploadImageUrl extends Action
     {
         try {
             if ($this->http->isAjax()) {
-                Log::Info("Uploading image url");
                 $resultJson = $this->jsonFactory->create();
                 $uploader = $this->uploaderFactory->create(['fileId' => 'image']);
                 $uploader->setAllowedExtensions(['jpg', 'jpeg', 'gif', 'png', 'webp', 'svg']);
@@ -107,7 +100,6 @@ class UploadImageUrl extends Action
                     Log::Error(__('File cannot be saved to path: $1', $mediaDirectory));
                 }
                 $filePath = self::UPLOAD_IMAGE_PATH . $result['file'];
-                //$fileUrl = "https://eliteelevensporting.com/cdn/shop/files/EEAUG2333637.jpg?v=1694395027";
                 $fileUrl = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $filePath;
                 if ($fileUrl) {
                     return $resultJson->setData(["response" => $fileUrl]);

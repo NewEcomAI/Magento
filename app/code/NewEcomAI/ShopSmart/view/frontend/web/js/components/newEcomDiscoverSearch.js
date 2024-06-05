@@ -50,7 +50,6 @@ define([
 
         // create a url from upload image
         function getUploadImageUrl(fileInput) {
-            console.log("getUploadImageUrl");
             var uploadImageUrl = "newecomai/recommendations/uploadimageurl";
             var formData = new FormData();
             formData.append('image', fileInput[0].files[0]);
@@ -61,10 +60,9 @@ define([
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    console.log(response.response);
-                    // return response.response;
                     imageUploadUrl = response.response;
                     $('.NewEcomAi__popup-content__image-preview__img').attr("src", imageUploadUrl);
+                    $('.js-image-preview').removeClass('NewEcomAi-hide-image');
                 }
             });
         }
@@ -619,9 +617,6 @@ define([
 
         $('#NewEcomAi-remove-preview').click(function() {
             $('.js-image-preview').addClass('NewEcomAi-hide-image');
-        });
-        $('.NewEcomAi__popup-content__file').click(function() {
-            $('.js-image-preview').removeClass('NewEcomAi-hide-image');
             $('.NewEcomAi__popup-content__image-preview__img').attr("src", "");
         });
     }
