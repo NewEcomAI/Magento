@@ -113,7 +113,6 @@ define([
                     });
                 }
                 searchResultsDiv.prepend(resultDiv);
-                // $("#NewEcomAi-question").val("");
             }
             function decideSearchAPICall(searchQuestion , questionId, currentProductTitle, currentProductDescription) {
                 var url = decideSearchUrl + '?searchKey=' + searchQuestion + '&questionId=' + questionId + '&currentProductTitle=' + currentProductTitle + '&currentProductDescription=' + currentProductDescription;
