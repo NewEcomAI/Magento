@@ -20,6 +20,7 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
+use Magento\Checkout\Model\Session as CheckoutSession;
 
 class DecideSearch extends Action
 {
@@ -78,6 +79,10 @@ class DecideSearch extends Action
      */
     private ProductUrl $productUrl;
 
+    /**
+     * @var CheckoutSession
+     */
+    private CheckoutSession $checkoutSession;
 
     /**
      * @param Context $context
@@ -91,6 +96,7 @@ class DecideSearch extends Action
      * @param StockItemRepository $stockItemRepository
      * @param Configurable $configurable
      * @param ProductUrl $productUrl
+     * @param CheckoutSession $checkoutSession
      */
     public function __construct(
         Context                             $context,
@@ -103,7 +109,8 @@ class DecideSearch extends Action
         StoreManagerInterface               $storeManager,
         StockItemRepository                 $stockItemRepository,
         Configurable                        $configurable,
-        ProductUrl                          $productUrl
+        ProductUrl                          $productUrl,
+        CheckoutSession                     $checkoutSession
     ) {
         $this->http = $http;
         $this->resultJsonFactory = $resultJsonFactory;
@@ -115,6 +122,7 @@ class DecideSearch extends Action
         $this->stockItemRepository = $stockItemRepository;
         $this->configurable = $configurable;
         $this->productUrl = $productUrl;
+        $this->checkoutSession = $checkoutSession;
         parent::__construct($context);
     }
 
@@ -130,6 +138,7 @@ class DecideSearch extends Action
         $currentProductTitle = $params['currentProductTitle'];
         $currentProductDescription = $params['currentProductDescription'];
         $userId = $this->dataHelper->getShopSmartUserId();
+        $this->checkoutSession->setNewEcomAiDecideSearchClicked(true);
         if ($this->http->isAjax()) {
             $resultJson = $this->resultJsonFactory->create();
             if (empty($questionId)) {
