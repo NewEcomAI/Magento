@@ -9,7 +9,7 @@
                        source_model="NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout">
                 <label translate="true">Layout</label>
             </parameter>
-            <parameter name="shop_smart_discover_discover_layout_product_grid" xsi:type="select" visible="true" sort_order="20"
+            <parameter name="shop_smart_discover_layout_product_grid" xsi:type="select" visible="true" sort_order="20"
                        source_model="NewEcomAI\ShopSmart\Model\Config\Source\ProductGrid">
                 <label translate="true">Layout: Product Grid</label>
             </parameter>
