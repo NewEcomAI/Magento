@@ -2,9 +2,8 @@ define([
     'jquery',
     'jquery/ui',
     'slick',
-    'mage/url',
-    'Magento_Ui/js/modal/alert'
-], function ($,urlBuilder, alert) {
+    'mage/url'
+], function ($,urlBuilder) {
     "use strict";
     var checkShowProduct = 1;
     return function discoverNewEcom(config) {
@@ -30,21 +29,27 @@ define([
         });
 
         $("#NewEcomAi-search").click(function (e) {
-            e.preventDefault();
-            currentSearchQuery = "";
-            let searchImageQuestion = "";
-            let searchQuestion = $('#NewEcomAi-discover-question').val();
-            // Save the new search term to the array
-            previousSearchTerms.push(searchQuestion);
-            discoverAPICall(searchQuestion,questionId);
-            let checkImage = $('#image-upload').val()
-            allProducts = [];
-            if (checkImage) {
-                searchImageQuestion = searchQuestion ? searchQuestion : 'I need something similar';
-                discoverImageApi(imageUploadUrl, searchImageQuestion, questionId);
-            }
-            if (searchQuestion) {
-                discoverAPICall(searchQuestion, questionId);
+            const searchInput = $('#NewEcomAi-discover-question').val().trim();
+            if (searchInput === '') {
+                alert('Please enter something in the search input!');
+            } else {
+                e.preventDefault();
+                currentSearchQuery = "";
+                let searchImageQuestion = "";
+                let searchQuestion = $('#NewEcomAi-discover-question').val();
+                // Save the new search term to the array
+                previousSearchTerms.push(searchQuestion);
+                $('body').trigger('processStart');
+                discoverAPICall(searchQuestion,questionId);
+                let checkImage = $('#image-upload').val()
+                allProducts = [];
+                if (checkImage) {
+                    searchImageQuestion = searchQuestion ? searchQuestion : 'I need something similar';
+                    discoverImageApi(imageUploadUrl, searchImageQuestion, questionId);
+                }
+                if (searchQuestion) {
+                    discoverAPICall(searchQuestion, questionId);
+                }
             }
         });
 
@@ -84,6 +89,7 @@ define([
                         response.products.forEach(function(product) {
                             allProducts.push(product);
                         });
+                        $('body').trigger('processStop');
                         getProductGrid(response);
                         if(response.response.hasNext === true) {
                             let qId = response.response.id;
@@ -93,9 +99,9 @@ define([
                             contextId = response.response.contextId;
                         }
                     } else {
+                        $('body').trigger('processStop');
                         getProductGrid(response);
                     }
-
                 },
                 error: function (error, status) {
                     $('.error_msg').show();
@@ -296,13 +302,7 @@ define([
                                     ${productColors}
                                     ${productSizes}
                                 </div>
-                                <div class="NewEcomAi__product-box__quantity">
-                                    <input class="item-qty" type="number" value="1" name="quantity" min="1">
-                            </div>
-                            </div>
-                            <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
-                                </div>
-                            <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
+                                <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
                                 <div class="NewEcomAi__product-box__add-cart">
                                     <button class="NewEcomAi__popup-content__button NewEcomAi__add-to-cart">Add to cart</button>
                                 </div>
@@ -340,6 +340,18 @@ define([
                         }
                     },]
                 });
+                var dummyProductCount = productGridLayout - 1;
+
+                for (let i = 0; i < dummyProductCount; i++) {
+                    const dummySlide = $(`
+                    <div class="NewEcomAi-Placeholder item-info">
+                        <div class="inner is-loading">
+                        </div>
+                    </div>
+                `);
+                    $('#productList').slick('slickAdd', dummySlide);
+                }
+
             }
         }
 
@@ -408,10 +420,25 @@ define([
             });
         }
 
+        function removeDummySlide() {
+            var classToRemove = 'NewEcomAi-Placeholder';
 
+            // Find all slides with the specific class and get their indices
+            var slidesToRemove = $('#productList').find(`.${classToRemove}`).map(function() {
+                return $(this).index();
+            }).get();
+
+            // Sort indices in descending order
+            slidesToRemove.sort((a, b) => b - a);
+
+            // Remove slides starting from the highest index
+            slidesToRemove.forEach(function(slideIndex) {
+                $('#productList').slick('slickRemove', slideIndex);
+            });
+        }
 
         function appendProductsToExistingSlide(responseData) {
-            if(responseData !== "undefined" ){
+            if (responseData !== "undefined") {
                 let totalProductCount = responseData.length;
                 checkShowProduct++;
                 $(".NewEcomAi__product-box__product-count").text(checkShowProduct);
@@ -424,6 +451,7 @@ define([
                 newProductItems.each(function() {
                     const newSlide = $('<div></div>').addClass('products-item slick-slide').append($(this).html());
                     $('#productList').slick('slickAdd', newSlide);
+                    removeDummySlide();
                 });
             }
         }
@@ -490,40 +518,34 @@ define([
                     if (sizes === null || sizes === undefined) {
                         productSizes = "";
                     }
-                    const productText = $(`<div class="products-item">
-                     <input type="hidden" class="product-id" value="${product.id}">
-                     <input type="hidden" class="question-id" value="${product.questionId}">
-                    <div class="NewEcomAi__product-box__info product-info">
-                        <div class="NewEcomAi__product-box__details product-details">
-                            <div class="NewEcomAi__product-box__image product-image">
-                                <a href="${product.productUrl}" target="_blank">
-                                    <img loading="lazy" src="${product.imageUrl}" alt="${product.title}">
-                                </a>
-                            </div>
-                            <div class="NewEcomAi__product-box__title product-title">
-                                <div class="title">
-                                    <a href="${product.productUrl}" target="_blank">${product.title}</a>
+                    const productText = $(`
+                        <div class="products-item">
+                            <input type="hidden" class="product-id" value="${product.id}">
+                            <input type="hidden" class="question-id" value="${product.questionId}">
+                            <div class="NewEcomAi__product-box__info product-info">
+                                <div class="NewEcomAi__product-box__details product-details">
+                                    <div class="NewEcomAi__product-box__image product-image">
+                                        <a href="${product.productUrl}" target="_blank">
+                                            <img loading="lazy" src="${product.imageUrl}" alt="${product.title}">
+                                        </a>
+                                    </div>
+                                    <div class="NewEcomAi__product-box__title product-title">
+                                        <div class="title">
+                                            <a href="${product.productUrl}" target="_blank">${product.title}</a>
+                                        </div>
+                                    </div>
+                                    <div class="NewEcomAi__product-box__price product-price">$${product.price}</div>
+                                    <div class="NewEcomAi__product-box__variant product-variant-container">
+                                        ${productColors}
+                                        ${productSizes}
+                                    </div>
+                                    <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
+                                    <div class="NewEcomAi__product-box__add-cart">
+                                        <button class="NewEcomAi__popup-content__button NewEcomAi__add-to-cart">Add to cart</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="NewEcomAi__product-box__price product-price">$${product.price}</div>
-                            <div class="NewEcomAi__product-box__variant product-variant-container">
-                                ${productColors}
-                                ${productSizes}
-                            </div>
-                            <div class="NewEcomAi__product-box__quantity">
-                                <input class="item-qty" type="number" value="1" name="quantity" min="1">
-                    </div>
-                    </div>
-                    <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
-                            </div>
-                    <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
-                            <div class="NewEcomAi__product-box__add-cart">
-                                <button class="NewEcomAi__popup-content__button NewEcomAi__add-to-cart">Add to cart</button>
-                            </div>
-                        </div>
-                   </div>
-                </div>
-            </div>`);
+                        </div>`);
                     productItems.append(productText);
                 });
 
@@ -605,14 +627,15 @@ define([
             }
         }
 
-        // Function to unslick the slider seetings when we clicked on back/cross button
         $('#NewEcomAi-reset-button, #newComclose').click(function () {
-            $('.js-newcom-popup-content').removeClass('newcom-full-width');
-            $('.js-newcom-popup-content-inner').removeClass('newcom-post-search');
-            $(".js-newcom-heading").html("AI‑Powered Shopping Assistant – What are you looking for?");
-            $('#stackedQuestion, #stackedList, #productList').slick('unslick');
-            $('#stackedQuestion, #stackedList').empty();
-            $('#NewEcomAi-discover-question').val('');
+            if ($('#stackedQuestion').hasClass('slick-initialized') || $('#stackedList').hasClass('slick-initialized') || $('#productList').hasClass('slick-initialized')) {
+                $('.js-newcom-popup-content').removeClass('newcom-full-width');
+                $('.js-newcom-popup-content-inner').removeClass('newcom-post-search');
+                $(".js-newcom-heading").html("AI‑Powered Shopping Assistant – What are you looking for?");
+                $('#stackedQuestion, #stackedList, #productList').slick('unslick');
+                $('#stackedQuestion, #stackedList').empty();
+                $('#NewEcomAi-discover-question').val('');
+            }
         });
 
         $('#NewEcomAi-remove-preview').click(function() {

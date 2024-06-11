@@ -6,11 +6,12 @@ use Magento\Framework\View\Element\Template;
 use Magento\Widget\Block\BlockInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
 use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
+use NewEcomAI\ShopSmart\Model\Log\Log;
 
 /**
  * Get All NewEcomAI Widget Parameters Class
  */
-class PopupPosition extends Template implements BlockInterface
+class DiscoverPopup extends Template implements BlockInterface
 {
     const DISCOVER_SEARCH_CONTROLLER_PATH = "newecomai/recommendations/discoversearch";
     const PRODUCT_ADD_TO_CART_PATH = "newecomai/recommendations/addtocart";
@@ -37,17 +38,16 @@ class PopupPosition extends Template implements BlockInterface
     const SHOP_SMART_DISCOVER_DESTINATION_STATUS = 'shop_smart_discover_destination_status';
     const SHOP_SMART_DISCOVER_CUSTOM_CSS = 'shop_smart_discover_custom_css';
 
+    /**
+     * @var Data
+     */
+    protected Data $helperData;
 
     /**
      * Popup Template
      * @var string
      */
     protected $_template = "NewEcomAI_ShopSmart::widget/discover_template.phtml";
-
-    /**
-     * @var Data
-     */
-    protected Data $helperData;
 
     /**
      * @param Template\Context $context
@@ -61,8 +61,10 @@ class PopupPosition extends Template implements BlockInterface
     ) {
         $this->helperData = $helperData;
         $this->data = $data;
+        $this->setTemplate('NewEcomAI_ShopSmart::widget/discover_template.phtml');
         parent::__construct($context);
     }
+
 
     /**
      * @return Data

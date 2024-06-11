@@ -171,6 +171,12 @@ class DiscoverSearch extends Action
         }
     }
 
+    /**
+     * @param $product
+     * @param $questionId
+     * @return array
+     * @throws NoSuchEntityException
+     */
     public function loadProductDetails($product,$questionId)
     {
         return [

@@ -12,9 +12,6 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use NewEcomAI\ShopSmart\Model\Log\Log;
-use Magento\Catalog\Model\Product\Type;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResource;
 
 
