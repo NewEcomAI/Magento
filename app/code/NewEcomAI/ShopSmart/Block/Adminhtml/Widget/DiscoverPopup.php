@@ -65,17 +65,6 @@ class DiscoverPopup extends Template implements BlockInterface
         parent::__construct($context);
     }
 
-    /**
-     * Disable cache for this widget.
-     *
-     * @return int|null
-     */
-    public function getCacheLifetime()
-    {
-        Log::Info("Cache disable");
-        return null;
-    }
-
 
     /**
      * @return Data

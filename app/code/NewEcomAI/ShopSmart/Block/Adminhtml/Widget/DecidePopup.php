@@ -87,18 +87,6 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
-     * @return void|null
-     */
-    public function getCacheLifetime()
-    {
-        $isDecideWidgetEnable = $this->getDatahelper()->isDecideWidgetEnabled();
-        if ($isDecideWidgetEnable)
-        {
-            return null;
-        }
-    }
-
-    /**
      * @return array|mixed|null
      */
     public function getProductGrid()
