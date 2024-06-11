@@ -14,6 +14,10 @@
             <general_catalog_sync>
                 <catalog_sync_date>12:30:15</catalog_sync_date>
             </general_catalog_sync>
+            <general_newecomai_widgets>
+                <shop_smart_discover_widget>0</shop_smart_discover_widget>
+                <shop_smart_decide_widget>0</shop_smart_decide_widget>
+            </general_newecomai_widgets>
         </shop_smart>
     </default>
 </config>

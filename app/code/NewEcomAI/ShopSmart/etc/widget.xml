@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
-    <widget class="NewEcomAI\ShopSmart\Block\Adminhtml\Widget\PopupPosition" id="newecomai_discover_popup">
+    <widget class="NewEcomAI\ShopSmart\Block\Adminhtml\Widget\DiscoverPopup" id="newecomai_discover_popup">
         <label>NewEcomAI Discover</label>
         <description>Shop Smart</description>
         <parameters>

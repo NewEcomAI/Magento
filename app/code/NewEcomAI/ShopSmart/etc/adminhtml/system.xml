@@ -5,19 +5,18 @@
         <tab id="new_ecom_ai" translate="label" sortOrder="0">
             <label>NewEcomAi</label>
         </tab>
-        <section id="shop_smart" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
-                 showInStore="1">
+        <section id="shop_smart" translate="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
             <label>Shop Smart</label>
             <tab>new_ecom_ai</tab>
             <resource>NewEcomAI_ShopSmart::config_newecomai</resource>
 
-            <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
-                   showInStore="1">
-                <label>NewEcomAi API Configurationn</label>
+            <group id="general" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>NewEcomAi API Configuration</label>
                 <include path="NewEcomAI_ShopSmart::system/account_configuration.xml"/>
                 <include path="NewEcomAI_ShopSmart::system/catalog_sync.xml"/>
                 <include path="NewEcomAI_ShopSmart::system/product_attribute_mapping.xml"/>
+                <include path="NewEcomAI_ShopSmart::system/newecomai_widgets.xml"/>
             </group>
         </section>
     </system>

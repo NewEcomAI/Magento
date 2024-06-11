@@ -2,9 +2,12 @@
 
 namespace NewEcomAI\ShopSmart\Helper;
 
+use \Exception;
+use Psr\Log\LoggerInterface;
+use NewEcomAI\ShopSmart\Model\Log\Log;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source\Mode;
-use Psr\Log\LoggerInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
@@ -18,19 +21,24 @@ use Magento\Framework\HTTP\Client\Curl;
 class Data extends AbstractHelper
 {
     /**
-     * @var string NewCommAI authentication token
+     * Check Api limit Endpoint
      */
-    protected $token;
-
-    const MODULE_ENABLE = 'shop_smart/general_account_configuration/enable';
-
+    const CHECK_API_LIMIT_ENDPOINT = 'api/checkLimit';
+    const MODULE_ENABLE = 'shop_smart/general/account_configuration/enable';
+    const SHOP_SMART_DISCOVER_WIDGET = 'shop_smart/general_newecomai_widgets/shop_smart_discover_widget';
+    const SHOP_SMART_DECIDE_WIDGET = 'shop_smart/general_newecomai_widgets/shop_smart_decide_widget';
     const SHOP_SMART_MODE = 'shop_smart/general_account_configuration/shop_smart_mode';
     const SHOP_SMART_USER_ID = 'shop_smart/general_account_configuration/user_id';
     const SHOP_SMART_USER_NAME = 'shop_smart/general_account_configuration/user_name';
     const SHOP_SMART_USER_PASSWORD = 'shop_smart/general_account_configuration/user_password';
     const SHOP_SMART_AB_TESTING = 'shop_smart/general_account_configuration/ab_testing';
-    const SHOP_SMART_CATALOG_SYNC_BUTTON = 'shop_smart/general_catalog_sync/catalog_sync_button';
-    const SHOP_SMART_MAPPING = 'shop_smart/general_product_attribute_mapping/mapping';
+    const SHOP_SMART_CATALOG_SYNC_BUTTON = 'shop_smart/general/catalog_sync/catalog_sync_button';
+    const SHOP_SMART_MAPPING = 'shop_smart/general/product_attribute_mapping/mapping';
+
+    /**
+     * @var string NewCommAI authentication token
+     */
+    protected string $token;
 
     /**
      * @var LoggerInterface
@@ -68,6 +76,11 @@ class Data extends AbstractHelper
     private Curl $httpClient;
 
     /**
+     * @var JsonFactory
+     */
+    private JsonFactory $resultJsonFactory;
+
+    /**
      * @param LoggerInterface $logger
      * @param StoreManagerInterface $storeManager
      * @param ProductRepository $productRepository
@@ -75,17 +88,19 @@ class Data extends AbstractHelper
      * @param CategoryFactory $categoryFactory
      * @param Context $context
      * @param Generic $session
+     * @param JsonFactory $resultJsonFactory
      * @param Curl $httpClient
      */
     public function __construct(
-        LoggerInterface             $logger,
-        StoreManagerInterface       $storeManager,
-        ProductRepository           $productRepository,
-        ScopeConfigInterface        $scopeConfigInterface,
-        CategoryFactory             $categoryFactory,
-        Context                     $context,
-        Generic                    $session,
-        Curl                       $httpClient
+        LoggerInterface       $logger,
+        StoreManagerInterface $storeManager,
+        ProductRepository     $productRepository,
+        ScopeConfigInterface  $scopeConfigInterface,
+        Context               $context,
+        Generic               $session,
+        CategoryFactory       $categoryFactory,
+        JsonFactory           $resultJsonFactory,
+        Curl                  $httpClient
     ) {
         $this->logger = $logger;
         $this->storeManager = $storeManager;
@@ -94,88 +109,141 @@ class Data extends AbstractHelper
         $this->session = $session;
         $this->httpClient = $httpClient;
         $this->categoryFactory = $categoryFactory;
+        $this->resultJsonFactory = $resultJsonFactory;
         parent::__construct($context);
     }
 
 
     /**
-     * @param null $storeId
-     * @return mixed
+     * @return false|mixed
      */
-    public function isEnable($storeId = null)
+    public function isEnable()
     {
-        return $this->scopeConfig->getValue(self::MODULE_ENABLE, ScopeInterface::SCOPE_STORE, $storeId);
+        try {
+            return $this->scopeConfig->getValue(self::MODULE_ENABLE, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
     }
 
     /**
-     * @param $storeId
-     * @return mixed
+     * @return mixed|void
      */
-    public function getShopSmartMode($storeId = null)
+    public function isDiscoverWidgetEnabled()
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_MODE,  ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId());
+        try {
+            return $this->scopeConfig->getValue(self::SHOP_SMART_DISCOVER_WIDGET, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
     }
 
     /**
-     * @param $storeId
-     * @return mixed
+     * @return false|mixed
      */
-    public function getShopSmartUserId($storeId = null)
+    public function isDecideWidgetEnabled()
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_USER_ID,  ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId());
+        try {
+            return $this->scopeConfig->getValue(self::SHOP_SMART_DECIDE_WIDGET, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
     }
 
     /**
-     * @param $storeId
-     * @return mixed
+     * @return false|mixed
      */
-    public function getShopSmartUserName($storeId = null)
+    public function getShopSmartMode()
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_USER_NAME,  ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId());
+        try {
+            return $this->scopeConfig->getValue(self::SHOP_SMART_MODE, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
     }
 
     /**
-     * @param $storeId
-     * @return mixed
+     * @return false|mixed
      */
-    public function getShopSmartUserPassword($storeId = null)
+    public function getShopSmartUserId()
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_USER_PASSWORD,  ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId());
+        try {
+            return $this->scopeConfig->getValue(self::SHOP_SMART_USER_ID, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
     }
 
     /**
-     * @param $storeId
-     * @return mixed
+     * @return false|mixed
      */
-    public function getShopSmartABTesting($storeId = null)
+    public function getShopSmartUserName()
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_AB_TESTING, $storeId);
+        try {
+            return $this->scopeConfig->getValue(self::SHOP_SMART_USER_NAME, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+
+        }
     }
 
 
     /**
-     * @param $storeId
-     * @return mixed
+     * @return false|mixed
      */
-    public function getShopSmartProductAttribute($storeId = null)
+    public function getShopSmartUserPassword()
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_MAPPING, ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId());
+        try {
+            return $this->scopeConfig->getValue(self::SHOP_SMART_USER_PASSWORD, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
     }
 
     /**
-     * @param $storeId
-     * @return mixed
-     * @throws NoSuchEntityException
+     * @return false|mixed
      */
-    public function getShopSmartCatalogSyncButton($storeId = null)
+    public function getShopSmartABTesting()
     {
-        return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_BUTTON,  ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId());
+        try {
+            return $this->scopeConfig->getValue(self::SHOP_SMART_AB_TESTING, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * @return false|mixed
+     */
+    public function getShopSmartProductAttribute()
+    {
+        try {
+            return $this->scopeConfig->getValue(self::SHOP_SMART_MAPPING, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * @return false|mixed
+     */
+    public function getShopSmartCatalogSyncButton()
+    {
+        try {
+            return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_BUTTON, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -185,6 +253,7 @@ class Data extends AbstractHelper
     {
         return $this->getConfigValue('shop_smart/general/popup');
     }
+
     /**
      * Get Admin Configuration Values
      *
@@ -199,7 +268,7 @@ class Data extends AbstractHelper
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->critical('Config value: ' . $e->getMessage());
         }
     }
@@ -216,20 +285,23 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $sku
-     * @return mixed
-     * @throws NoSuchEntityException
+     * @param $id
+     * @return array|mixed|null
      */
     public function getProductImageUrl($id)
     {
-        $url = [];
-        $product= $this->productRepository->getById($id);
-        $productimages = $product->getMediaGalleryImages();
-        foreach($productimages as $productimage)
-        {
-            $url = $productimage['url'];
+        try {
+            $url = [];
+            $product = $this->productRepository->getById($id);
+            $productimages = $product->getMediaGalleryImages();
+            foreach ($productimages as $productimage) {
+                $url = $productimage['url'];
+            }
+            return $url;
+        } catch (Exception $e) {
+            Log::Error($e->getMessage());
+            return null;
         }
-        return $url;
     }
 
     /**
@@ -248,10 +320,10 @@ class Data extends AbstractHelper
 
 
     /**
-     * @param $sku
+     * @param $data
      * @return array|void
      */
-    public function  getProductAttributeMapping($data)
+    public function getProductAttributeMapping($data)
     {
         try {
             $productAttributes = $this->getShopSmartProductAttribute();
@@ -274,7 +346,7 @@ class Data extends AbstractHelper
             $keyValueString = rtrim($keyValueString, " | ");
             $products = [];
             $products['Id'] = $data['sku'];
-            $products['Description'] = $data['description'].$keyValueString;
+            $products['Description'] = $data['description'] . $keyValueString;
             $products['Name'] = $valuesString;
             $categoryIds = $this->productRepository->getById($data['entity_id'])->getCategoryIds();
             $categoryName = $this->getCategoryName($categoryIds) ?? "";
@@ -284,7 +356,7 @@ class Data extends AbstractHelper
             $products['Category'] = $categoryName ?? "";
             $products['Vendor'] = "magento";
             return $products;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->critical($e->getMessage());
         }
     }
@@ -343,29 +415,29 @@ class Data extends AbstractHelper
             'userId' => $this->getShopSmartUserId()
         ]);
 
-        $response = $this->sendApiRequest($endpoint,"POST", false, $postData);
+        $response = $this->sendApiRequest($endpoint, "POST", false, $postData);
         return json_decode($response, true);
 
     }
 
     /**
-     * @param $url
+     * @param $endpoint
      * @param $method
-     * @param array $data
-     * @param $headerName
-     * @param $headerValue
+     * @param $requireOAuth
+     * @param $data
      * @return string
      */
-    public function sendApiRequest($endpoint, $method, $requireOAuth , $data = [] ) {
+    public function sendApiRequest($endpoint, $method, $requireOAuth, $data = [])
+    {
         $mode = $this->getShopSmartMode();
         $url = '';
-        if($mode === '0') {
-            $url = Mode::STAGING_URL.$endpoint;
-        } elseif($mode === '1') {
-            $url = Mode::PRODUCTION_URL.$endpoint;
+        if ($mode === Mode::STAGING_URL) {
+            $url = Mode::STAGING_URL . $endpoint;
+        } elseif ($mode === Mode::PRODUCTION_URL) {
+            $url = Mode::PRODUCTION_URL . $endpoint;
         }
         $this->httpClient->addHeader("Content-Type", "application/json");
-        if($requireOAuth) {
+        if ($requireOAuth) {
             $outhToken = $this->getToken();
             $headers = [
                 'Authorization' => 'Bearer ' . $outhToken,
@@ -374,9 +446,9 @@ class Data extends AbstractHelper
             ];
             $this->httpClient->setHeaders($headers);
         }
-        if(strtoupper($method) === 'POST') {
+        if (strtoupper($method) === 'POST') {
             $this->httpClient->post($url, $data);
-        } elseif(strtoupper($method) === 'GET') {
+        } elseif (strtoupper($method) === 'GET') {
             $this->httpClient->get($url);
         }
         return $this->httpClient->getBody();

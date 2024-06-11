@@ -2,6 +2,7 @@
 
 namespace NewEcomAI\ShopSmart\Block\Adminhtml\Widget;
 
+use Magento\Catalog\Model\Product;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Widget\Block\BlockInterface;
@@ -11,14 +12,8 @@ use Magento\Catalog\Block\Product\View as ProductViewBlock;
 
 class DecidePopup extends Template implements BlockInterface
 {
-    /**
-     * Decide Template
-     * @var string
-     */
-    protected $_template = "NewEcomAI_ShopSmart::widget/decide_template.phtml";
     const DECIDE_SEARCH_CONTROLLER_PATH = "newecomai/productinformation/decidesearch";
     const DECIDE_RATE_QUESTION_CONTROLLER_PATH = "newecomai/productinformation/ratequestion";
-
     const POPUP_CLASS = 'newcomPopup';
     const LEFT_SIDE_CLASS = 'newcomLeftSide';
     const RIGHT_SIDE_CLASS = 'newcomRightSide';
@@ -42,10 +37,19 @@ class DecidePopup extends Template implements BlockInterface
     const SHOP_SMART_DECIDE_CUSTOM_CSS = 'shop_smart_decide_custom_css';
 
     /**
+     * Decide Template
+     * @var string
+     */
+    protected $_template = "NewEcomAI_ShopSmart::widget/decide_template.phtml";
+
+    /**
      * @var Data
      */
     protected Data $helperData;
 
+    /**
+     * @var ProductViewBlock
+     */
     protected ProductViewBlock $productViewBlock;
 
     /**
@@ -66,6 +70,9 @@ class DecidePopup extends Template implements BlockInterface
         parent::__construct($context);
     }
 
+    /**
+     * @return Product
+     */
     public function getCurrentProduct()
     {
         return $this->productViewBlock->getProduct();
@@ -77,6 +84,18 @@ class DecidePopup extends Template implements BlockInterface
     public function getDatahelper()
     {
         return $this->helperData;
+    }
+
+    /**
+     * @return void|null
+     */
+    public function getCacheLifetime()
+    {
+        $isDecideWidgetEnable = $this->getDatahelper()->isDecideWidgetEnabled();
+        if ($isDecideWidgetEnable)
+        {
+            return null;
+        }
     }
 
     /**
