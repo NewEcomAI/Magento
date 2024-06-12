@@ -30,7 +30,8 @@ define([
 
         $("#NewEcomAi-search").click(function (e) {
             const searchInput = $('#NewEcomAi-discover-question').val().trim();
-            if (searchInput === '') {
+            const imagePreview = $('.NewEcomAi__popup-content__file').val();
+            if (searchInput === '' && imagePreview.length === 0) {
                 alert('Please enter something in the search input!');
             } else {
                 e.preventDefault();
@@ -125,6 +126,7 @@ define([
                         response.products.forEach(function(product) {
                             allProducts.push(product);
                         });
+                        $('body').trigger('processStop');
                         getProductGrid(response);
                         if(response.response.hasNext === true) {
                             let qId = response.response.id;
@@ -134,6 +136,7 @@ define([
                             contextId = response.response.contextId;
                         }
                     } else {
+                        $('body').trigger('processStop');
                         getProductGrid(response);
                     }
                 },
@@ -635,12 +638,17 @@ define([
                 $('#stackedQuestion, #stackedList, #productList').slick('unslick');
                 $('#stackedQuestion, #stackedList').empty();
                 $('#NewEcomAi-discover-question').val('');
+            } else {
+                $('.js-image-preview').addClass('NewEcomAi-hide-image');
+                $('.NewEcomAi__popup-content__image-preview__img').attr("src", "");
+                $('.NewEcomAi__popup-content__file').val("");
             }
         });
 
         $('#NewEcomAi-remove-preview').click(function() {
             $('.js-image-preview').addClass('NewEcomAi-hide-image');
             $('.NewEcomAi__popup-content__image-preview__img').attr("src", "");
+            $('.NewEcomAi__popup-content__file').val("");
         });
     }
 });

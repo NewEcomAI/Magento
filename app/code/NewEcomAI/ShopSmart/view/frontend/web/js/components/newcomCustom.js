@@ -39,7 +39,6 @@ define([
                     }
 
                     $('#newComclose').on('click', function() {
-                        console.log("dis");
                         $('#newcom-popup').css('display', 'none');
                     });
 

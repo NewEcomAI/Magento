@@ -117,6 +117,7 @@ define([
                     });
                 }
                 searchResultsDiv.prepend(resultDiv);
+                $("NewEcomAi-discover-question").val("");
             }
 
             function decideSearchAPICall(searchQuestion, questionId, currentProductTitle, currentProductDescription, searchId) {

@@ -31,47 +31,54 @@ if ($dataHelper->isDecideWidgetEnabled() && $popupPosition):?>
             <div id="newcom-popup" class="popup NewEcomAi__popup">
                 <div class="popup-content NewEcomAi__popup-content js-newcom-popup-content"
                      style="background-color: <?= $sectionBackgroundColor; ?>">
-                    <span class="close NewEcomAi__close" id="newComclose">&times;</span>
-                    <div class="NewEcomAi__popup-content__inner">
-                        <h2 class="NewEcomAi__popup-content__heading">
-                            <?= $heading ? $heading : __('Ask me anything you want about this product in Natural Language.') ?></h2>
-                        <div class="NewEcomAi__popup-content__search-box">
-                            <input class="NewEcomAi__popup-content__input" rows="2" name="NewEcomAi-question"
-                                   id="NewEcomAi-question" alt=""
-                                   placeholder="<?= $placeHolder ? $placeHolder : __('Can I wear this product for a formal diner?'); ?>">
-                            <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button"
-                                    style="background-color: <?= $buttonBackgroundColor ?>"><?= $buttonText ? $buttonText : __('Tell me'); ?></button>
+                    <div class="NewEcomAi__popup-content__column image">
+                        <div class="NewEcomAi__popup-content__image-container">
+                            <img class="NewEcomAi__popup-content__image-container__img" src="<?php echo $this->getViewFileUrl('NewEcomAI_ShopSmart::images/Newecom.ai-logo_2.jpg'); ?>" alt="Popup Image" />
                         </div>
+                    </div>
+                    <div class="NewEcomAi__popup-content__column content">
+                        <span class="close NewEcomAi__close" id="newComclose">&times;</span>
+                        <div class="NewEcomAi__popup-content__inner">
+                            <h2 class="NewEcomAi__popup-content__heading">
+                                <?= $heading ? $heading : __('Ask me anything you want about this product in Natural Language.') ?></h2>
+                            <div class="NewEcomAi__popup-content__search-box">
+                                <input class="NewEcomAi__popup-content__input" rows="2" name="NewEcomAi-question"
+                                       id="NewEcomAi-question" alt=""
+                                       placeholder="<?= $placeHolder ? $placeHolder : __('Can I wear this product for a formal diner?'); ?>">
+                                <button id="NewEcomAi-search" class="NewEcomAi__popup-content__button"
+                                        style="background-color: <?= $buttonBackgroundColor ?>"><?= $buttonText ? $buttonText : __('Tell me'); ?></button>
+                            </div>
 
-                        <div class="NewEcomAi__popup-content__examples">
-                            <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                            <div class="NewEcomAi__popup-content__examples">
+                                <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
                             <span
                                 class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryOne ? $exampleQueryOne : __("What are the materials?"); ?></span>
-                            </div>
-                            <?php if ($exampleQueryTwo): ?>
-                                <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                                </div>
+                                <?php if ($exampleQueryTwo): ?>
+                                    <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
                                 <span
                                     class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryTwo; ?></span>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ($exampleQueryThree): ?>
-                                <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($exampleQueryThree): ?>
+                                    <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
                                 <span
                                     class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryThree; ?></span>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ($exampleQueryFour): ?>
-                                <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($exampleQueryFour): ?>
+                                    <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
                                 <span
                                     class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryFour; ?></span>
-                                </div>
-                            <?php endif; ?>
-                            <?php if ($exampleQueryFive): ?>
-                                <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($exampleQueryFive): ?>
+                                    <div class="NewEcomAi__popup-content__examples__query newcomClickableText">
                                 <span
                                     class="NewEcomAi__popup-content__examples__query__text"><?= $exampleQueryFive; ?></span>
-                                </div>
-                            <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                     <div id="NewEcomAi-search-result" class="NewEcomAi__popup-content__response"></div>
