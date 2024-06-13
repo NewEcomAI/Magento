@@ -32,7 +32,7 @@ define([
             const searchInput = $('#NewEcomAi-discover-question').val().trim();
             const imagePreview = $('.NewEcomAi__popup-content__file').val();
             if (searchInput === '' && imagePreview.length === 0) {
-                alert('Please enter something in the search input!');
+                alert('Write your question');
             } else {
                 e.preventDefault();
                 currentSearchQuery = "";
@@ -637,7 +637,6 @@ define([
                 $(".js-newcom-heading").html("AI‑Powered Shopping Assistant – What are you looking for?");
                 $('#stackedQuestion, #stackedList, #productList').slick('unslick');
                 $('#stackedQuestion, #stackedList').empty();
-                $('#NewEcomAi-discover-question').val('');
             } else {
                 $('.js-image-preview').addClass('NewEcomAi-hide-image');
                 $('.NewEcomAi__popup-content__image-preview__img').attr("src", "");
