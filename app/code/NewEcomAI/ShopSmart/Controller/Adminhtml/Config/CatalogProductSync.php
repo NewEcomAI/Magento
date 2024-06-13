@@ -84,7 +84,7 @@ class CatalogProductSync extends Action
                 $resultJson = $this->resultJsonFactory->create();
                 $catalogSynced = $this->getRequest()->getParam("buttonClicked");
                 if($catalogSynced == true){
-                    $this->writer->save("shop_smart/general_catalog_sync/catalog_sync_button", true);
+                    $this->writer->save("shop_smart/general_catalog_sync/catalog_sync_button", "1");
                 }
                 return $resultJson->setData(['status' => true, 'message' => "Catalog Syncing has been started in the background."]);
             } catch (\Exception $exception) {
