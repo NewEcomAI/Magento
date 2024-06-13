@@ -32,7 +32,7 @@ class Data extends AbstractHelper
     const SHOP_SMART_USER_NAME = 'shop_smart/general_account_configuration/user_name';
     const SHOP_SMART_USER_PASSWORD = 'shop_smart/general_account_configuration/user_password';
     const SHOP_SMART_AB_TESTING = 'shop_smart/general_account_configuration/ab_testing';
-    const SHOP_SMART_CATALOG_SYNC_BUTTON = 'shop_smart/general/catalog_sync/catalog_sync_button';
+    const SHOP_SMART_CATALOG_SYNC_BUTTON = 'shop_smart/general_catalog_sync/catalog_sync_button';
     const SHOP_SMART_MAPPING = 'shop_smart/general/product_attribute_mapping/mapping';
 
     /**

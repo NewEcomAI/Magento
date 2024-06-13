@@ -12,6 +12,7 @@
                     <ab_testing>0</ab_testing>
             </general_account_configuration>
             <general_catalog_sync>
+                <catalog_sync_button>0</catalog_sync_button>
                 <catalog_sync_date>12:30:15</catalog_sync_date>
             </general_catalog_sync>
             <general_newecomai_widgets>

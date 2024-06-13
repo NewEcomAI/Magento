@@ -44,7 +44,6 @@ class InitialCatalogSync
         Log::Info($isCatalogSyncTriggered);
 
         if($isCatalogSyncTriggered){
-
             $productCollection = $this->productCollection->addAttributeToSelect('*');
             $productCollection->addAttributeToFilter('status', Status::STATUS_ENABLED);
             $productCollection->addAttributeToFilter('type_id', ['in' => [Type::TYPE_SIMPLE, "configurable"]]);

@@ -62,7 +62,7 @@ use NewEcomAi\ShopSmart\Block\System\Config\Button\CatalogSyncExecution;
                     $('#catalog_sync #lastSynced').hide();
                     $.ajax({
                         url: "<?= $block->getUrl('newecomai/config/catalogproductsync'); ?>",
-                        data: {form_key: window.FORM_KEY},
+                        data: {form_key: window.FORM_KEY,buttonClicked:"1"},
                         showLoader: true,
                         type: "POST",
                         success: function (response, status) {
