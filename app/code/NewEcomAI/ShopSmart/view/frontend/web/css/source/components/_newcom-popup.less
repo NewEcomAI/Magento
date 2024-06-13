@@ -34,6 +34,18 @@
 
         &__column {
             max-width: 100%;
+
+            &.image {
+                .NewEcomAi {
+                    &__popup-content {
+                        &__image-container {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        }
+                    }
+                }
+            }
         }
 
         &.newcom-full-width {
@@ -487,6 +499,10 @@
                 &__inner {
                     margin: 20px auto 10px;
                     padding-bottom: 0;
+                }
+
+                &__input {
+                    padding-right: 9px;
                 }
             }
         }

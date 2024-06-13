@@ -192,7 +192,7 @@ define([
                     slidesToScroll: 1,
                     autoplay: false,
                     autoplaySpeed: 1000,
-                    infinite: false,
+                    infinite: true,
                     draggable: false,
                     arrows: true,
                     speed: 400,
@@ -328,7 +328,7 @@ define([
                     slidesToScroll: 1,
                     autoplay: false,
                     autoplaySpeed: 1000,
-                    infinite: false,
+                    infinite: true,
                     draggable: false,
                     arrows: true,
                     speed: 400,
@@ -449,12 +449,12 @@ define([
             if (responseData.error !== "No product found") {
                 // Create new product items from the response data
                 const newProductItems = createProductItems(responseData);
+                removeDummySlide();
 
                 // Iterate over each new product item and add it as a new slide
                 newProductItems.each(function() {
                     const newSlide = $('<div></div>').addClass('products-item slick-slide').append($(this).html());
                     $('#productList').slick('slickAdd', newSlide);
-                    removeDummySlide();
                 });
             }
         }
@@ -596,7 +596,7 @@ define([
                         slidesToScroll: 1,
                         autoplay: false,
                         autoplaySpeed: 1000,
-                        infinite: false,
+                        infinite: true,
                         draggable: false,
                         arrows: true,
                         speed: 400,
