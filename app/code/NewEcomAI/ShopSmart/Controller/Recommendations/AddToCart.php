@@ -180,7 +180,7 @@ class AddToCart extends Action
             $quote->addProduct($configurableProduct, $buyRequest);
             $quote->collectTotals()->save();
             $this->setFlag($quote->getId(),$productId, $questionId);
-
+            $quote->setData('add_to_cart_from_discover', 1);
             if (!$this->customerSession->isLoggedIn()) {
                 $this->cartRepository->save($quote);
             }
