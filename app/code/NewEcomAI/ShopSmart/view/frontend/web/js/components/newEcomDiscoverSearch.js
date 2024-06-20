@@ -18,6 +18,7 @@ define([
         var questionItems = "";
         var previousSearchTerms = [];
         var imageUploadUrl = "";
+        var totalProductCount = 0;
 
         $("#image-upload").change(function (e) {
             e.preventDefault();
@@ -41,7 +42,7 @@ define([
                 // Save the new search term to the array
                 previousSearchTerms.push(searchQuestion);
                 $('body').trigger('processStart');
-                discoverAPICall(searchQuestion,questionId);
+                // discoverAPICall(searchQuestion,questionId);
                 let checkImage = $('#image-upload').val()
                 allProducts = [];
                 if (checkImage) {
@@ -90,8 +91,11 @@ define([
                         response.products.forEach(function(product) {
                             allProducts.push(product);
                         });
+                        // Update total product count
+                        totalProductCount += response.products.length;
+
                         $('body').trigger('processStop');
-                        getProductGrid(response);
+                        getProductGrid(response,totalProductCount);
                         if(response.response.hasNext === true) {
                             let qId = response.response.id;
                             discoverAPICall(searchQuestion, qId);
@@ -101,7 +105,7 @@ define([
                         }
                     } else {
                         $('body').trigger('processStop');
-                        getProductGrid(response);
+                        getProductGrid(response,totalProductCount);
                     }
                 },
                 error: function (error, status) {
@@ -127,7 +131,8 @@ define([
                             allProducts.push(product);
                         });
                         $('body').trigger('processStop');
-                        getProductGrid(response);
+                        totalProductCount += response.products.length;
+                        getProductGrid(response,totalProductCount);
                         if(response.response.hasNext === true) {
                             let qId = response.response.id;
                             discoverImageApi(fileInput, searchImageQuestion, qId);
@@ -137,7 +142,7 @@ define([
                         }
                     } else {
                         $('body').trigger('processStop');
-                        getProductGrid(response);
+                        getProductGrid(response,totalProductCount);
                     }
                 },
                 error: function () {
@@ -146,19 +151,19 @@ define([
             });
         }
 
-        function getProductGrid(responseData) {
+        function getProductGrid(responseData,totalProductCount) {
             const searchInput = $('#NewEcomAi-discover-question').val().trim();
             let searchImageQuestion = searchInput ? searchInput : 'I need something similar';
             if (searchImageQuestion !== currentSearchQuery) {
                 // If the search query has changed, create a new slide
                 currentSearchQuery = searchImageQuestion;
-                addNewSlide(responseData);
+                addNewSlide(responseData,totalProductCount);
             } else {
-                appendProductsToExistingSlide(responseData);
+                appendProductsToExistingSlide(responseData,totalProductCount);
             }
         }
 
-        function addNewSlide(response) {
+        function addNewSlide(response,totalProductCount) {
             var searchInput = $('#NewEcomAi-discover-question').val().trim();
             if (!searchInput)
             {
@@ -178,7 +183,7 @@ define([
                 questionItems = $('<div id="productList" class="NewEcomAi__product-box__productList product-list js-newcom-product-list"></div>');
 
                 $('#stackedQuestion').slick('slickAdd', carouselSlide, true);
-                const productCount = $('<div class="NewEcomAi__product-box__product-count">').text("0");
+                const productCount = $('<div class="NewEcomAi__product-box__product-count">').text(totalProductCount);
                 carouselSlide.append(productCount);
                 const feedbackLine = $('<div class="NewEcomAi__product-box__feedback"></div>').text(response.error);
                 stackedSlide.append(feedbackLine,questionItems);
@@ -224,7 +229,7 @@ define([
                 $('#stackedQuestion').slick('slickAdd', carouselSlide, true);
                 $('#stackedQuestion').slick('slickGoTo', $('#stackedQuestion').slick('slickCurrentSlide') - 1);
 
-                const productCount = $('<div class="NewEcomAi__product-box__product-count">').text(checkShowProduct);
+                const productCount = $('<div class="NewEcomAi__product-box__product-count">').text(totalProductCount);
                 carouselSlide.append(productCount);
 
                 questionItems = $('<div id="productList" class="NewEcomAi__product-box__productList product-list js-newcom-product-list"></div>');
@@ -412,7 +417,6 @@ define([
                             customerData.invalidate(sections);
                             customerData.reload(sections, true);
                         });
-                        location.reload();
                     } else {
                         console.log('Error adding product to cart: ' + response.message);
                     }
@@ -440,13 +444,9 @@ define([
             });
         }
 
-        function appendProductsToExistingSlide(responseData) {
-            if (responseData !== "undefined") {
-                let totalProductCount = responseData.length;
-                checkShowProduct++;
-                $(".NewEcomAi__product-box__product-count").text(checkShowProduct);
-            }
+        function appendProductsToExistingSlide(responseData,totalProductCount) {
             if (responseData.error !== "No product found") {
+                $(".NewEcomAi__product-box__product-count").text(totalProductCount);
                 // Create new product items from the response data
                 const newProductItems = createProductItems(responseData);
                 removeDummySlide();
