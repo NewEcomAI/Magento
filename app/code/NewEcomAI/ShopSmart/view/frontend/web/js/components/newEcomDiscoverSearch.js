@@ -19,6 +19,7 @@ define([
         var previousSearchTerms = [];
         var imageUploadUrl = "";
         var totalProductCount = 0;
+        var currentSearchId = null;
 
         $("#image-upload").change(function (e) {
             e.preventDefault();
@@ -37,13 +38,15 @@ define([
             } else {
                 e.preventDefault();
                 currentSearchQuery = "";
+                totalProductCount = 0;
                 let searchImageQuestion = "";
                 let searchQuestion = $('#NewEcomAi-discover-question').val();
                 // Save the new search term to the array
                 previousSearchTerms.push(searchQuestion);
                 $('body').trigger('processStart');
                 // discoverAPICall(searchQuestion,questionId);
-                let checkImage = $('#image-upload').val()
+                let checkImage = $('#image-upload').val();
+                currentSearchId = new Date().getTime();
                 allProducts = [];
                 if (checkImage) {
                     searchImageQuestion = searchQuestion ? searchQuestion : 'I need something similar';
@@ -183,7 +186,9 @@ define([
                 questionItems = $('<div id="productList" class="NewEcomAi__product-box__productList product-list js-newcom-product-list"></div>');
 
                 $('#stackedQuestion').slick('slickAdd', carouselSlide, true);
-                const productCount = $('<div class="NewEcomAi__product-box__product-count">').text(totalProductCount);
+                const productCount = $(`<div id="search-result-${currentSearchId}">`).addClass("NewEcomAi__product-box__product-count").text(totalProductCount);
+
+                // const productCount = $('<div class="NewEcomAi__product-box__product-count ">').text(totalProductCount);
                 carouselSlide.append(productCount);
                 const feedbackLine = $('<div class="NewEcomAi__product-box__feedback"></div>').text(response.error);
                 stackedSlide.append(feedbackLine,questionItems);
@@ -229,7 +234,7 @@ define([
                 $('#stackedQuestion').slick('slickAdd', carouselSlide, true);
                 $('#stackedQuestion').slick('slickGoTo', $('#stackedQuestion').slick('slickCurrentSlide') - 1);
 
-                const productCount = $('<div class="NewEcomAi__product-box__product-count">').text(totalProductCount);
+                const productCount = $(`<div id="search-result-${currentSearchId}">`).addClass("NewEcomAi__product-box__product-count").text(totalProductCount);
                 carouselSlide.append(productCount);
 
                 questionItems = $('<div id="productList" class="NewEcomAi__product-box__productList product-list js-newcom-product-list"></div>');
@@ -446,7 +451,7 @@ define([
 
         function appendProductsToExistingSlide(responseData,totalProductCount) {
             if (responseData.error !== "No product found") {
-                $(".NewEcomAi__product-box__product-count").text(totalProductCount);
+                $(`#search-result-${currentSearchId}`).text(totalProductCount);
                 // Create new product items from the response data
                 const newProductItems = createProductItems(responseData);
                 removeDummySlide();
