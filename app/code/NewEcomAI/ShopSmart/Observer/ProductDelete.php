@@ -33,7 +33,7 @@ class ProductDelete implements ObserverInterface
         $product = $observer->getEvent()->getProduct();
         $isDeleted = $product->isDeleted();
         if($isDeleted) {
-            $productData[] = $product->getId();
+            $productData[] = $product->getSku();
             $data = [
                 "userId" => $this->helper->getShopSmartUserId(),
                 "catalog" => $productData
