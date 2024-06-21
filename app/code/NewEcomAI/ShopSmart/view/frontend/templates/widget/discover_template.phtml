@@ -21,6 +21,7 @@ $destinationStatus = $block->getDestinaltionStatus();
 $customCss = $block->getCustomCss();
 $dataHelper = $block->getDataHelper();
 $showProductGrid = $block->getProductGrid();
+$popupImage = $block->getImageUrl();
 if ($dataHelper->isDiscoverWidgetEnabled() && $popupPosition):?>
     <?= $customCss ? $customCss : ""; ?>
     <div class="discover_widget" style="display: none">
@@ -28,11 +29,13 @@ if ($dataHelper->isDiscoverWidgetEnabled() && $popupPosition):?>
             <div id="newcom-popup" class="popup NewEcomAi__popup">
                 <div class="popup-content NewEcomAi__popup-content js-newcom-popup-content"
                      style="background-color: <?= $sectionBackgroundColor; ?>">
+                    <?php if ($popupImage):?>
                     <div class="NewEcomAi__popup-content__column image">
                         <div class="NewEcomAi__popup-content__image-container">
-                            <img class="NewEcomAi__popup-content__image-container__img" src="<?php echo $this->getViewFileUrl('NewEcomAI_ShopSmart::images/Newecom.ai-logo_2.jpg'); ?>" alt="Popup Image" />
+                            <img class="NewEcomAi__popup-content__image-container__img" src="<?= $popupImage;?>" alt="Popup Image" />
                         </div>
                     </div>
+                    <?php endif;?>
                     <div class="NewEcomAi__popup-content__column content">
                         <span class="close NewEcomAi__close" id="newComclose">&times;</span>
                         <div class="NewEcomAi__popup-content__inner js-newcom-popup-content-inner">

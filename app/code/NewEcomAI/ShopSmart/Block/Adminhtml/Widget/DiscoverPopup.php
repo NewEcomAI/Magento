@@ -3,9 +3,11 @@
 namespace NewEcomAI\ShopSmart\Block\Adminhtml\Widget;
 
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 use Magento\Widget\Block\BlockInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
 use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
+use Magento\Store\Model\StoreManagerInterface;
 use NewEcomAI\ShopSmart\Model\Log\Log;
 
 /**
@@ -27,6 +29,7 @@ class DiscoverPopup extends Template implements BlockInterface
     const SHOP_SMART_DISCOVER_BUTTON_TEXT = 'shop_smart_discover_button_text';
     const SHOP_SMART_DISCOVER_BUTTON_BACKGROUND_COLOR = 'shop_smart_discover_button_background_color';
     const SHOP_SMART_DISCOVER_SECTION_BACKGROUND_COLOR = 'shop_smart_discover_section_button_color';
+    const SHOP_SMART_DISCOVER_IMAGE = 'shop_smart_discover_image';
     const SHOP_SMART_DISCOVER_IMAGE_RECOGNITION = 'shop_smart_discover_image_recognition';
     const SHOP_SMART_DISCOVER_LAYOUT_TEXT = 'shop_smart_discover_layout_text';
     const SHOP_SMART_DISCOVER_LAYOUT_DESCRIPTION_TEXT = 'shop_smart_discover_layout_description_text';
@@ -44,27 +47,33 @@ class DiscoverPopup extends Template implements BlockInterface
     protected Data $helperData;
 
     /**
+     * @var StoreManagerInterface
+     */
+    protected StoreManagerInterface $storeManager;
+
+    /**
      * Popup Template
      * @var string
      */
     protected $_template = "NewEcomAI_ShopSmart::widget/discover_template.phtml";
 
     /**
-     * @param Template\Context $context
+     * @param Context $context
      * @param Data $helperData
+     * @param StoreManagerInterface $storeManager
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
         Data             $helperData,
+        StoreManagerInterface $storeManager,
         array            $data = []
     ) {
         $this->helperData = $helperData;
         $this->data = $data;
-        $this->setTemplate('NewEcomAI_ShopSmart::widget/discover_template.phtml');
+        $this->storeManager = $storeManager;
         parent::__construct($context);
     }
-
 
     /**
      * @return Data
@@ -72,6 +81,14 @@ class DiscoverPopup extends Template implements BlockInterface
     public function getDatahelper()
     {
         return $this->helperData;
+    }
+
+    /**
+     * @return array|mixed|null
+     */
+    public function getImageUrl()
+    {
+        return $this->getData(self::SHOP_SMART_DISCOVER_IMAGE);
     }
 
     /**
