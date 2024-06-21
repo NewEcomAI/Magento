@@ -29,14 +29,6 @@ define([
                 }
             });
 
-            function showLoader() {
-                $("#loader").show();
-            }
-
-            function hideLoader() {
-                $("#loader").hide();
-            }
-
             function searchResult(response, searchId) {
                 let searchText = $("#NewEcomAi-question").val().trim();
                 let searchResponseData = response;
@@ -60,9 +52,6 @@ define([
                 searchResultsArray.push(searchResult);
                 // Append the response to the correct search result div
                 $(`#search-result-${searchId} .newcom-query-response`).last().html(additionalInfo);
-                if (response.hasNext === false) {
-                    $("#NewEcomAi-question").val("");
-                }
             }
 
             function showDecideResponse(response, searchId) {
@@ -117,7 +106,6 @@ define([
                     });
                 }
                 searchResultsDiv.prepend(resultDiv);
-                $("NewEcomAi-discover-question").val("");
             }
 
             function decideSearchAPICall(searchQuestion, questionId, currentProductTitle, currentProductDescription, searchId) {
@@ -135,6 +123,7 @@ define([
                         }
                         if (response.response.hasNext == false) {
                             currentSearchQuery = "";
+                            $("#NewEcomAi-question").val("");
                         }
                     },
                     error: function(error, status) {
