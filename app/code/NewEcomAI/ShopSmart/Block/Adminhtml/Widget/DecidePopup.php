@@ -25,6 +25,7 @@ class DecidePopup extends Template implements BlockInterface
     const SHOP_SMART_DECIDE_BUTTON_TEXT = 'shop_smart_decide_button_text';
     const SHOP_SMART_DECIDE_BUTTON_BACKGROUND_COLOR = 'shop_smart_decide_button_background_color';
     const SHOP_SMART_DECIDE_SECTION_BACKGROUND_COLOR = 'shop_smart_decide_section_button_color';
+    const SHOP_SMART_DECIDE_IMAGE = 'shop_smart_decide_image';
     const SHOP_SMART_DECIDE_IMAGE_RECOGNITION = 'shop_smart_decide_image_recognition';
     const SHOP_SMART_DECIDE_LAYOUT_TEXT = 'shop_smart_decide_layout_text';
     const SHOP_SMART_DECIDE_LAYOUT_DESCRIPTION_TEXT = 'shop_smart_decide_layout_description_text';
@@ -168,6 +169,14 @@ class DecidePopup extends Template implements BlockInterface
     public function getSectionBackgroundColor()
     {
         return $this->getData(self::SHOP_SMART_DECIDE_SECTION_BACKGROUND_COLOR);
+    }
+
+    /**
+     * @return array|mixed|null
+     */
+    public function getImageUrl()
+    {
+        return $this->getData(self::SHOP_SMART_DECIDE_IMAGE);
     }
 
     /**
