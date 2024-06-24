@@ -43,8 +43,12 @@ class CatalogProductSync extends Action
     /**
      * @var ProductCollection
      */
-    private ProductCollection $productCollection;
-    private ConfigurableResource $configurableResource;
+    protected ProductCollection $productCollection;
+
+    /**
+     * @var ConfigurableResource
+     */
+    protected ConfigurableResource $configurableResource;
 
     /**
      * @param Http $http
@@ -53,6 +57,7 @@ class CatalogProductSync extends Action
      * @param Data $helperData
      * @param ProductCollection $productCollection
      * @param WriterInterface $writer
+     * @param ConfigurableResource $configurableResource
      */
     public function __construct(
         Http                    $http,
@@ -85,8 +90,9 @@ class CatalogProductSync extends Action
                 $catalogSynced = $this->getRequest()->getParam("buttonClicked");
                 if($catalogSynced == true){
                     $this->writer->save("shop_smart/general_catalog_sync/catalog_sync_button", "1");
+                    $catalogSyncDate = $this->helperData->getShopSmartCatalogSyncDate();
                 }
-                return $resultJson->setData(['status' => true, 'message' => "Catalog Syncing has been started in the background."]);
+                return $resultJson->setData(['status' => true, 'message' => "Catalog Syncing has been started in the background.", 'lastSyncDate' => $catalogSyncDate]);
             } catch (\Exception $exception) {
                 /** @var JsonFactory $resultJson */
                 return $resultJson->setData(['status' => false, 'message' => $exception->getMessage()]);

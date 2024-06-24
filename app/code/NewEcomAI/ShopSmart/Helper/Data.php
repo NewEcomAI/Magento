@@ -17,6 +17,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Framework\Session\Generic;
 use Magento\Framework\HTTP\Client\Curl;
+use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 
 class Data extends AbstractHelper
 {
@@ -80,6 +81,8 @@ class Data extends AbstractHelper
      */
     private JsonFactory $resultJsonFactory;
 
+    protected $configDataCollectionFactory;
+
     /**
      * @param LoggerInterface $logger
      * @param StoreManagerInterface $storeManager
@@ -100,6 +103,7 @@ class Data extends AbstractHelper
         Generic               $session,
         CategoryFactory       $categoryFactory,
         JsonFactory           $resultJsonFactory,
+        CollectionFactory     $configDataCollectionFactory,
         Curl                  $httpClient
     ) {
         $this->logger = $logger;
@@ -110,6 +114,7 @@ class Data extends AbstractHelper
         $this->httpClient = $httpClient;
         $this->categoryFactory = $categoryFactory;
         $this->resultJsonFactory = $resultJsonFactory;
+        $this->configDataCollectionFactory = $configDataCollectionFactory;
         parent::__construct($context);
     }
 
@@ -240,6 +245,29 @@ class Data extends AbstractHelper
     {
         try {
             return $this->scopeConfig->getValue(self::SHOP_SMART_CATALOG_SYNC_BUTTON, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getShopSmartCatalogSyncDate()
+    {
+        try {
+            $collection = $this->configDataCollectionFactory->create()
+                ->addFieldToFilter('path', self::SHOP_SMART_CATALOG_SYNC_BUTTON)
+                ->setPageSize(1);
+
+            $configData = $collection->getFirstItem();
+            if ($configData->getValue()) {
+                Log::info($configData->getUpdatedAt());
+                return $configData->getUpdatedAt();
+            } else {
+                return "0000-00-00 00:00:00";
+            }
         } catch (NoSuchEntityException $e) {
             Log::Error($e->getMessage());
             return false;
