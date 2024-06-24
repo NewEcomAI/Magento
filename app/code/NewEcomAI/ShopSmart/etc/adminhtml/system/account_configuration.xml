@@ -29,7 +29,7 @@
             <depends>
                 <field id="shop_smart/general/account_configuration/enable">1</field>
             </depends>
-            <comment><![CDATA[<strong>For Example</strong>: example1234. Check usage <a href="#">here</a>]]></comment>
+            <comment><![CDATA[<strong>For Example</strong>: example1234.]]></comment>
             <config_path>shop_smart/general_account_configuration/user_id</config_path>
         </field>
 
@@ -39,7 +39,7 @@
             <depends>
                 <field id="shop_smart/general/account_configuration/enable">1</field>
             </depends>
-            <comment><![CDATA[<strong>For Example</strong>: NewEcomAi. Check usage <a href="#">here</a>]]></comment>
+            <comment><![CDATA[<strong>For Example</strong>: NewEcomAi.]]></comment>
             <config_path>shop_smart/general_account_configuration/user_name</config_path>
         </field>
 

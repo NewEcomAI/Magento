@@ -104,6 +104,10 @@ define([
                             let qId = response.response.id;
                             discoverAPICall(searchQuestion, qId);
                         }
+
+                        if(response.response.hasNext === false) {
+                            $('#NewEcomAi-discover-question').val('');
+                        }
                         if(response.response.contextId !== undefined) {
                             contextId = response.response.contextId;
                         }
@@ -140,6 +144,9 @@ define([
                         if(response.response.hasNext === true) {
                             let qId = response.response.id;
                             discoverImageApi(imageUploadUrl, searchImageQuestion, qId);
+                        }
+                        if(response.response.hasNext === false) {
+                            $('#NewEcomAi-discover-question').val('')
                         }
                         if(response.response.contextId !== undefined) {
                             contextId = response.response.contextId;

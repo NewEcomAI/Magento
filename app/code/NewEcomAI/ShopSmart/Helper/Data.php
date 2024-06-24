@@ -263,7 +263,6 @@ class Data extends AbstractHelper
 
             $configData = $collection->getFirstItem();
             if ($configData->getValue()) {
-                Log::info($configData->getUpdatedAt());
                 return $configData->getUpdatedAt();
             } else {
                 return "0000-00-00 00:00:00";
