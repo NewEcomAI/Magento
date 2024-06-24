@@ -39,10 +39,7 @@ class InitialCatalogSync
      */
     public function execute()
     {
-        Log::Info("InCron");
         $isCatalogSyncTriggered = $this->helperData->getShopSmartCatalogSyncButton();
-        Log::Info($isCatalogSyncTriggered);
-
         if($isCatalogSyncTriggered){
             $productCollection = $this->productCollection->addAttributeToSelect('*');
             $productCollection->addAttributeToFilter('status', Status::STATUS_ENABLED);
@@ -81,7 +78,7 @@ class InitialCatalogSync
                 $response = $this->helperData->sendApiRequest($endpoint, "POST", true, json_encode($data));
                 $responseData = json_decode($response, true);
                 if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
-                    Log::Info($responseData['response']['status']);
+                    Log::Info("Initial catalog sync cron run : " . $responseData['response']['status']);
                 }
                 $productData = [];
                 $productCollection->clear();
