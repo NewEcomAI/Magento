@@ -13,7 +13,7 @@ define([
                 type: "POST",
                 success: function(response) {
 
-                    // if (response.response.response.status) {
+                    if (response.response.response.status) {
                     $('.discover_widget').show();
                     $('.decide_widget').show();
                     //  JS for clickable text
@@ -67,7 +67,7 @@ define([
 
                     // Pass in the target node, as well as the observer options
                     observer.observe(document.querySelector('.js-newcom-popup-content'), config);
-                    // }
+                    }
                 },
                 error: function(error, status) {
                     $('.error_msg').show();

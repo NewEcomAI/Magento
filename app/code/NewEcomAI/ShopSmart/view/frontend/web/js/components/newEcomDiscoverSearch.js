@@ -49,6 +49,7 @@ define([
                 currentSearchId = new Date().getTime();
                 allProducts = [];
                 if (checkImage) {
+                    $('.js-image-preview').hide();
                     searchImageQuestion = searchQuestion ? searchQuestion : 'I need something similar';
                     discoverImageApi(imageUploadUrl, searchImageQuestion, questionId);
                 }
@@ -138,7 +139,7 @@ define([
                         getProductGrid(response,totalProductCount);
                         if(response.response.hasNext === true) {
                             let qId = response.response.id;
-                            discoverImageApi(fileInput, searchImageQuestion, qId);
+                            discoverImageApi(imageUploadUrl, searchImageQuestion, qId);
                         }
                         if(response.response.contextId !== undefined) {
                             contextId = response.response.contextId;
