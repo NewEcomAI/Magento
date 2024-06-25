@@ -9,6 +9,7 @@ define([
     return function discoverNewEcom(config) {
         var discoverUrl = config.discoverUrl;
         var productAddToCartUrl = config.productAddToCartUrl;
+        var productRemoveFromCartUrl = config.productRemoveFromCartUrl;
         var discoverImageUpload = config.discoverImageUpload;
         var productGridLayout = config.productGridLayout;
         var questionId = "";
@@ -305,6 +306,7 @@ define([
                     const productText = $(`
                     <div class="products-item">
                         <input type="hidden" class="product-id" value="${product.id}">
+                        <input type="hidden" class="product-sku" value="${product.sku}">
                         <input type="hidden" class="question-id" value="${product.questionId}">
                         <div class="NewEcomAi__product-box__info product-info">
                             <div class="NewEcomAi__product-box__details product-details">
@@ -402,28 +404,29 @@ define([
         }
 
         $(document).on('click', '.NewEcomAi__popup-content__button.NewEcomAi__add-to-cart', function() {
-            console.log("on add to acrt click");
             let productElement = $(this).closest('.products-item');
             let productId = productElement.find('.product-id').val();
+            let productSku = productElement.find('.product-sku').val();
             let questionId = productElement.find('.question-id').val();
             let { colorOption, sizeOption } = getSelectedOptions(productElement);
-            addToCartViaAjax(productId, colorOption, sizeOption,questionId);
+            addToCartViaAjax(productSku, colorOption, sizeOption, questionId, $(this));
         });
 
-        function addToCartViaAjax(productId, colorOption, sizeOption,questionId) {
+        function addToCartViaAjax(productSku, colorOption, sizeOption,questionId,buttonElement) {
             $.ajax({
-                url: productAddToCartUrl, // URL to your custom controller
+                url: productAddToCartUrl, // URL to the controller
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({
-                    productId: productId,
+                    productId: productSku,
                     questionId: questionId,
                     colorOption: colorOption,
                     sizeOption: sizeOption
                 }),
                 success: function(response) {
                     if (response.success) {
-                        // alert('Product added to cart successfully.');
+                        // Change button text to "Remove from cart"
+                        buttonElement.removeClass('NewEcomAi__add-to-cart').addClass('NewEcomAi__remove-from-cart').text('Remove from cart');
                         // Refresh the page to update the mini cart
                         require(['Magento_Customer/js/customer-data'], function (customerData) {
                             var sections = ['cart'];
@@ -432,6 +435,40 @@ define([
                         });
                     } else {
                         console.log('Error adding product to cart: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('An error occurred: ' + error);
+                }
+            });
+        }
+
+        // Handle the remove from cart functionality
+        $(document).on('click', '.NewEcomAi__popup-content__button.NewEcomAi__remove-from-cart', function() {
+            let productElement = $(this).closest('.products-item');
+            let productId = productElement.find('.product-id').val();
+            removeFromCartViaAjax(productId, $(this));
+        });
+
+        function removeFromCartViaAjax(productId, buttonElement) {
+            $.ajax({
+                url: productRemoveFromCartUrl, // URL to your custom remove controller
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ productId: productId }),
+                success: function(response) {
+                    if (response.success) {
+                        // Change button text to "Add to cart"
+                        buttonElement.removeClass('NewEcomAi__remove-from-cart').addClass('NewEcomAi__add-to-cart').text('Add to cart');
+
+                        // Refresh the mini cart
+                        require(['Magento_Customer/js/customer-data'], function (customerData) {
+                            var sections = ['cart'];
+                            customerData.invalidate(sections);
+                            customerData.reload(sections, true);
+                        });
+                    } else {
+                        console.log('Error removing product from cart: ' + response.message);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -537,6 +574,7 @@ define([
                     const productText = $(`
                         <div class="products-item">
                             <input type="hidden" class="product-id" value="${product.id}">
+                            <input type="hidden" class="product-sku" value="${product.sku}">
                             <input type="hidden" class="question-id" value="${product.questionId}">
                             <div class="NewEcomAi__product-box__info product-info">
                                 <div class="NewEcomAi__product-box__details product-details">
