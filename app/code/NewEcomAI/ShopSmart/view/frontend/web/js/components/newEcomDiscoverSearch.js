@@ -54,7 +54,7 @@ define([
                     searchImageQuestion = searchQuestion ? searchQuestion : 'I need something similar';
                     discoverImageApi(imageUploadUrl, searchImageQuestion, questionId);
                 }
-                if (searchQuestion) {
+                if (searchQuestion && searchQuestion !== "I need something similar") {
                     discoverAPICall(searchQuestion, questionId);
                 }
             }
@@ -72,6 +72,7 @@ define([
                 contentType: false,
                 processData: false,
                 success: function (response) {
+                    $('#NewEcomAi-discover-question').val("I need something similar");
                     imageUploadUrl = response.response;
                     $('.NewEcomAi__popup-content__image-preview__img').attr("src", imageUploadUrl);
                     $('.js-image-preview').removeClass('NewEcomAi-hide-image');
