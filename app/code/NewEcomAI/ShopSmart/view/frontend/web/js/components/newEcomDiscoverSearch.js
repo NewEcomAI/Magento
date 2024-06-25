@@ -104,10 +104,6 @@ define([
                             let qId = response.response.id;
                             discoverAPICall(searchQuestion, qId);
                         }
-
-                        if(response.response.hasNext === false) {
-                            $('#NewEcomAi-discover-question').val('');
-                        }
                         if(response.response.contextId !== undefined) {
                             contextId = response.response.contextId;
                         }
@@ -143,10 +139,7 @@ define([
                         getProductGrid(response,totalProductCount);
                         if(response.response.hasNext === true) {
                             let qId = response.response.id;
-                            discoverImageApi(imageUploadUrl, searchImageQuestion, qId);
-                        }
-                        if(response.response.hasNext === false) {
-                            $('#NewEcomAi-discover-question').val();
+                            discoverImageApi(uploadImageUrl, searchImageQuestion, qId);
                         }
                         if(response.response.contextId !== undefined) {
                             contextId = response.response.contextId;
@@ -654,6 +647,7 @@ define([
                 $('.js-image-preview').addClass('NewEcomAi-hide-image');
                 $('.NewEcomAi__popup-content__image-preview__img').attr("src", "");
                 $('.NewEcomAi__popup-content__file').val("");
+                $('#NewEcomAi-discover-question').val("");
             }
         });
 
@@ -661,6 +655,7 @@ define([
             $('.js-image-preview').addClass('NewEcomAi-hide-image');
             $('.NewEcomAi__popup-content__image-preview__img').attr("src", "");
             $('.NewEcomAi__popup-content__file').val("");
+            $('#NewEcomAi-discover-question').val("");
         });
     }
 });
