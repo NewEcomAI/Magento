@@ -75,7 +75,6 @@ class AddToCart implements ObserverInterface
         }
         if(isset($decideAddToCart) && $decideAddToCart == true){
             $quote = $this->checkoutSession->getQuote();
-            Log::Info($quote->getItems());
             $quote->setData('add_to_cart_from_decide', 1);
             $quote->save();
             $this->cartRepository->save($quote);
