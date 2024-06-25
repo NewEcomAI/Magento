@@ -90,6 +90,7 @@ class CatalogProductSync extends Action
                 $catalogSynced = $this->getRequest()->getParam("buttonClicked");
                 if($catalogSynced == true){
                     $this->writer->save("shop_smart/general_catalog_sync/catalog_sync_button", "1");
+                    $this->helperData->setShopSmartCatalogSyncDate();
                     $catalogSyncDate = $this->helperData->getShopSmartCatalogSyncDate();
                 }
                 return $resultJson->setData(['status' => true, 'message' => "Catalog Syncing has been started in the background.", 'lastSyncDate' => $catalogSyncDate]);

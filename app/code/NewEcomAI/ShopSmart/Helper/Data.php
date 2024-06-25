@@ -35,6 +35,7 @@ class Data extends AbstractHelper
     const SHOP_SMART_AB_TESTING = 'shop_smart/general_account_configuration/ab_testing';
     const SHOP_SMART_CATALOG_SYNC_BUTTON = 'shop_smart/general_catalog_sync/catalog_sync_button';
     const SHOP_SMART_MAPPING = 'shop_smart/general/product_attribute_mapping/mapping';
+    const LOCALE_TIME_ZONE = 'general/locale/timezone';
 
     /**
      * @var string NewCommAI authentication token
@@ -263,13 +264,36 @@ class Data extends AbstractHelper
 
             $configData = $collection->getFirstItem();
             if ($configData->getValue()) {
-                return $configData->getUpdatedAt();
+                $timestamp = strtotime($configData->getUpdatedAt());
+                date_default_timezone_set($this->scopeConfig->getValue(self::LOCALE_TIME_ZONE, ScopeInterface::SCOPE_STORE));
+                return date("Y-m-d H:i:s", $timestamp);
             } else {
                 return "0000-00-00 00:00:00";
             }
         } catch (NoSuchEntityException $e) {
             Log::Error($e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function setShopSmartCatalogSyncDate()
+    {
+        try {
+            $collection = $this->configDataCollectionFactory->create()
+                ->addFieldToFilter('path', self::SHOP_SMART_CATALOG_SYNC_BUTTON)
+                ->setPageSize(1);
+
+            $configData = $collection->getFirstItem();
+            if ($configData->getValue()) {
+                date_default_timezone_set($this->scopeConfig->getValue(self::LOCALE_TIME_ZONE, ScopeInterface::SCOPE_STORE));
+                 $configData->setUpdatedAt(date("Y-m-d H:i:s"));
+                $configData->save();
+            }
+        } catch (NoSuchEntityException $e) {
+            Log::Error($e->getMessage());
         }
     }
 
