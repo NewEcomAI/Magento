@@ -176,7 +176,7 @@ class DiscoverUploadImage extends Action
                     foreach ($responseData['bestProducts'] as $product) {
                         $productSku = $product['product']['productId'];
                         $product = $this->productRepository->get($productSku);
-                        $productDetails = $this->loadProductDetails($product);
+                        $productDetails = $this->loadProductDetails($product,$responseData['id']);
                         $productInfoArray[] = $productDetails;
                     }
                     return $resultJson->setData(['response' => $responseData, 'products' => $productInfoArray]);
@@ -197,16 +197,19 @@ class DiscoverUploadImage extends Action
      * @return array
      * @throws NoSuchEntityException
      */
-    public function loadProductDetails($product)
+    public function loadProductDetails($product,$questionId)
     {
         return [
+            'id' => $product->getId(),
+            'sku' => $product->getSku(),
             'title' => $product->getName(),
             'color' => $this->getColorNameByProductId($product),
             'size' => $this->getSizeByProductId($product),
             'price' => number_format((float)$product->getData('price'), 2),
             'imageUrl' => $this->getProductMediaUrl($product),
             'productUrl' => $this->productUrl->getUrl($product),
-            'quantity' => $this->getProductQtyById($product->getId())
+            'quantity' => $this->getProductQtyById($product->getId()),
+            'questionId' => $questionId
         ];
     }
 
