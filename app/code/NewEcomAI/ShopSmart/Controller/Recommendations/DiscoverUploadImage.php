@@ -28,12 +28,12 @@ class DiscoverUploadImage extends Action
     /**
      * Save image path
      */
-    const UPLOAD_IMAGE_PATH = "NewEcomAI/ShopSmart/images/";
+    protected const UPLOAD_IMAGE_PATH = "NewEcomAI/ShopSmart/images/";
 
     /**
      * Discovery Api Endpoint
      */
-    const DISCOVER_API_ENDPOINT = "api/recommendations/discovery";
+    protected const DISCOVER_API_ENDPOINT = "api/recommendations/discovery";
     /**
      * @var JsonFactory
      */
@@ -129,10 +129,11 @@ class DiscoverUploadImage extends Action
         $this->configurable = $configurable;
         $this->productUrl = $productUrl;
         parent::__construct($context);
-
     }
 
     /**
+     * Upload image for discover Controller
+     *
      * @return ResponseInterface|Json|ResultInterface
      */
     public function execute()
@@ -152,16 +153,14 @@ class DiscoverUploadImage extends Action
                         "listQuestions" => [$searchKey],
                         "imageUrl" => $fileUrl
                     ];
-                }
-                elseif (!empty($contextId)) {
+                } elseif (!empty($contextId)) {
                     $data = [
                         "userId" => $userId,
                         "contextId" => $contextId,
                         "listQuestions" => [$searchKey],
                         "imageUrl" => $fileUrl
                     ];
-                }
-                else {
+                } else {
                     $data = [
                         "userId" => $userId,
                         "questionId" => $questionId,
@@ -176,12 +175,13 @@ class DiscoverUploadImage extends Action
                     foreach ($responseData['bestProducts'] as $product) {
                         $productSku = $product['product']['productId'];
                         $product = $this->productRepository->get($productSku);
-                        $productDetails = $this->loadProductDetails($product,$responseData['id']);
+                        $productDetails = $this->loadProductDetails($product, $responseData['id']);
                         $productInfoArray[] = $productDetails;
                     }
                     return $resultJson->setData(['response' => $responseData, 'products' => $productInfoArray]);
                 } else {
-                    return $resultJson->setData(["error" => "No product found", 'feedback' => $responseData['feedback']]);
+                    return $resultJson->setData(["error" => "No product found",
+                        'feedback' => $responseData['feedback']]);
                 }
             }
         } catch (\Exception $e) {
@@ -193,11 +193,14 @@ class DiscoverUploadImage extends Action
     }
 
     /**
+     * Load product details
+     *
      * @param $product
+     * @param $questionId
      * @return array
      * @throws NoSuchEntityException
      */
-    public function loadProductDetails($product,$questionId)
+    public function loadProductDetails($product, $questionId)
     {
         return [
             'id' => $product->getId(),
@@ -214,6 +217,8 @@ class DiscoverUploadImage extends Action
     }
 
     /**
+     * Get color name by product id
+     *
      * @param $product
      * @return array|mixed|string
      * @throws NoSuchEntityException
@@ -256,8 +261,9 @@ class DiscoverUploadImage extends Action
         }
     }
 
-
     /**
+     * Get size by product id
+     *
      * @param $product
      * @return array
      * @throws NoSuchEntityException
@@ -297,6 +303,8 @@ class DiscoverUploadImage extends Action
     }
 
     /**
+     * Get product media url
+     *
      * @param $product
      * @return string
      * @throws NoSuchEntityException
@@ -308,6 +316,8 @@ class DiscoverUploadImage extends Action
     }
 
     /**
+     * Get product qty by product id
+     *
      * @param $productId
      * @return float
      * @throws NoSuchEntityException

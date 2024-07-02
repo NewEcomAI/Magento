@@ -27,13 +27,14 @@ class OrderPlace implements ObserverInterface
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         Data $helper
-    )
-    {
+    ) {
         $this->orderRepository = $orderRepository;
         $this->helper = $helper;
     }
 
     /**
+     * Order place observer
+     *
      * @param Observer $observer
      * @return void
      */
@@ -42,7 +43,8 @@ class OrderPlace implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $userId = $this->helper->getShopSmartUserId();
         $orderId = $order->getIncrementId();
-        $orderDate = date('Y-m-d');;
+        $orderDate = date('Y-m-d');
+        ;
         $orderItems = [];
         $orderTax = $order->getTaxAmount();
         $orderTotal = $order->getGrandTotal();
@@ -67,7 +69,7 @@ class OrderPlace implements ObserverInterface
         ];
         $decideProduct = $order->getData('discover_search_product');
         $discoverProduct = $order->getData('decide_search_product');
-        if($decideProduct == 1 || $discoverProduct == 1) {
+        if ($decideProduct == 1 || $discoverProduct == 1) {
             try {
                 $endpoint = "api/order/add";
                 $response = $this->helper->sendApiRequest($endpoint, "POST", true, json_encode($data));

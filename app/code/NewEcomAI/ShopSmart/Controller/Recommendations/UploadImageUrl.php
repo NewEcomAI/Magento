@@ -22,7 +22,7 @@ class UploadImageUrl extends Action
     /**
      * Save image path
      */
-    const UPLOAD_IMAGE_PATH = "NewEcomAI/ShopSmart/images/";
+    protected const UPLOAD_IMAGE_PATH = "NewEcomAI/ShopSmart/images/";
     /**
      * @var JsonFactory
      */
@@ -81,6 +81,8 @@ class UploadImageUrl extends Action
     }
 
     /**
+     * Upload image url controller
+     *
      * @return ResponseInterface|Json|ResultInterface|string|void
      */
     public function execute()
@@ -111,5 +113,4 @@ class UploadImageUrl extends Action
             Log::Error($e->getMessage());
         }
     }
-
 }

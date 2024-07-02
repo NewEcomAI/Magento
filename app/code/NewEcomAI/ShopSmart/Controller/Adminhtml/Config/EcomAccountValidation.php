@@ -50,6 +50,8 @@ class EcomAccountValidation extends Action
     }
 
     /**
+     * Validate Account credentials
+     *
      * @return ResponseInterface|Json|ResultInterface|void
      */
     public function execute()
@@ -62,7 +64,7 @@ class EcomAccountValidation extends Action
                 'password' => $this->helperData->getShopSmartUserPassword(),
                 'userId' => $this->helperData->getShopSmartUserId()
             ]);
-            $response = $this->helperData->sendApiRequest($endpoint,"POST",false, $postData,);
+            $response = $this->helperData->sendApiRequest($endpoint, "POST", false, $postData,);
             $responseData = json_decode($response, true);
             if ($responseData && isset($responseData['token'])) {
                 return $resultJson->setData(['status' => true, 'message' => "Account Validated Successfully"]);

@@ -12,6 +12,8 @@ use Magento\Widget\Block\BlockInterface;
 class ButtonColor extends Template implements BlockInterface
 {
     /**
+     * Prepare color picker field
+     *
      * @param AbstractElement $element
      * @return AbstractElement
      */
@@ -42,4 +44,3 @@ class ButtonColor extends Template implements BlockInterface
         return $element;
     }
 }
-

@@ -17,7 +17,7 @@ class CheckLimit extends Action
     /**
      * Decide Rate Question API Endpoint
      */
-    const CHECK_LIMIT_API_ENDPOINT = "api/checkLimit";
+    protected const CHECK_LIMIT_API_ENDPOINT = "api/checkLimit";
 
     /**
      * @var Http
@@ -45,7 +45,6 @@ class CheckLimit extends Action
         Http        $http,
         JsonFactory $resultJsonFactory,
         Data        $dataHelper,
-
     ) {
         $this->http = $http;
         $this->resultJsonFactory = $resultJsonFactory;
@@ -54,6 +53,8 @@ class CheckLimit extends Action
     }
 
     /**
+     * Check Limit of widgets
+     *
      * @return Response|Json|ResultInterface|void
      */
     public function execute()

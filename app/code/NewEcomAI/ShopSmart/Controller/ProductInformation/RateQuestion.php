@@ -2,7 +2,6 @@
 
 namespace NewEcomAI\ShopSmart\Controller\ProductInformation;
 
-
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Request\Http;
@@ -18,7 +17,7 @@ class RateQuestion extends Action
     /**
      * Decide Rate Question API Endpoint
      */
-    const DECIDE_RATE_QUESTION_API_ENDPOINT = "api/questions/decide/rate";
+    protected const DECIDE_RATE_QUESTION_API_ENDPOINT = "api/questions/decide/rate";
 
     /**
      * @var Http
@@ -45,8 +44,7 @@ class RateQuestion extends Action
         Context     $context,
         Http        $http,
         JsonFactory $resultJsonFactory,
-        Data        $dataHelper,
-
+        Data        $dataHelper
     ) {
         $this->http = $http;
         $this->resultJsonFactory = $resultJsonFactory;
@@ -55,6 +53,8 @@ class RateQuestion extends Action
     }
 
     /**
+     * Rate question controller
+     *
      * @return Response|Json|ResultInterface|void
      */
     public function execute()
