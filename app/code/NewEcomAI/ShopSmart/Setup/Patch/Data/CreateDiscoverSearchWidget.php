@@ -10,6 +10,7 @@ use Magento\Cms\Model\PageFactory;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\App\State;
 use Magento\Framework\View\DesignInterface;
+use NewEcomAI\ShopSmart\Block\Adminhtml\Widget\DiscoverPopup;
 
 class CreateDiscoverSearchWidget implements DataPatchInterface
 {
@@ -36,13 +37,19 @@ class CreateDiscoverSearchWidget implements DataPatchInterface
     /**
      * @var State
      */
-    private $appState;
+    protected State $appState;
 
-    protected $design;
+    /**
+     * @var DesignInterface
+     */
+    protected DesignInterface $design;
 
     /**
      * @param InstanceFactory $widgetInstanceFactory
      * @param WidgetInstanceResource $widgetInstanceResource
+     * @param PageFactory $pageFactory
+     * @param State $appState
+     * @param DesignInterface $design
      * @param Json $json
      */
     public function __construct(
@@ -62,6 +69,8 @@ class CreateDiscoverSearchWidget implements DataPatchInterface
     }
 
     /**
+     * Apply data patch for decide widget
+     *
      * @return void
      * @throws \Exception
      */
@@ -77,11 +86,11 @@ class CreateDiscoverSearchWidget implements DataPatchInterface
         if ($page->getId()) {
             $widgetInstance = $this->widgetInstanceFactory->create();
             $widgetInstance->setData([
-                'instance_type' => 'NewEcomAI\ShopSmart\Block\Adminhtml\Widget\DiscoverPopup',
+                'instance_type' => DiscoverPopup::class,
                 'theme_id' => $themeId,
                 'title' => 'ShopSmart Discover Search Widget',
                 'store_ids' => [0,1],
-                'widget_parameters' => '{"shop_smart_decide_popup_position":"new_ecom_popup","shop_smart_decide_layout_product_grid":"1","shop_smart_decide_heading":"","shop_smart_decide_message_placeholder":"","shop_smart_decide_button_text":"","shop_smart_decide_button_background_color":"#3B0C79","shop_smart_decide_section_button_color":"#FFFFFF","shop_smart_discover_image":"","shop_smart_decide_image_recognition":"1","shop_smart_decide_layout_text":"","shop_smart_decide_layout_description_text":"","shop_smart_decide_example_query_one":"","shop_smart_decide_example_query_two":"","shop_smart_decide_example_query_three":"","shop_smart_decide_example_query_four":"","shop_smart_decide_example_query_five":"","shop_smart_decide_destination_status":"1","shop_smart_decide_custom_css":""}',
+                'widget_parameters' => '{"shop_smart_discover_popup_position":"new_ecom_popup","shop_smart_discover_layout_product_grid":"4","shop_smart_discover_heading":"","shop_smart_discover_message_placeholder":"","shop_smart_discover_button_text":"","shop_smart_discover_button_background_color":"#3B0C79","shop_smart_discover_section_button_color":"#FFFFFF","shop_smart_discover_image":"","shop_smart_discover_image_recognition":"1","shop_smart_discover_layout_text":"","shop_smart_discover_layout_description_text":"","shop_smart_discover_example_query_one":"","shop_smart_discover_example_query_two":"","shop_smart_discover_example_query_three":"","shop_smart_discover_example_query_four":"","shop_smart_discover_example_query_five":"","shop_smart_discover_destination_status":"1","shop_smart_discover_custom_css":""}',
                 'page_groups' => [
                     [
                         'page_group' => 'pages',
@@ -114,5 +123,4 @@ class CreateDiscoverSearchWidget implements DataPatchInterface
     {
         return [];
     }
-
 }

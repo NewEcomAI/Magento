@@ -14,7 +14,6 @@ use NewEcomAI\ShopSmart\Helper\Data;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResource;
 
-
 /**
  * Product Attribute Sync
  */
@@ -88,12 +87,14 @@ class CatalogProductSync extends Action
             try {
                 $resultJson = $this->resultJsonFactory->create();
                 $catalogSynced = $this->getRequest()->getParam("buttonClicked");
-                if($catalogSynced == true){
+                if ($catalogSynced == true) {
                     $this->writer->save("shop_smart/general_catalog_sync/catalog_sync_button", "1");
                     $this->helperData->setShopSmartCatalogSyncDate();
                     $catalogSyncDate = $this->helperData->getShopSmartCatalogSyncDate();
                 }
-                return $resultJson->setData(['status' => true, 'message' => "Catalog Syncing has been started in the background.", 'lastSyncDate' => $catalogSyncDate]);
+                return $resultJson->setData(['status' => true,
+                    'message' => "Catalog Syncing has been started in the background.",
+                    'lastSyncDate' => $catalogSyncDate]);
             } catch (\Exception $exception) {
                 /** @var JsonFactory $resultJson */
                 return $resultJson->setData(['status' => false, 'message' => $exception->getMessage()]);

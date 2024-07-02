@@ -13,7 +13,7 @@ class CatalogSyncExecution extends Field
      * @var DataHelper
      */
     private DataHelper $dataHelper;
-    const BUTTON_TEMPLATE = 'NewEcomAI_ShopSmart::system/config/button/catalog_sync_execution.phtml';
+    protected const BUTTON_TEMPLATE = 'NewEcomAI_ShopSmart::system/config/button/catalog_sync_execution.phtml';
 
     /**
      * @param Context $context
@@ -30,11 +30,13 @@ class CatalogSyncExecution extends Field
     }
 
     /**
+     * Get the data helper class
+     *
      * @return DataHelper
      */
     public function getHelper()
     {
-       return $this->dataHelper;
+        return $this->dataHelper;
     }
 
     /**
@@ -63,7 +65,6 @@ class CatalogSyncExecution extends Field
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
-
 
     /**
      * Get the button and scripts contents

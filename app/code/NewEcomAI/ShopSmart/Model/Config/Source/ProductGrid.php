@@ -9,12 +9,12 @@ use Magento\Framework\Data\OptionSourceInterface;
  */
 class ProductGrid implements OptionSourceInterface
 {
-    const ONE_PRODUCTS_ROW = '1';
-    const TWO_PRODUCTS_ROW = '2';
-    const THREE_PRODUCTS_ROW = '3';
-    const FOUR_PRODUCTS_ROW = '4';
-    const FIVE_PRODUCTS_ROW = '5';
-    const SIX_PRODUCTS_ROW = '6';
+    protected const ONE_PRODUCTS_ROW = '1';
+    protected const TWO_PRODUCTS_ROW = '2';
+    protected const THREE_PRODUCTS_ROW = '3';
+    protected const FOUR_PRODUCTS_ROW = '4';
+    protected const FIVE_PRODUCTS_ROW = '5';
+    protected const SIX_PRODUCTS_ROW = '6';
 
     /**
      * @var array
@@ -29,9 +29,11 @@ class ProductGrid implements OptionSourceInterface
     ];
 
     /**
+     * Returns the array
+     *
      * @return string[]
      */
-    public static function getOptionArray(): array
+    public function getOptionArray(): array
     {
         return self::$layoutProductGrid;
     }

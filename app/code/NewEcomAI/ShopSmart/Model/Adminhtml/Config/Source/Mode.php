@@ -10,8 +10,8 @@ use Magento\Framework\Data\OptionSourceInterface;
 class Mode implements OptionSourceInterface
 {
 
-    const STAGING_URL = 'https://newecomenginestaging.azurewebsites.net/';
-    const PRODUCTION_URL = 'production';
+    public const STAGING_URL = 'https://newecomenginestaging.azurewebsites.net/';
+    public const PRODUCTION_URL = 'production';
 
     /**
      * @var array
@@ -22,9 +22,11 @@ class Mode implements OptionSourceInterface
     ];
 
     /**
+     * Returns the array for available modes
+     *
      * @return string[]
      */
-    public static function getOptionArray(): array
+    public function getOptionArray(): array
     {
         return self::$checkModeURL;
     }

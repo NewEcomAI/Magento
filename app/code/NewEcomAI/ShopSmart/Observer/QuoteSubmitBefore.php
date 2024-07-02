@@ -4,8 +4,15 @@ namespace NewEcomAI\ShopSmart\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
+
 class QuoteSubmitBefore implements ObserverInterface
 {
+    /**
+     * Observer for product difference b/w add to cart from discover or decide
+     *
+     * @param Observer $observer
+     * @return void
+     */
     public function execute(Observer $observer)
     {
         $quote = $observer->getEvent()->getQuote();

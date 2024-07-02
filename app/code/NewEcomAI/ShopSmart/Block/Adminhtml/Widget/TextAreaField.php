@@ -51,6 +51,4 @@ class TextAreaField extends Template
         $element->setValue(null);
         return $element;
     }
-
-
 }

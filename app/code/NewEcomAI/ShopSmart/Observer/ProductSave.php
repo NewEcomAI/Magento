@@ -19,12 +19,13 @@ class ProductSave implements ObserverInterface
      */
     public function __construct(
         Data $helper,
-    ){
+    ) {
         $this->helper = $helper;
     }
 
     /**
-     *  Apply moon product save operation
+     *  Apply product save operation
+     *
      * @param Observer $observer
      * @return void
      */
@@ -33,16 +34,17 @@ class ProductSave implements ObserverInterface
         $product = $observer->getEvent()->getProduct();
         $isNewProduct = $product->isObjectNew();
         $isProductUpdated = $product->hasDataChanges();
-        if($isNewProduct || $isProductUpdated) {
+        if ($isNewProduct || $isProductUpdated) {
             $productData[] = $this->helper->getProductAttributeMapping($product->getData());
             $data = [
                 "userId" => $this->helper->getShopSmartUserId(),
                 "catalog" => $productData
             ];
             $endpoint = "api/catalog/update";
-            $response = $this->helper->sendApiRequest($endpoint,"POST", true, json_encode($data));
+            $response = $this->helper->sendApiRequest($endpoint, "POST", true, json_encode($data));
             $responseData = json_decode($response, true);
-            if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
+            if ($responseData && isset($responseData['response']['status'])
+                && $responseData['response']['status'] == 'success') {
                 Log::Info($responseData['response']['status']);
             }
         }

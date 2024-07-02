@@ -1,6 +1,5 @@
-
-@import "../core/_variables.less";
-@import "../_typography.less";
+@import '../core/_variables.less';
+@import '../_typography.less';
 
 .NewEcomAi {
     &__popup {
@@ -57,9 +56,9 @@
                     &__column {
                         flex: 1;
 
-                       &.image {
-                           display: none;
-                       }
+                        &.image {
+                            display: none;
+                        }
                     }
                 }
             }
@@ -120,6 +119,7 @@
 
             &.newcom-post-search {
                 max-width: 95%;
+
                 .NewEcomAi {
                     &__popup-content {
                         &__upload {
@@ -371,42 +371,42 @@
         }
     }
 
-  &.newcomLeftSide {
-    .NewEcomAi {
-      &__left {
-        border-bottom-right-radius: 10px;
-        border-top-right-radius: 10px;
-        left: 0;
+    &.newcomLeftSide {
+        .NewEcomAi {
+            &__left {
+                border-bottom-right-radius: 10px;
+                border-top-right-radius: 10px;
+                left: 0;
 
-        &__desc {
-            display: none;
-            padding: 10px;
-        }
+                &__desc {
+                    display: none;
+                    padding: 10px;
+                }
 
-        &__text {
-            border-left: 1px solid;
-            overflow: hidden;
-            padding: 10px;
-            position: relative;
-            transition: all 0.2s ease;
-            writing-mode: vertical-lr;
-        }
+                &__text {
+                    border-left: 1px solid;
+                    overflow: hidden;
+                    padding: 10px;
+                    position: relative;
+                    transition: all 0.2s ease;
+                    writing-mode: vertical-lr;
+                }
 
-        &:hover {
-          .NewEcomAi {
-              &__left {
-              &__desc {
-                display: block;
-                opacity: 1;
-                transform: translateY(0);
-                transition: opacity 0.2s ease, transform 0.2s ease;
-              }
+                &:hover {
+                    .NewEcomAi {
+                        &__left {
+                            &__desc {
+                                display: block;
+                                opacity: 1;
+                                transform: translateY(0);
+                                transition: opacity 0.2s ease, transform 0.2s ease;
+                            }
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
 
     &.newSmartShopDiscover,
     &.newcomPopup,
@@ -434,66 +434,67 @@
         }
     }
 
-  &.newcomRightSide {
-    .NewEcomAi {
-      &__right {
-        border-bottom-left-radius: 10px;
-        border-top-left-radius: 10px;
-        right: 0;
-
-        &__desc {
-          display: none;
-          padding: 10px;
-        }
-
-        &__text {
-          border-left: 1px solid;
-          overflow: hidden;
-          padding: 10px;
-          position: relative;
-          transform: rotate(180deg);
-          transition: all 0.2s ease;
-          writing-mode: vertical-lr;
-        }
-
-        &:hover {
-          .NewEcomAi {
+    &.newcomRightSide {
+        .NewEcomAi {
             &__right {
-              &__desc {
-                  display: block;
-                  opacity: 1;
-                  transform: translateY(0);
-                  transition: opacity 0.2s ease, transform 0.2s ease;
-              }
+                border-bottom-left-radius: 10px;
+                border-top-left-radius: 10px;
+                right: 0;
+
+                &__desc {
+                    display: none;
+                    padding: 10px;
+                }
+
+                &__text {
+                    border-left: 1px solid;
+                    overflow: hidden;
+                    padding: 10px;
+                    position: relative;
+                    transform: rotate(180deg);
+                    transition: all 0.2s ease;
+                    writing-mode: vertical-lr;
+                }
+
+                &:hover {
+                    .NewEcomAi {
+                        &__right {
+                            &__desc {
+                                display: block;
+                                opacity: 1;
+                                transform: translateY(0);
+                                transition: opacity 0.2s ease, transform 0.2s ease;
+                            }
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
 
-  &__btn {
-    align-items: center;
-    color: @white;
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    max-width: 30%;
-    position: fixed;
-    top: 50%;
-    z-index: 4;
-    font-size: 16px;
-    background-color: @sticky-btn-bg-color;
-  }
-  &__product-box {
-    display: none;
-  }
+    &__btn {
+        align-items: center;
+        color: @white;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        max-width: 30%;
+        position: fixed;
+        top: 50%;
+        z-index: 4;
+        font-size: 16px;
+        background-color: @sticky-btn-bg-color;
+    }
 
-  &.newSmartShopDecide {
-    .NewEcomAi {
-      &__popup-content {
-        background-color: @decide-popup-bg-color;
-        border-radius: 20px;
+    &__product-box {
+        display: none;
+    }
+
+    &.newSmartShopDecide {
+        .NewEcomAi {
+            &__popup-content {
+                background-color: @decide-popup-bg-color;
+                border-radius: 20px;
 
                 &__inner {
                     margin: 20px auto 10px;
@@ -664,6 +665,7 @@
         &__popup {
             padding-top: 140px;
             z-index: 3;
+
             &-content {
                 display: flex;
                 justify-content: center;

@@ -15,7 +15,7 @@ class ImageChooser extends Template
     /**
      * Save image controller path
      */
-    const UPLOAD_IMAGE_CONTROLLER_PATH = "newecomai/widgetimage/uploadimageurl";
+    protected const UPLOAD_IMAGE_CONTROLLER_PATH = "newecomai/widgetimage/uploadimageurl";
 
     /**
      * @var Factory
@@ -118,10 +118,21 @@ class ImageChooser extends Template
         updateFileInputVisibility();
     });
     </script>';
-        $html .= '<input type="hidden" id="' . $element->getHtmlId() . '_hidden" name="' . $element->getName() . '" value="' . $value . '" />';
-        $html .= '<img id="' . $element->getHtmlId() . '_preview" src="' . $value . '" style="max-width: 100px; max-height: 100px;' . ($value ? '' : ' display:none;') . '" />';
-        $html .= '<span id="' . $element->getHtmlId() . '_remove" style="cursor: pointer; color: #000000; margin-left: 10px; position:absolute;' . ($value ? '' : ' display:none;') . '">&#10060;</span>';
+        $html .= '<input type="hidden" id="' .
+                $element->getHtmlId() .
+                '_hidden" name="' . $element->getName() .
+                '" value="' . $value . '" />';
 
+        $html .= '<img id="' .
+                $element->getHtmlId() .
+                '_preview" src="' . $value .
+                '" style="max-width: 100px; max-height: 100px;' .
+                ($value ? '' : ' display:none;') . '" />';
+
+        $html .= '<span id="' .
+                $element->getHtmlId() .
+                '_remove" style="cursor: pointer; color: #000000; margin-left: 10px; position:absolute;' .
+                ($value ? '' : ' display:none;') . '">&#10060;</span>';
 
         $element->setData('after_element_html', $html);
         $element->setValue(null);

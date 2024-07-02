@@ -38,13 +38,11 @@ class AddToCart implements ObserverInterface
         CheckoutSession $checkoutSession,
         Data $helper,
         CartRepositoryInterface $cartRepository
-
-    ){
+    ) {
         $this->checkoutSession = $checkoutSession;
         $this->helper = $helper;
         $this->cartRepository = $cartRepository;
     }
-
 
     /**
      * Observer for checkout_cart_product_add_after.
@@ -60,20 +58,21 @@ class AddToCart implements ObserverInterface
         $productId = $this->checkoutSession->getNewEcomAiProductId();
         $questionId = $this->checkoutSession->getNewEcomAiQuestionId();
         $decideAddToCart = $this->checkoutSession->getNewEcomAiDecideSearchClicked();
-        if ($newComProduct && $quoteId && $productId ) {
+        if ($newComProduct && $quoteId && $productId) {
             $data = [
                 "userId" => $this->helper->getShopSmartUserId(),
                 "questionId"=> $questionId,
                 "productId" => $productId
             ];
             $endpoint = "api/questions/discovery/addtocart";
-            $response = $this->helper->sendApiRequest($endpoint,"POST", true, json_encode($data));
+            $response = $this->helper->sendApiRequest($endpoint, "POST", true, json_encode($data));
             $responseData = json_decode($response, true);
-            if ($responseData && isset($responseData['response']['status']) && $responseData['response']['status'] == 'success') {
+            if ($responseData && isset($responseData['response']['status'])
+                && $responseData['response']['status'] == 'success') {
                 Log::Info("The product has been added to cart and synced successfully.");
             }
         }
-        if(isset($decideAddToCart) && $decideAddToCart == true){
+        if (isset($decideAddToCart) && $decideAddToCart == true) {
             $quote = $this->checkoutSession->getQuote();
             $quote->setData('add_to_cart_from_decide', 1);
             $quote->save();

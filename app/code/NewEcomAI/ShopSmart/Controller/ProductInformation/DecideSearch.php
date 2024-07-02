@@ -27,7 +27,7 @@ class DecideSearch extends Action
     /**
      * Decide Product Information API Endpoint
      */
-    const DECIDE_API_ENDPOINT = "api/product/decide";
+    protected const DECIDE_API_ENDPOINT = "api/product/decide";
 
     /**
      * @var Http
@@ -127,6 +127,8 @@ class DecideSearch extends Action
     }
 
     /**
+     * Decide search controller
+     *
      * @return ResponseInterface|Json|ResultInterface|void
      * @throws NoSuchEntityException
      */
@@ -170,146 +172,4 @@ class DecideSearch extends Action
 
         }
     }
-
-    public function loadProductDetails($product)
-    {
-        return [
-            'title' => $product->getName(),
-            'color' => $this->getColorNameByProductId($product),
-            'size' => $this->getSizeByProductId($product),
-            'price' => number_format((float)$product->getData('price'), 2),
-            'imageUrl' => $this->getProductMediaUrl($product),
-            'productUrl' =>  $this->productUrl->getUrl($product),
-            'quantity' => $this->getProductQtyById($product->getId())
-        ];
-    }
-
-    /**
-     * @param $product
-     * @return array|mixed|string
-     * @throws NoSuchEntityException
-     */
-    public function getColorNameByProductId($product)
-    {
-
-        try {
-            $attributeCode = 'color'; // Replace with the actual attribute code for color
-            if ($product->getTypeId() == 'configurable') {
-
-                $childProducts = $this->configurable->getUsedProducts($product);
-                $colorAttribute = $this->attributeRepository->get($attributeCode);
-                $colorOptions = $colorAttribute->getSource()->getAllOptions();
-                $colorNames = [];
-                foreach ($childProducts as $childProduct) {
-                    $colorValue = $childProduct->getColor();
-                    foreach ($colorOptions as $option) {
-                        if ($option['value'] == $colorValue) {
-                            $colorNames[] = $option['label'];
-                        }
-                    }
-                }
-                return array_unique($colorNames);
-            } else {
-                $attribute = $this->attributeRepository->get($attributeCode);
-                $colorValue = $product->getData($attributeCode);
-
-                if ($attribute && $colorValue !== null) {
-                    $options = $attribute->getOptions();
-                    foreach ($options as $option) {
-                        if ($option['value'] == $colorValue) {
-                            return $option['label'];
-                        }
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            Log::Error($e->getMessage());
-        }
-    }
-
-
-    /**
-     * @param $product
-     * @return array
-     * @throws NoSuchEntityException
-     */
-    public function getSizeByProductId($product)
-    {
-        $attributeCode = 'size';
-        if ($product->getTypeId() == 'configurable') {
-            $childProducts = $this->configurable->getUsedProducts($product);
-            $sizeAttribute = $this->attributeRepository->get($attributeCode);
-            $sizeOptions = $sizeAttribute->getSource()->getAllOptions();
-
-            $sizeNames = [];
-            foreach ($childProducts as $childProduct) {
-                $sizeValue = $childProduct->getSize();
-                foreach ($sizeOptions as $option) {
-                    if ($option['value'] == $sizeValue) {
-                        $sizeNames[] = $option['label'];
-                    }
-                }
-            }
-            return array_unique(array_values($sizeNames));
-        } else {
-            $attribute = $this->attributeRepository->get($attributeCode);
-            $sizeValue = $product->getData($attributeCode);
-
-            if ($attribute && $sizeValue !== null) {
-                $options = $attribute->getOptions();
-                foreach ($options as $option) {
-                    if ($option['value'] == $sizeValue) {
-                        return $option['label'];
-                    }
-                }
-            }
-
-        }
-    }
-
-    /**
-     * @param $product
-     * @param $attributeCode
-     * @return array
-     */
-    protected function getOptionLabels($product, $attributeCode)
-    {
-        $attributeOptions = [];
-        $attribute = $product->getResource()->getAttribute($attributeCode);
-        if ($attribute && $attribute->usesSource()) {
-            $options = $attribute->getSource()->getAllOptions();
-            foreach ($options as $option) {
-                $value = $option['value'];
-                if (!$value) {
-                    continue;
-                }
-                $label = $option['label'];
-                $attributeOptions[$value] = $label;
-            }
-        }
-        return $attributeOptions;
-    }
-
-    /**
-     * @param $product
-     * @return string
-     * @throws NoSuchEntityException
-     */
-    public function getProductMediaUrl($product): string
-    {
-        $mediaUrl = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_MEDIA);
-        return $mediaUrl . 'catalog/product' . $product->getImage();
-    }
-
-    /**
-     * @param $productId
-     * @return float
-     * @throws NoSuchEntityException
-     */
-    public function getProductQtyById($productId)
-    {
-        $stockItem = $this->stockItemRepository->get($productId);
-        return $stockItem->getQty();
-    }
-
 }
