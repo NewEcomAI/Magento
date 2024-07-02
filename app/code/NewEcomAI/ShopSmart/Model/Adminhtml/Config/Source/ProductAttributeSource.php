@@ -35,7 +35,9 @@ class ProductAttributeSource implements OptionSourceInterface
     }
 
     /**
-     * @return array
+     * Returns the array
+     *
+     * @return string[]
      */
     public function toOptionArray()
     {
@@ -47,13 +49,12 @@ class ProductAttributeSource implements OptionSourceInterface
         );
 
         $productAttribute = [];
-        foreach ($attributeRepository->getItems()  as $key =>  $items) {
+        foreach ($attributeRepository->getItems() as $key => $items) {
             $items->getAttributeCode();
             $items->getFrontendLabel();
 
             $productAttribute[] = ["label" => $items->getFrontendLabel(), "value" => $items->getAttributeCode()];
         }
         return $productAttribute;
-
     }
 }

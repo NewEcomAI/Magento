@@ -114,6 +114,8 @@ class AddToCart extends Action
     }
 
     /**
+     * Add to cart controller
+     *
      * @return ResponseInterface|Json|ResultInterface
      */
     public function execute()
@@ -179,7 +181,7 @@ class AddToCart extends Action
 
             $quote->addProduct($configurableProduct, $buyRequest);
             $quote->collectTotals()->save();
-            $this->setFlag($quote->getId(),$productId, $questionId);
+            $this->setFlag($quote->getId(), $productId, $questionId);
             $quote->setData('add_to_cart_from_discover', 1);
             if (!$this->customerSession->isLoggedIn()) {
                 $this->cartRepository->save($quote);
@@ -196,6 +198,8 @@ class AddToCart extends Action
     }
 
     /**
+     * Set flag values in the session
+     *
      * @param $quoteId
      * @param $productId
      * @param $questionId

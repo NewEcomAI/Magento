@@ -15,32 +15,32 @@ use NewEcomAI\ShopSmart\Model\Log\Log;
  */
 class DiscoverPopup extends Template implements BlockInterface
 {
-    const DISCOVER_SEARCH_CONTROLLER_PATH = "newecomai/recommendations/discoversearch";
-    const PRODUCT_ADD_TO_CART_PATH = "newecomai/recommendations/addtocart";
-    const PRODUCT_REMOVE_FROM_CART_PATH = "newecomai/recommendations/productremovefromcart";
-    const DISCOVER_UPLOAD_IMAGE_CONTROLLER_PATH = "newecomai/recommendations/discoveruploadimage";
-    const POPUP_CLASS = 'newcomPopup';
-    const LEFT_SIDE_CLASS = 'newcomLeftSide';
-    const RIGHT_SIDE_CLASS = 'newcomRightSide';
-    const PRODUCT_GRID_CLASS = 'newcomProductGrid';
-    const SHOP_SMART_DISCOVER_POPUP_POSITION = 'shop_smart_discover_popup_position';
-    const SHOP_SMART_DISCOVER_LAYOUT_PRODUCT_GRID = 'shop_smart_discover_layout_product_grid';
-    const SHOP_SMART_DISCOVER_HEADING = 'shop_smart_discover_heading';
-    const SHOP_SMART_DISCOVER_MESSAGE_PLACEHOLDER = 'shop_smart_discover_message_placeholder';
-    const SHOP_SMART_DISCOVER_BUTTON_TEXT = 'shop_smart_discover_button_text';
-    const SHOP_SMART_DISCOVER_BUTTON_BACKGROUND_COLOR = 'shop_smart_discover_button_background_color';
-    const SHOP_SMART_DISCOVER_SECTION_BACKGROUND_COLOR = 'shop_smart_discover_section_button_color';
-    const SHOP_SMART_DISCOVER_IMAGE = 'shop_smart_discover_image';
-    const SHOP_SMART_DISCOVER_IMAGE_RECOGNITION = 'shop_smart_discover_image_recognition';
-    const SHOP_SMART_DISCOVER_LAYOUT_TEXT = 'shop_smart_discover_layout_text';
-    const SHOP_SMART_DISCOVER_LAYOUT_DESCRIPTION_TEXT = 'shop_smart_discover_layout_description_text';
-    const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_ONE = 'shop_smart_discover_example_query_one';
-    const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_TWO = 'shop_smart_discover_example_query_two';
-    const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_THREE = 'shop_smart_discover_example_query_three';
-    const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_FOUR = 'shop_smart_discover_example_query_four';
-    const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_FIVE = 'shop_smart_discover_example_query_five';
-    const SHOP_SMART_DISCOVER_DESTINATION_STATUS = 'shop_smart_discover_destination_status';
-    const SHOP_SMART_DISCOVER_CUSTOM_CSS = 'shop_smart_discover_custom_css';
+    protected const DISCOVER_SEARCH_CONTROLLER_PATH = "newecomai/recommendations/discoversearch";
+    protected const PRODUCT_ADD_TO_CART_PATH = "newecomai/recommendations/addtocart";
+    protected const PRODUCT_REMOVE_FROM_CART_PATH = "newecomai/recommendations/productremovefromcart";
+    protected const DISCOVER_UPLOAD_IMAGE_CONTROLLER_PATH = "newecomai/recommendations/discoveruploadimage";
+    protected const POPUP_CLASS = 'newcomPopup';
+    protected const LEFT_SIDE_CLASS = 'newcomLeftSide';
+    protected const RIGHT_SIDE_CLASS = 'newcomRightSide';
+    protected const PRODUCT_GRID_CLASS = 'newcomProductGrid';
+    protected const SHOP_SMART_DISCOVER_POPUP_POSITION = 'shop_smart_discover_popup_position';
+    protected const SHOP_SMART_DISCOVER_LAYOUT_PRODUCT_GRID = 'shop_smart_discover_layout_product_grid';
+    protected const SHOP_SMART_DISCOVER_HEADING = 'shop_smart_discover_heading';
+    protected const SHOP_SMART_DISCOVER_MESSAGE_PLACEHOLDER = 'shop_smart_discover_message_placeholder';
+    protected const SHOP_SMART_DISCOVER_BUTTON_TEXT = 'shop_smart_discover_button_text';
+    protected const SHOP_SMART_DISCOVER_BUTTON_BACKGROUND_COLOR = 'shop_smart_discover_button_background_color';
+    protected const SHOP_SMART_DISCOVER_SECTION_BACKGROUND_COLOR = 'shop_smart_discover_section_button_color';
+    protected const SHOP_SMART_DISCOVER_IMAGE = 'shop_smart_discover_image';
+    protected const SHOP_SMART_DISCOVER_IMAGE_RECOGNITION = 'shop_smart_discover_image_recognition';
+    protected const SHOP_SMART_DISCOVER_LAYOUT_TEXT = 'shop_smart_discover_layout_text';
+    protected const SHOP_SMART_DISCOVER_LAYOUT_DESCRIPTION_TEXT = 'shop_smart_discover_layout_description_text';
+    protected const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_ONE = 'shop_smart_discover_example_query_one';
+    protected const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_TWO = 'shop_smart_discover_example_query_two';
+    protected const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_THREE = 'shop_smart_discover_example_query_three';
+    protected const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_FOUR = 'shop_smart_discover_example_query_four';
+    protected const SHOP_SMART_DISCOVER_EXAMPLE_QUERY_FIVE = 'shop_smart_discover_example_query_five';
+    protected const SHOP_SMART_DISCOVER_DESTINATION_STATUS = 'shop_smart_discover_destination_status';
+    protected const SHOP_SMART_DISCOVER_CUSTOM_CSS = 'shop_smart_discover_custom_css';
 
     /**
      * @var Data
@@ -77,6 +77,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Data Helper functions
+     *
      * @return Data
      */
     public function getDatahelper()
@@ -85,6 +87,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover Image Url
+     *
      * @return array|mixed|null
      */
     public function getImageUrl()
@@ -93,6 +97,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover layout product grid value
+     *
      * @return array|mixed|null
      */
     public function getProductGrid()
@@ -101,6 +107,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover popup position
+     *
      * Get Popup Position in widget
      *
      * @return string
@@ -121,6 +129,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget heading
+     *
      * @return array|mixed|null
      */
     public function getHeading()
@@ -129,6 +139,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover Search Url path
+     *
      * @return string
      */
     public function getDiscoverSearchUrl()
@@ -136,8 +148,9 @@ class DiscoverPopup extends Template implements BlockInterface
         return $this->getUrl(self:: DISCOVER_SEARCH_CONTROLLER_PATH);
     }
 
-
     /**
+     * Get Discover widget Add to cart URL path
+     *
      * @return string
      */
     public function productAddToCartUrl()
@@ -146,6 +159,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget remove from cart URL path
+     *
      * @return string
      */
     public function productRemoveFromCartUrl()
@@ -153,8 +168,9 @@ class DiscoverPopup extends Template implements BlockInterface
         return $this->getUrl(self:: PRODUCT_REMOVE_FROM_CART_PATH);
     }
 
-
     /**
+     * Get Discover widget upload image URL path
+     *
      * @return string
      */
     public function getDiscoverUploadImage()
@@ -162,6 +178,8 @@ class DiscoverPopup extends Template implements BlockInterface
         return $this->getUrl(self::DISCOVER_UPLOAD_IMAGE_CONTROLLER_PATH);
     }
     /**
+     * Get Discover widget message place holder
+     *
      * @return array|mixed|null
      */
     public function getMessagePlaceholder()
@@ -170,6 +188,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget button text
+     *
      * @return array|mixed|null
      */
     public function getButtonText()
@@ -178,6 +198,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget button background color
+     *
      * @return array|mixed|null
      */
     public function getButtonBackgroundColor()
@@ -186,6 +208,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget section background color
+     *
      * @return array|mixed|null
      */
     public function getSectionBackgroundColor()
@@ -194,6 +218,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget Image Recognition Field enable/disable
+     *
      * @return array|mixed|null
      */
     public function getImageRecognition()
@@ -202,6 +228,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget Layout Text
+     *
      * @return array|mixed|null
      */
     public function getLayoutText()
@@ -210,6 +238,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget layout description Text
+     *
      * @return array|mixed|null
      */
     public function getLayoutDescriptionText()
@@ -218,6 +248,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget Example Query 1
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryOne()
@@ -226,6 +258,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget Example Query 2
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryTwo()
@@ -234,6 +268,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget Example Query 3
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryThree()
@@ -242,6 +278,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget Example Query 4
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryFour()
@@ -250,6 +288,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget Example Query 5
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryFive()
@@ -258,6 +298,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget destination Status
+     *
      * @return array|mixed|null
      */
     public function getDestinaltionStatus()
@@ -266,6 +308,8 @@ class DiscoverPopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Discover widget custom css
+     *
      * @return array|mixed|null
      */
     public function getCustomCss()

@@ -26,7 +26,7 @@ class DiscoverSearch extends Action
     /**
      * Save image path
      */
-    const DISCOVER_API_ENDPOINT = "api/recommendations/discovery";
+    protected const DISCOVER_API_ENDPOINT = "api/recommendations/discovery";
 
     /**
      * @var Http
@@ -78,7 +78,6 @@ class DiscoverSearch extends Action
      */
     private ProductUrl $productUrl;
 
-
     /**
      * @param Context $context
      * @param Http $http
@@ -119,6 +118,8 @@ class DiscoverSearch extends Action
     }
 
     /**
+     * Controller to get search result for discover widget
+     *
      * @return ResponseInterface|Json|ResultInterface|void
      * @throws NoSuchEntityException
      */
@@ -137,15 +138,13 @@ class DiscoverSearch extends Action
                     "userId" => $userId,
                     "listQuestions" => $searchArray
                 ];
-            }
-            elseif (!empty($contextId)) {
+            } elseif (!empty($contextId)) {
                 $data = [
                     "userId" => $userId,
                     "contextId" => $contextId,
                     "listQuestions" => $searchArray
                 ];
-            }
-            else {
+            } else {
                 $data = [
                     "userId" => $userId,
                     "questionId" => $questionId,
@@ -158,12 +157,12 @@ class DiscoverSearch extends Action
             $responseData = json_decode($response, true);
 
             if ($responseData['bestProducts']) {
-                  foreach ($responseData['bestProducts'] as $product) {
-                      $productSku = $product['product']['productId'];
-                      $product = $this->productRepository->get($productSku);
-                      $productDetails = $this->loadProductDetails($product,$responseData['id']);
-                      $productInfoArray[] = $productDetails;
-                  }
+                foreach ($responseData['bestProducts'] as $product) {
+                    $productSku = $product['product']['productId'];
+                    $product = $this->productRepository->get($productSku);
+                    $productDetails = $this->loadProductDetails($product, $responseData['id']);
+                    $productInfoArray[] = $productDetails;
+                }
                   return $resultJson->setData(['response' => $responseData, 'products' =>$productInfoArray]);
             } else {
                 return $resultJson->setData(["error" => "No product found", 'feedback' => $responseData['feedback']]);
@@ -172,12 +171,14 @@ class DiscoverSearch extends Action
     }
 
     /**
+     * Load Product Details method
+     *
      * @param $product
      * @param $questionId
      * @return array
      * @throws NoSuchEntityException
      */
-    public function loadProductDetails($product,$questionId)
+    public function loadProductDetails($product, $questionId)
     {
         return [
             'id' => $product->getId(),
@@ -194,6 +195,8 @@ class DiscoverSearch extends Action
     }
 
     /**
+     * Get Color Name by Attribute Value
+     *
      * @param $product
      * @return array|mixed|string
      * @throws NoSuchEntityException
@@ -236,8 +239,9 @@ class DiscoverSearch extends Action
         }
     }
 
-
     /**
+     * Get size attribute value
+     *
      * @param $product
      * @return array
      * @throws NoSuchEntityException
@@ -277,6 +281,8 @@ class DiscoverSearch extends Action
     }
 
     /**
+     * Get Option Label Value
+     *
      * @param $product
      * @param $attributeCode
      * @return array
@@ -300,6 +306,8 @@ class DiscoverSearch extends Action
     }
 
     /**
+     * Get Product media url
+     *
      * @param $product
      * @return string
      * @throws NoSuchEntityException
@@ -311,6 +319,8 @@ class DiscoverSearch extends Action
     }
 
     /**
+     * Get product qty by product Id
+     *
      * @param $productId
      * @return float
      * @throws NoSuchEntityException
@@ -320,6 +330,4 @@ class DiscoverSearch extends Action
         $stockItem = $this->stockItemRepository->get($productId);
         return $stockItem->getQty();
     }
-
-
 }

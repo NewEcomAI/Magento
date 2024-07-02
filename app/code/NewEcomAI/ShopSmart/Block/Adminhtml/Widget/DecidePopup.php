@@ -12,30 +12,30 @@ use Magento\Catalog\Block\Product\View as ProductViewBlock;
 
 class DecidePopup extends Template implements BlockInterface
 {
-    const DECIDE_SEARCH_CONTROLLER_PATH = "newecomai/productinformation/decidesearch";
-    const DECIDE_RATE_QUESTION_CONTROLLER_PATH = "newecomai/productinformation/ratequestion";
-    const POPUP_CLASS = 'newcomPopup';
-    const LEFT_SIDE_CLASS = 'newcomLeftSide';
-    const RIGHT_SIDE_CLASS = 'newcomRightSide';
-    const PRODUCT_GRID_CLASS = 'newcomProductGrid';
-    const SHOP_SMART_DECIDE_POPUP_POSITION = 'shop_smart_decide_popup_position';
-    const SHOP_SMART_DECIDE_LAYOUT_PRODUCT_GRID = 'shop_smart_decide_layout_product_grid';
-    const SHOP_SMART_DECIDE_HEADING = 'shop_smart_decide_heading';
-    const SHOP_SMART_DECIDE_MESSAGE_PLACEHOLDER = 'shop_smart_decide_message_placeholder';
-    const SHOP_SMART_DECIDE_BUTTON_TEXT = 'shop_smart_decide_button_text';
-    const SHOP_SMART_DECIDE_BUTTON_BACKGROUND_COLOR = 'shop_smart_decide_button_background_color';
-    const SHOP_SMART_DECIDE_SECTION_BACKGROUND_COLOR = 'shop_smart_decide_section_button_color';
-    const SHOP_SMART_DECIDE_IMAGE = 'shop_smart_decide_image';
-    const SHOP_SMART_DECIDE_IMAGE_RECOGNITION = 'shop_smart_decide_image_recognition';
-    const SHOP_SMART_DECIDE_LAYOUT_TEXT = 'shop_smart_decide_layout_text';
-    const SHOP_SMART_DECIDE_LAYOUT_DESCRIPTION_TEXT = 'shop_smart_decide_layout_description_text';
-    const SHOP_SMART_DECIDE_EXAMPLE_QUERY_ONE = 'shop_smart_decide_example_query_one';
-    const SHOP_SMART_DECIDE_EXAMPLE_QUERY_TWO = 'shop_smart_decide_example_query_two';
-    const SHOP_SMART_DECIDE_EXAMPLE_QUERY_THREE = 'shop_smart_decide_example_query_three';
-    const SHOP_SMART_DECIDE_EXAMPLE_QUERY_FOUR = 'shop_smart_decide_example_query_four';
-    const SHOP_SMART_DECIDE_EXAMPLE_QUERY_FIVE = 'shop_smart_decide_example_query_five';
-    const SHOP_SMART_DECIDE_DESTINATION_STATUS = 'shop_smart_decide_destination_status';
-    const SHOP_SMART_DECIDE_CUSTOM_CSS = 'shop_smart_decide_custom_css';
+    protected const DECIDE_SEARCH_CONTROLLER_PATH = "newecomai/productinformation/decidesearch";
+    protected const DECIDE_RATE_QUESTION_CONTROLLER_PATH = "newecomai/productinformation/ratequestion";
+    protected const POPUP_CLASS = 'newcomPopup';
+    protected const LEFT_SIDE_CLASS = 'newcomLeftSide';
+    protected const RIGHT_SIDE_CLASS = 'newcomRightSide';
+    protected const PRODUCT_GRID_CLASS = 'newcomProductGrid';
+    protected const SHOP_SMART_DECIDE_POPUP_POSITION = 'shop_smart_decide_popup_position';
+    protected const SHOP_SMART_DECIDE_LAYOUT_PRODUCT_GRID = 'shop_smart_decide_layout_product_grid';
+    protected const SHOP_SMART_DECIDE_HEADING = 'shop_smart_decide_heading';
+    protected const SHOP_SMART_DECIDE_MESSAGE_PLACEHOLDER = 'shop_smart_decide_message_placeholder';
+    protected const SHOP_SMART_DECIDE_BUTTON_TEXT = 'shop_smart_decide_button_text';
+    protected const SHOP_SMART_DECIDE_BUTTON_BACKGROUND_COLOR = 'shop_smart_decide_button_background_color';
+    protected const SHOP_SMART_DECIDE_SECTION_BACKGROUND_COLOR = 'shop_smart_decide_section_button_color';
+    protected const SHOP_SMART_DECIDE_IMAGE = 'shop_smart_decide_image';
+    protected const SHOP_SMART_DECIDE_IMAGE_RECOGNITION = 'shop_smart_decide_image_recognition';
+    protected const SHOP_SMART_DECIDE_LAYOUT_TEXT = 'shop_smart_decide_layout_text';
+    protected const SHOP_SMART_DECIDE_LAYOUT_DESCRIPTION_TEXT = 'shop_smart_decide_layout_description_text';
+    protected const SHOP_SMART_DECIDE_EXAMPLE_QUERY_ONE = 'shop_smart_decide_example_query_one';
+    protected const SHOP_SMART_DECIDE_EXAMPLE_QUERY_TWO = 'shop_smart_decide_example_query_two';
+    protected const SHOP_SMART_DECIDE_EXAMPLE_QUERY_THREE = 'shop_smart_decide_example_query_three';
+    protected const SHOP_SMART_DECIDE_EXAMPLE_QUERY_FOUR = 'shop_smart_decide_example_query_four';
+    protected const SHOP_SMART_DECIDE_EXAMPLE_QUERY_FIVE = 'shop_smart_decide_example_query_five';
+    protected const SHOP_SMART_DECIDE_DESTINATION_STATUS = 'shop_smart_decide_destination_status';
+    protected const SHOP_SMART_DECIDE_CUSTOM_CSS = 'shop_smart_decide_custom_css';
 
     /**
      * Decide Template
@@ -72,6 +72,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Current Product
+     *
      * @return Product
      */
     public function getCurrentProduct()
@@ -80,6 +82,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Data Helper functions
+     *
      * @return Data
      */
     public function getDatahelper()
@@ -88,6 +92,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Product Grid Layout Config
+     *
      * @return array|mixed|null
      */
     public function getProductGrid()
@@ -116,6 +122,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Widget Heading
+     *
      * @return array|mixed|null
      */
     public function getHeading()
@@ -124,6 +132,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Widget Url Path
+     *
      * @return string
      */
     public function getDecideSearchUrl()
@@ -132,6 +142,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Widget Rate Question Url
+     *
      * @return string
      */
     public function getDecideSearchQuestionRateUrl()
@@ -140,6 +152,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Widget message placeholder field
+     *
      * @return array|mixed|null
      */
     public function getMessagePlaceholder()
@@ -148,6 +162,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * GEt decide widget Button text
+     *
      * @return array|mixed|null
      */
     public function getButtonText()
@@ -156,6 +172,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Widget button background color
+     *
      * @return array|mixed|null
      */
     public function getButtonBackgroundColor()
@@ -164,6 +182,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Section Background Color
+     *
      * @return array|mixed|null
      */
     public function getSectionBackgroundColor()
@@ -172,6 +192,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Popup Image
+     *
      * @return array|mixed|null
      */
     public function getImageUrl()
@@ -180,6 +202,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Image Recognition Field enable/disable
+     *
      * @return array|mixed|null
      */
     public function getImageRecognition()
@@ -188,6 +212,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Layout Text
+     *
      * @return array|mixed|null
      */
     public function getLayoutText()
@@ -196,6 +222,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Layout Description
+     *
      * @return array|mixed|null
      */
     public function getLayoutDescriptionText()
@@ -204,6 +232,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Example Query 1
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryOne()
@@ -212,6 +242,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Example Query 2
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryTwo()
@@ -220,6 +252,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Example Query 3
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryThree()
@@ -228,6 +262,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Example Query 4
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryFour()
@@ -236,6 +272,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get Decide Example Query 5
+     *
      * @return array|mixed|null
      */
     public function getExampleQueryFive()
@@ -244,6 +282,8 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get destination Status
+     *
      * @return array|mixed|null
      */
     public function getDestinaltionStatus()
@@ -252,11 +292,12 @@ class DecidePopup extends Template implements BlockInterface
     }
 
     /**
+     * Get decide custom css
+     *
      * @return array|mixed|null
      */
     public function getCustomCss()
     {
         return $this->getData(self::SHOP_SMART_DECIDE_CUSTOM_CSS);
     }
-
 }

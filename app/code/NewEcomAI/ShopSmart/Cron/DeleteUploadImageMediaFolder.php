@@ -2,12 +2,12 @@
 
 namespace NewEcomAI\ShopSmart\Cron;
 
+use Magento\Framework\Exception\FileSystemException;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\Filesystem\Io\File;
 
 class DeleteUploadImageMediaFolder
 {
-
     /**
      * @var LoggerInterface
      */
@@ -31,7 +31,10 @@ class DeleteUploadImageMediaFolder
     }
 
     /**
+     * Execute the cron job to delete files in the media folder
+     *
      * @return void
+     * @throws FileSystemException
      */
     public function execute()
     {
@@ -45,8 +48,10 @@ class DeleteUploadImageMediaFolder
     }
 
     /**
-     * @param $dir
-     * @return void
+     * Recursively clear the directory
+     *
+     * @param string $dir
+     * @throws FileSystemException
      */
     protected function clearDirectory($dir)
     {
@@ -60,5 +65,4 @@ class DeleteUploadImageMediaFolder
             }
         }
     }
-
 }

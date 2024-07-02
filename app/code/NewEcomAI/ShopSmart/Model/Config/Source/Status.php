@@ -10,9 +10,8 @@ use Magento\Framework\Data\OptionSourceInterface;
 class Status implements OptionSourceInterface
 {
 
-    const DISABLE = '0';
-    const ENABLE = '1';
-
+    protected const DISABLE = '0';
+    protected const ENABLE = '1';
 
     /**
      * @var array
@@ -23,9 +22,11 @@ class Status implements OptionSourceInterface
     ];
 
     /**
+     * Returns the array
+     *
      * @return string[]
      */
-    public static function getOptionArray(): array
+    public function getOptionArray(): array
     {
         return self::$checkStatus;
     }
@@ -46,5 +47,4 @@ class Status implements OptionSourceInterface
         }
         return $opts;
     }
-
 }

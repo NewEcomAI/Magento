@@ -10,6 +10,7 @@ use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\View\DesignInterface;
 use Magento\Widget\Model\ResourceModel\Widget\Instance as WidgetInstanceResource;
 use Magento\Widget\Model\Widget\InstanceFactory;
+use NewEcomAI\ShopSmart\Block\Adminhtml\Widget\DecidePopup;
 
 class CreateDecideSearchWidget implements DataPatchInterface
 {
@@ -69,6 +70,8 @@ class CreateDecideSearchWidget implements DataPatchInterface
     }
 
     /**
+     * Apply data patch for decide widget
+     *
      * @return void
      * @throws LocalizedException
      */
@@ -82,11 +85,11 @@ class CreateDecideSearchWidget implements DataPatchInterface
         $themeId = $this->design->getConfigurationDesignTheme('frontend');
         $widgetInstance = $this->widgetInstanceFactory->create();
         $widgetInstance->setData([
-            'instance_type' => 'NewEcomAI\ShopSmart\Block\Adminhtml\Widget\DecidePopup',
+            'instance_type' => DecidePopup::class,
             'theme_id' => $themeId,
             'title' => 'ShopSmart Decide Search Widget',
             'store_ids' => [0, 1],
-            'widget_parameters' => '{"shop_smart_decide_popup_position":"new_ecom_popup","shop_smart_decide_layout_product_grid":"1","shop_smart_decide_heading":"","shop_smart_decide_message_placeholder":"","shop_smart_decide_button_text":"","shop_smart_decide_button_background_color":"#3B0C79","shop_smart_decide_section_button_color":"#FFFFFF","shop_smart_discover_image":"","shop_smart_decide_image_recognition":"1","shop_smart_decide_layout_text":"","shop_smart_decide_layout_description_text":"","shop_smart_decide_example_query_one":"","shop_smart_decide_example_query_two":"","shop_smart_decide_example_query_three":"","shop_smart_decide_example_query_four":"","shop_smart_decide_example_query_five":"","shop_smart_decide_destination_status":"1","shop_smart_decide_custom_css":""}',
+            'widget_parameters' => '{"shop_smart_decide_popup_position":"new_ecom_popup","shop_smart_decide_layout_product_grid":"4","shop_smart_decide_heading":"","shop_smart_decide_message_placeholder":"","shop_smart_decide_button_text":"","shop_smart_decide_button_background_color":"#3B0C79","shop_smart_decide_section_button_color":"#FFFFFF","shop_smart_discover_image":"","shop_smart_decide_image_recognition":"1","shop_smart_decide_layout_text":"","shop_smart_decide_layout_description_text":"","shop_smart_decide_example_query_one":"","shop_smart_decide_example_query_two":"","shop_smart_decide_example_query_three":"","shop_smart_decide_example_query_four":"","shop_smart_decide_example_query_five":"","shop_smart_decide_destination_status":"1","shop_smart_decide_custom_css":""}',
             'page_groups' => [
                 [
                     'page_group' => 'all_products',
@@ -118,6 +121,4 @@ class CreateDecideSearchWidget implements DataPatchInterface
     {
         return [];
     }
-
 }
-

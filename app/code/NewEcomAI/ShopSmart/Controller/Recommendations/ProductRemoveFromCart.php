@@ -34,6 +34,11 @@ class ProductRemoveFromCart extends Action
         parent::__construct($context);
     }
 
+    /**
+     * Remove product from cart url
+     *
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Json|\Magento\Framework\Controller\ResultInterface
+     */
     public function execute()
     {
         $result = $this->resultJsonFactory->create();
@@ -50,6 +55,7 @@ class ProductRemoveFromCart extends Action
                     $this->cart->save();
                 }
             }
+
             return $result->setData(['success' => true]);
         } catch (\Exception $e) {
             return $result->setData(['success' => false, 'message' => $e->getMessage()]);

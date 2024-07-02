@@ -6,7 +6,6 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\View\Element\Template;
 use Magento\Widget\Block\BlockInterface;
 
-
 /**
  * Change Popup Background Color
  */
@@ -14,6 +13,8 @@ class SectionBackgroundColor extends Template implements BlockInterface
 {
 
     /**
+     * Prepare Widget Background Color Picker Element
+     *
      * @param AbstractElement $element
      * @return AbstractElement
      */

@@ -7,7 +7,8 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 
 class CheckAccountValidation extends Field
 {
-    const ACCOUNT_VALIDATION_BUTTON = 'NewEcomAI_ShopSmart::system/config/button/check_account_validation.phtml';
+    protected const ACCOUNT_VALIDATION_BUTTON =
+        'NewEcomAI_ShopSmart::system/config/button/check_account_validation.phtml';
 
     /**
      * Set template to itself
@@ -35,7 +36,6 @@ class CheckAccountValidation extends Field
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
-
 
     /**
      * Get the button and scripts contents
