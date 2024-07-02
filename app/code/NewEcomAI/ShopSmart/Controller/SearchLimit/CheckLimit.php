@@ -10,7 +10,6 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
-use NewEcomAI\ShopSmart\Model\Log\Log;
 
 class CheckLimit extends Action
 {
@@ -61,7 +60,6 @@ class CheckLimit extends Action
     public function execute()
     {
         $userId = $this->dataHelper->getShopSmartUserId();
-        Log::Info("sssssss");
         if ($this->http->isAjax()) {
             $resultJson = $this->resultJsonFactory->create();
             $data = [
