@@ -12,6 +12,7 @@ define([
             var currentProductDescription = config.currentProductDescription;
             var questionId = "";
             let currentSearchQuery = '';
+            var allProducts = [];
             var responseProductInfo = [];
             var currentSearchId = null; // To track the current search
 
@@ -114,7 +115,15 @@ define([
                     url: url,
                     type: "POST",
                     success: function(response) {
+                        allProducts = [];
                         let searchResponseData = response.response;
+                        if (response.products)
+                        {
+                            response.products.forEach(function(product) {
+                                allProducts.push(product);
+                            });
+                        }
+
                         searchResult(searchResponseData, searchId);
                         $('body').trigger('processStop');
                         if (response.response.hasNext == true) {
