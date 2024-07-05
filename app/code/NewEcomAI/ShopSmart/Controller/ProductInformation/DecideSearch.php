@@ -2,6 +2,7 @@
 
 namespace NewEcomAI\ShopSmart\Controller\ProductInformation;
 
+use Exception;
 use Magento\Catalog\Model\Product\Attribute\Repository as AttributeRepository;
 use Magento\Catalog\Model\Product\Url as ProductUrl;
 use Magento\Catalog\Model\ProductRepository;
@@ -21,6 +22,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use NewEcomAI\ShopSmart\Helper\Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Psr\Log\LoggerInterface;
 
 class DecideSearch extends Action
 {
@@ -85,6 +87,11 @@ class DecideSearch extends Action
     private CheckoutSession $checkoutSession;
 
     /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
+    /**
      * @param Context $context
      * @param Http $http
      * @param JsonFactory $resultJsonFactory
@@ -97,6 +104,7 @@ class DecideSearch extends Action
      * @param Configurable $configurable
      * @param ProductUrl $productUrl
      * @param CheckoutSession $checkoutSession
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Context                             $context,
@@ -110,7 +118,8 @@ class DecideSearch extends Action
         StockItemRepository                 $stockItemRepository,
         Configurable                        $configurable,
         ProductUrl                          $productUrl,
-        CheckoutSession                     $checkoutSession
+        CheckoutSession                     $checkoutSession,
+        LoggerInterface                     $logger
     ) {
         $this->http = $http;
         $this->resultJsonFactory = $resultJsonFactory;
@@ -123,6 +132,7 @@ class DecideSearch extends Action
         $this->configurable = $configurable;
         $this->productUrl = $productUrl;
         $this->checkoutSession = $checkoutSession;
+        $this->logger = $logger;
         parent::__construct($context);
     }
 
@@ -130,55 +140,57 @@ class DecideSearch extends Action
      * Decide search controller
      *
      * @return ResponseInterface|Json|ResultInterface|void
-     * @throws NoSuchEntityException
      */
     public function execute()
     {
-        $params = $this->getRequest()->getParams();
-        $searchKey = $params['searchKey'];
-        $questionId = $params['questionId'];
-        $currentProductTitle = $params['currentProductTitle'];
-        $currentProductDescription = $params['currentProductDescription'];
-        $userId = $this->dataHelper->getShopSmartUserId();
-        $this->checkoutSession->setNewEcomAiDecideSearchClicked(true);
-        if ($this->http->isAjax()) {
-            $resultJson = $this->resultJsonFactory->create();
-            if (empty($questionId)) {
-                $data = [
-                    'userId' => $userId,
-                    'listQuestions' => [$searchKey],
-                    'currentProduct' => [
-                        'title' => $currentProductTitle,
-                        'body_html' => $currentProductDescription
-                    ]
-                ];
-            } else {
-                $data = [
-                    'userId' => $userId,
-                    "questionId" => $questionId,
-                    'listQuestions' => [$searchKey],
-                    'currentProduct' => [
-                        'title' => $currentProductTitle,
-                        'body_html' => $currentProductDescription
-                    ]
-                ];
-
-            }
-            $endpoint = self::DECIDE_API_ENDPOINT;
-            $response = $this->dataHelper->sendApiRequest($endpoint, "POST", true, json_encode($data));
-            $responseData = json_decode($response, true);
-
-            if ($responseData['bestProducts']) {
-                foreach ($responseData['bestProducts'] as $product) {
-                    $productSku = $product['product']['productId'];
-                    $product = $this->productRepository->get($productSku);
-                    $productDetails = $this->loadProductDetails($product, $responseData['id']);
-                    $productInfoArray[] = $productDetails;
+        try {
+            $params = $this->getRequest()->getParams();
+            $searchKey = $params['searchKey'];
+            $questionId = $params['questionId'];
+            $currentProductTitle = $params['currentProductTitle'];
+            $currentProductDescription = $params['currentProductDescription'];
+            $productRecommendation = $params['productRecommendation'];
+            $userId = $this->dataHelper->getShopSmartUserId();
+            $this->checkoutSession->setNewEcomAiDecideSearchClicked(true);
+            if ($this->http->isAjax()) {
+                $resultJson = $this->resultJsonFactory->create();
+                if (empty($questionId)) {
+                    $data = [
+                        'userId' => $userId,
+                        'listQuestions' => [$searchKey],
+                        'currentProduct' => [
+                            'title' => $currentProductTitle,
+                            'body_html' => $currentProductDescription
+                        ]
+                    ];
+                } else {
+                    $data = [
+                        'userId' => $userId,
+                        "questionId" => $questionId,
+                        'listQuestions' => [$searchKey],
+                        'currentProduct' => [
+                            'title' => $currentProductTitle,
+                            'body_html' => $currentProductDescription
+                        ]
+                    ];
                 }
-                return $resultJson->setData(['response' => $responseData, 'products' => $productInfoArray]);
-            } else {
-                return $resultJson->setData(['response' => $responseData]);
+                $endpoint = self::DECIDE_API_ENDPOINT;
+                $response = $this->dataHelper->sendApiRequest($endpoint, "POST", true, json_encode($data));
+                $responseData = json_decode($response, true);
+                if ($responseData['bestProducts']) {
+                    foreach ($responseData['bestProducts'] as $product) {
+                        $productSku = $product['product']['productId'];
+                        $product = $this->productRepository->get($productSku);
+                        $productDetails = $this->loadProductDetails($product, $responseData['id'], $productRecommendation);
+                        $productInfoArray[] = $productDetails;
+                    }
+                    return $resultJson->setData(['response' => $responseData, 'products' => $productInfoArray]);
+                } else {
+                    return $resultJson->setData(['response' => $responseData]);
+                }
             }
+        } catch (Exception $e) {
+            $this->logger->critical($e->getMessage());
         }
     }
 
@@ -187,23 +199,31 @@ class DecideSearch extends Action
      *
      * @param $product
      * @param $questionId
-     * @return array
-     * @throws NoSuchEntityException
+     * @param $productRecommendation
+     * @return array|void
      */
-    public function loadProductDetails($product, $questionId)
+    public function loadProductDetails($product, $questionId, $productRecommendation)
     {
-        return [
-            'id' => $product->getId(),
-            'sku' => $product->getSku(),
-            'title' => $product->getName(),
-            'color' => $this->getColorNameByProductId($product),
-            'size' => $this->getSizeByProductId($product),
-            'price' => number_format((float)$product->getData('price'), 2),
-            'imageUrl' => $this->getProductMediaUrl($product),
-            'productUrl' =>  $this->productUrl->getUrl($product),
-            'quantity' => $this->getProductQtyById($product->getId()),
-            'questionId' => $questionId
-        ];
+        try {
+            if ($productRecommendation) {
+                return [
+                    'id' => $product->getId(),
+                    'sku' => $product->getSku(),
+                    'title' => $product->getName(),
+                    'color' => $this->getColorNameByProductId($product),
+                    'size' => $this->getSizeByProductId($product),
+                    'price' => number_format((float)$product->getData('price'), 2),
+                    'imageUrl' => $this->getProductMediaUrl($product),
+                    'productUrl' =>  $this->productUrl->getUrl($product),
+                    'quantity' => $this->getProductQtyById($product->getId()),
+                    'questionId' => $questionId
+                ];
+            } else {
+                return ['productUrl' =>  $this->productUrl->getUrl($product)];
+            }
+        } catch (NoSuchEntityException $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 
     /**
@@ -211,11 +231,9 @@ class DecideSearch extends Action
      *
      * @param $product
      * @return array|mixed|string
-     * @throws NoSuchEntityException
      */
     public function getColorNameByProductId($product)
     {
-
         try {
             $attributeCode = 'color'; // Replace with the actual attribute code for color
             if ($product->getTypeId() == 'configurable') {
@@ -246,8 +264,8 @@ class DecideSearch extends Action
                     }
                 }
             }
-        } catch (\Exception $e) {
-            Log::Error($e->getMessage());
+        } catch (NoSuchEntityException $e) {
+            $this->logger->error($e->getMessage());
         }
     }
 
@@ -256,39 +274,42 @@ class DecideSearch extends Action
      *
      * @param $product
      * @return array
-     * @throws NoSuchEntityException
      */
     public function getSizeByProductId($product)
     {
-        $attributeCode = 'size';
-        if ($product->getTypeId() == 'configurable') {
-            $childProducts = $this->configurable->getUsedProducts($product);
-            $sizeAttribute = $this->attributeRepository->get($attributeCode);
-            $sizeOptions = $sizeAttribute->getSource()->getAllOptions();
+        try {
+            $attributeCode = 'size';
+            if ($product->getTypeId() == 'configurable') {
+                $childProducts = $this->configurable->getUsedProducts($product);
+                $sizeAttribute = $this->attributeRepository->get($attributeCode);
+                $sizeOptions = $sizeAttribute->getSource()->getAllOptions();
 
-            $sizeNames = [];
-            foreach ($childProducts as $childProduct) {
-                $sizeValue = $childProduct->getSize();
-                foreach ($sizeOptions as $option) {
-                    if ($option['value'] == $sizeValue) {
-                        $sizeNames[] = $option['label'];
+                $sizeNames = [];
+                foreach ($childProducts as $childProduct) {
+                    $sizeValue = $childProduct->getSize();
+                    foreach ($sizeOptions as $option) {
+                        if ($option['value'] == $sizeValue) {
+                            $sizeNames[] = $option['label'];
+                        }
                     }
                 }
-            }
-            return array_unique(array_values($sizeNames));
-        } else {
-            $attribute = $this->attributeRepository->get($attributeCode);
-            $sizeValue = $product->getData($attributeCode);
+                return array_unique(array_values($sizeNames));
+            } else {
+                $attribute = $this->attributeRepository->get($attributeCode);
+                $sizeValue = $product->getData($attributeCode);
 
-            if ($attribute && $sizeValue !== null) {
-                $options = $attribute->getOptions();
-                foreach ($options as $option) {
-                    if ($option['value'] == $sizeValue) {
-                        return $option['label'];
+                if ($attribute && $sizeValue !== null) {
+                    $options = $attribute->getOptions();
+                    foreach ($options as $option) {
+                        if ($option['value'] == $sizeValue) {
+                            return $option['label'];
+                        }
                     }
                 }
-            }
 
+            }
+        } catch (NoSuchEntityException $e) {
+            $this->logger->error($e->getMessage());
         }
     }
 

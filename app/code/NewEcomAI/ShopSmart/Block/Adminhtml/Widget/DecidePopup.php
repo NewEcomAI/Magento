@@ -19,6 +19,7 @@ class DecidePopup extends Template implements BlockInterface
     protected const RIGHT_SIDE_CLASS = 'newcomRightSide';
     protected const PRODUCT_GRID_CLASS = 'newcomProductGrid';
     protected const SHOP_SMART_DECIDE_POPUP_POSITION = 'shop_smart_decide_popup_position';
+    protected const SHOP_SMART_DECIDE_PRODUCT_RECOMMENDATION = 'shop_smart_decide_product_recommendation';
     protected const SHOP_SMART_DECIDE_LAYOUT_PRODUCT_GRID = 'shop_smart_decide_layout_product_grid';
     protected const SHOP_SMART_DECIDE_HEADING = 'shop_smart_decide_heading';
     protected const SHOP_SMART_DECIDE_MESSAGE_PLACEHOLDER = 'shop_smart_decide_message_placeholder';
@@ -119,6 +120,16 @@ class DecidePopup extends Template implements BlockInterface
             $popupPosition = self::POPUP_CLASS;
         }
         return $popupPosition;
+    }
+
+    /**
+     * Get Decide Widget Product Recommendation
+     *
+     * @return array|mixed|null
+     */
+    public function getProductRecommendation()
+    {
+        return $this->getData(self::SHOP_SMART_DECIDE_PRODUCT_RECOMMENDATION);
     }
 
     /**
