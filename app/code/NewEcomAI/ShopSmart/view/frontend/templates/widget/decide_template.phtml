@@ -27,6 +27,7 @@ $showProductGrid = $block->getProductGrid();
 $currentProduct = $block->getCurrentProduct();
 $currentProductDetail = preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription())));
 $popupImage = $block->getImageUrl();
+$productRecommendation = $block->getProductRecommendation();
 if ($dataHelper->isDecideWidgetEnabled() && $popupPosition):?>
     <?= $customCss ? $escaper->escapeCss($customCss) : ""; ?>
     <div class="decide_widget" style="display: none">
@@ -134,7 +135,8 @@ if ($dataHelper->isDecideWidgetEnabled() && $popupPosition):?>
                     "decideSearchQuestionRateUrl": "<?= $escaper->escapeUrl($block->getDecideSearchQuestionRateUrl());?>",
                     "productGridLayout": "<?= $escaper->escapeHtml($showProductGrid);?>",
                     "currentProductTitle": "<?= $escaper->escapeHtml($currentProduct->getName());?>",
-                    "currentProductDescription": "<?= $escaper->escapeHtml(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription()))));?>"
+                    "currentProductDescription": "<?= $escaper->escapeHtml(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription()))));?>",
+                    "productRecommendation": "<?= $escaper->escapeHtml($productRecommendation);?>"
                 }
             }
         }

@@ -126,24 +126,36 @@
                     </option>
                 </options>
             </parameter>
-            <parameter name="shop_smart_decide_heading" xsi:type="text" visible="true" sort_order="30">
+            <parameter name="shop_smart_decide_product_recommendation" xsi:type="select" visible="true" sort_order="30"
+                       source_model="NewEcomAI\ShopSmart\Model\Config\Source\Status">
+                <label translate="true">Decide: Product Recommendations</label>
+                <options>
+                    <option name="product_link" value="0" selected="true">
+                        <label translate="true">No</label>
+                    </option>
+                    <option name="product_grid" value="1">
+                        <label translate="true">Yes</label>
+                    </option>
+                </options>
+            </parameter>
+            <parameter name="shop_smart_decide_heading" xsi:type="text" visible="true" sort_order="40">
                 <label translate="true">Heading</label>
             </parameter>
-            <parameter name="shop_smart_decide_message_placeholder" xsi:type="text" visible="true" sort_order="40">
+            <parameter name="shop_smart_decide_message_placeholder" xsi:type="text" visible="true" sort_order="50">
                 <label translate="true">Message placeholder</label>
             </parameter>
-            <parameter name="shop_smart_decide_button_text" xsi:type="text" visible="true" sort_order="50">
+            <parameter name="shop_smart_decide_button_text" xsi:type="text" visible="true" sort_order="60">
                 <label translate="true">Button Text</label>
             </parameter>
-            <parameter name="shop_smart_decide_button_background_color" xsi:type="block" visible="true" sort_order="60">
+            <parameter name="shop_smart_decide_button_background_color" xsi:type="block" visible="true" sort_order="70">
                 <label translate="true">Button BG Color</label>
                 <block class="NewEcomAI\ShopSmart\Block\Adminhtml\Widget\ButtonColor"/>
             </parameter>
-            <parameter name="shop_smart_decide_section_button_color" xsi:type="block" visible="true" sort_order="70">
+            <parameter name="shop_smart_decide_section_button_color" xsi:type="block" visible="true" sort_order="80">
                 <label translate="true">Section Background color</label>
                 <block class="NewEcomAI\ShopSmart\Block\Adminhtml\Widget\SectionBackgroundColor"/>
             </parameter>
-            <parameter name="shop_smart_decide_image" xsi:type="block" visible="true" sort_order="80">
+            <parameter name="shop_smart_decide_image" xsi:type="block" visible="true" sort_order="90">
                 <label>Image</label>
                 <block class="NewEcomAI\ShopSmart\Block\Adminhtml\Widget\ImageChooser">
                     <data>
@@ -153,36 +165,36 @@
                     </data>
                 </block>
             </parameter>
-            <parameter name="shop_smart_decide_image_recognition" xsi:type="select" visible="true" sort_order="90"
+            <parameter name="shop_smart_decide_image_recognition" xsi:type="select" visible="true" sort_order="100"
                        source_model="NewEcomAI\ShopSmart\Model\Config\Source\Status">
                 <label translate="true">Image Recognition</label>
             </parameter>
-            <parameter name="shop_smart_decide_layout_text" xsi:type="text" visible="true" sort_order="100">
+            <parameter name="shop_smart_decide_layout_text" xsi:type="text" visible="true" sort_order="110">
                 <label translate="true">Layout: Layout Left and Right Side Text</label>
             </parameter>
-            <parameter name="shop_smart_decide_layout_description_text" xsi:type="text" visible="true" sort_order="110">
+            <parameter name="shop_smart_decide_layout_description_text" xsi:type="text" visible="true" sort_order="120">
                 <label translate="true">Layout: Layout Left and Right Side Description Text</label>
             </parameter>
-            <parameter name="shop_smart_decide_example_query_one" xsi:type="text" visible="true" sort_order="120">
+            <parameter name="shop_smart_decide_example_query_one" xsi:type="text" visible="true" sort_order="130">
                 <label translate="true">Example query: 1</label>
             </parameter>
-            <parameter name="shop_smart_decide_example_query_two" xsi:type="text" visible="true" sort_order="130">
+            <parameter name="shop_smart_decide_example_query_two" xsi:type="text" visible="true" sort_order="140">
                 <label translate="true">Example query: 2</label>
             </parameter>
-            <parameter name="shop_smart_decide_example_query_three" xsi:type="text" visible="true" sort_order="140">
+            <parameter name="shop_smart_decide_example_query_three" xsi:type="text" visible="true" sort_order="150">
                 <label translate="true">Example query: 3</label>
             </parameter>
-            <parameter name="shop_smart_decide_example_query_four" xsi:type="text" visible="true" sort_order="150">
+            <parameter name="shop_smart_decide_example_query_four" xsi:type="text" visible="true" sort_order="160">
                 <label translate="true">Example query: 4</label>
             </parameter>
-            <parameter name="shop_smart_decide_example_query_five" xsi:type="text" visible="true" sort_order="160">
+            <parameter name="shop_smart_decide_example_query_five" xsi:type="text" visible="true" sort_order="170">
                 <label translate="true">Example of query: 5</label>
             </parameter>
-            <parameter name="shop_smart_decide_destination_status" xsi:type="select" visible="true" sort_order="170"
+            <parameter name="shop_smart_decide_destination_status" xsi:type="select" visible="true" sort_order="180"
                        source_model="NewEcomAI\ShopSmart\Model\Config\Source\Status">
                 <label translate="true">Destination Status</label>
             </parameter>
-            <parameter name="shop_smart_decide_custom_css" xsi:type="block" visible="true" sort_order="180">
+            <parameter name="shop_smart_decide_custom_css" xsi:type="block" visible="true" sort_order="190">
                 <label translate="true">Custom CSS</label>
                 <block class="NewEcomAI\ShopSmart\Block\Adminhtml\Widget\TextAreaField"/>
             </parameter>

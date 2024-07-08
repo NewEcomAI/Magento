@@ -10,8 +10,10 @@ define([
             var decideSearchQuestionRateUrl = config.decideSearchQuestionRateUrl;
             var currentProductTitle = config.currentProductTitle;
             var currentProductDescription = config.currentProductDescription;
+            var productRecommendation = config.productRecommendation;
             var questionId = "";
             let currentSearchQuery = '';
+            var allProducts = [];
             var responseProductInfo = [];
             var currentSearchId = null; // To track the current search
 
@@ -24,7 +26,7 @@ define([
                     if (questionId === "") {
                         $('body').trigger('processStart');
                         currentSearchId = new Date().getTime(); // Unique ID for each search
-                        decideSearchAPICall(searchText, questionId, currentProductTitle, currentProductDescription, currentSearchId);
+                        decideSearchAPICall(searchText, questionId, currentProductTitle, currentProductDescription, currentSearchId, productRecommendation);
                     }
                 }
             });
@@ -108,18 +110,27 @@ define([
                 searchResultsDiv.prepend(resultDiv);
             }
 
-            function decideSearchAPICall(searchQuestion, questionId, currentProductTitle, currentProductDescription, searchId) {
-                var url = decideSearchUrl + '?searchKey=' + searchQuestion + '&questionId=' + questionId + '&currentProductTitle=' + currentProductTitle + '&currentProductDescription=' + currentProductDescription;
+            function decideSearchAPICall(searchQuestion, questionId, currentProductTitle, currentProductDescription, searchId, productRecommendation) {
+                var url = decideSearchUrl + '?searchKey=' + searchQuestion + '&questionId=' + questionId + '&currentProductTitle=' + currentProductTitle + '&currentProductDescription=' + currentProductDescription + '&productRecommendation=' + productRecommendation;
                 $.ajax({
                     url: url,
                     type: "POST",
                     success: function(response) {
+                        allProducts = [];
                         let searchResponseData = response.response;
+                        if (response.products)
+                        {
+                            console.log(response.products);
+                            response.products.forEach(function(product) {
+                                allProducts.push(product);
+                            });
+                        }
+
                         searchResult(searchResponseData, searchId);
                         $('body').trigger('processStop');
                         if (response.response.hasNext == true) {
                             let qId = response.response.id;
-                            decideSearchAPICall(searchQuestion, qId, currentProductTitle, currentProductDescription, searchId);
+                            decideSearchAPICall(searchQuestion, qId, currentProductTitle, currentProductDescription, searchId, productRecommendation);
                         }
                         if (response.response.hasNext == false) {
                             currentSearchQuery = "";
