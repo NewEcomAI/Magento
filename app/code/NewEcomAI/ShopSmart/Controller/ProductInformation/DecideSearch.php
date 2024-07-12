@@ -219,7 +219,10 @@ class DecideSearch extends Action
                     'questionId' => $questionId
                 ];
             } else {
-                return ['productUrl' =>  $this->productUrl->getUrl($product)];
+                return [
+                    'title' => $product->getName(),
+                    'productUrl' =>  $this->productUrl->getUrl($product)
+                ];
             }
         } catch (NoSuchEntityException $e) {
             $this->logger->error($e->getMessage());

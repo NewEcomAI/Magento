@@ -16,6 +16,24 @@ define([
             var allProducts = [];
             var responseProductInfo = [];
             var currentSearchId = null; // To track the current search
+            var productGridLayout = config.productGridLayout;
+            var productGridColumn;
+
+            function updateProductGridColumn() {
+                if (window.innerWidth <= 768) {
+                  productGridColumn = 1;
+                } else {
+                  productGridColumn = productGridLayout;
+                }
+            }
+
+            $(document).ready(function() {
+                // Initial check
+                updateProductGridColumn();
+                // Update on resize
+                window.addEventListener('resize', updateProductGridColumn);
+                console.log("hehhehehhe",productGridColumn);
+            });
 
             $("#NewEcomAi-search").click(function() {
                 let searchText = $("#NewEcomAi-question").val().trim();
@@ -30,6 +48,37 @@ define([
                     }
                 }
             });
+
+            function applyBootstrapColumnClass(value) {
+                $(".NewEcomAi__product-items .products-item").removeClass(function(index, className) {
+                    let classesToRemove = (className.match(/(^|\s)col-(md)-\S+/g) || []).join(' ');
+                    console.log("Removing classes:", classesToRemove, "from element:", $(this));
+                    return classesToRemove;
+                });
+                let classToAdd = '';
+                
+                if (value === '1') {
+                    classToAdd = 'col-md-12';
+                } else if (value === '2') {
+                    classToAdd = 'col-md-6';
+                } else if (value === '3') {
+                    classToAdd = 'col-md-4';
+                } else if (value === '4') {
+                    classToAdd = 'col-md-3';
+                } else if (value === '5') {
+                    classToAdd = 'col-md-2';
+                } else if (value === '6') {
+                    classToAdd = 'col-md-1';
+                } else {
+                    console.warn('Invalid value for column class. Use a value between 1 and 6.');
+                    return;
+                }
+
+                $(".NewEcomAi__product-items .products-item").each(function() {
+                    $(this).addClass('col-12 ' + classToAdd);
+                    console.log("Added classes to element:", $(this).attr('class'));
+                });
+            }
 
             function searchResult(response, searchId) {
                 let searchText = $("#NewEcomAi-question").val().trim();
@@ -51,9 +100,120 @@ define([
                     additionalInfo: additionalInfo,
                     feedbackGiven: false
                 };
+                if (allProducts.length > 0) {
+                    var productLinks = '<div class="NewEcomAi__product-text"><p>Here are some products that might interest you:</p></div><ul class="NewEcomAi__product-items">';
+                    var hasPricedProducts = false;
+                    allProducts.forEach(function(product, index) {
+                        if (product.productUrl && product.title) {
+                            var productColors;
+                            var productSizes;
+                            if (product.price) {
+                                hasPricedProducts = true;
+                                let colors = [];
+                                let sizes = [];
+                                if ($.isArray(product.color)) {
+                                    for (const [key, value] of Object.entries(product.color)) {
+                                        colors.push(value);
+                                    }
+                                } else {
+                                    colors = product.color;
+                                }
+                                if ($.isArray(product.size)) {
+                                    for (let [key, value] of Object.entries(product.size)) {
+                                        sizes.push(value)
+                                    }
+                                } else {
+                                    sizes = product.size;
+                                }
+
+                                productColors = ($.isArray(colors) && colors.length > 0)
+                                    ? `<div class="NewEcomAi__product-box__variant__type product-variant-color">
+                                            <label>Color</label>
+                                            <select name="color" class="NewEcomAi__product-box__color-select-box">
+                                            ${colors.map(color => `<option value="${color}">${color}</option>`).join('')}
+                                            </select>
+                                        </div>`
+                                    : `<div class="NewEcomAi__product-box__variant__type product-variant-color">
+                                        <label>Color</label>
+                                        <div class="NewEcomAi__product-box__color-select-box">
+                                        <strong>${product.color}</strong>
+                                        </div>
+                                    </div>`;
+                                var sizesArray = [];
+                                $.each(sizes, function(index, value) {
+                                    sizesArray.push(value);
+                                });
+
+                                productSizes = ($.isArray(sizesArray) && sizesArray.length > 0)
+                                    ? `<div class="NewEcomAi__product-box__variant__type product-variant-size obj">
+                                        <label>Size</label>
+                                        <select name="size" class="NewEcomAi__product-box__size-select-box">
+                                        ${sizesArray.map(size => `<option value="${size}">${size}</option>`).join('')}
+                                        </select>
+                                    </div>`
+                                    : `<div class="NewEcomAi__product-box__variant__type product-variant-size simple">
+                                        <label>Size</label>
+                                        <div class="NewEcomAi__product-box__color-select-box">
+                                        <strong>${product.size}</strong>
+                                        </div>
+                                    </div>`;
+                                if (colors === null || colors === undefined) {
+                                    productColors = "";
+                                }
+                                if (sizes === null || sizes === undefined) {
+                                    productSizes = "";
+                                }
+                                productLinks += `
+                                    <div class="products-item" style="display: ${index < productGridColumn ? 'block' : 'none'};">
+                                        <input type="hidden" class="product-id" value="${product.id}">
+                                        <input type="hidden" class="product-sku" value="${product.sku}">
+                                        <input type="hidden" class="question-id" value="${product.questionId}">
+                                        <div class="NewEcomAi__product-box__info product-info">
+                                            <div class="NewEcomAi__product-box__details product-details">
+                                                <div class="NewEcomAi__product-box__image product-image">
+                                                    <a href="${product.productUrl}" target="_blank">
+                                                        <img loading="lazy" src="${product.imageUrl}" alt="${product.title}">
+                                                    </a>
+                                                </div>
+                                                <div class="NewEcomAi__product-box__title product-title">
+                                                    <div class="title">
+                                                        <a href="${product.productUrl}" target="_blank">${product.title}</a>
+                                                    </div>
+                                                </div>
+                                                <div class="NewEcomAi__product-box__price product-price">$${product.price}</div>
+                                                <div class="NewEcomAi__product-box__variant product-variant-container">
+                                                    ${productColors}
+                                                    ${productSizes}
+                                                </div>
+                                                <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
+                                                <div class="NewEcomAi__product-box__add-cart">
+                                                    <button class="NewEcomAi__popup-content__button NewEcomAi__add-to-cart">Add to cart</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                            } else {
+                                productLinks += `<li class="NewEcomAi__product-items__item"><a class="NewEcomAi__product-items__link" href="${product.productUrl}" target="_blank">${product.title}</a></li>`;
+                            }
+                        }
+                    });
+                    productLinks += `</ul>`;
+                    if (hasPricedProducts && allProducts.length > productGridColumn) {
+                        productLinks += '<button id="load-more-products" class="NewEcomAi__load-button">Load More</button>';
+                    }
+                    // Example usage:
+                    $(document).ready(function() {
+                        $('.NewEcomAi__product-items__item').each(function() {
+                            $(this).parent().css('display', 'block');
+                        });
+
+                        applyBootstrapColumnClass(productGridColumn); // Call with an example value
+                    });
+                    searchResult.additionalInfo += productLinks;
+                }
                 searchResultsArray.push(searchResult);
                 // Append the response to the correct search result div
-                $(`#search-result-${searchId} .newcom-query-response`).last().html(additionalInfo);
+                $(`#search-result-${searchId} .newcom-query-response`).last().html(searchResult.additionalInfo);
             }
 
             function showDecideResponse(response, searchId) {
@@ -65,6 +225,117 @@ define([
                 } else {
                     additionalInfo = `<div class="container"><p class="paragraph">${responseData}</p></div>`;
                 }
+                if (allProducts.length > 0) {
+                    var productLinks = '<div class="NewEcomAi__product-text"><p>Here are some products that might interest you:</p></div><ul class="NewEcomAi__product-items">';
+                    var hasPricedProducts = false;
+                    allProducts.forEach(function(product, index) {
+                        if (product.productUrl && product.title) {
+                            var productColors;
+                            var productSizes;
+                            if (product.price) {
+                                hasPricedProducts = true;
+                                let colors = [];
+                                let sizes = [];
+                                if ($.isArray(product.color)) {
+                                    for (const [key, value] of Object.entries(product.color)) {
+                                        colors.push(value);
+                                    }
+                                } else {
+                                    colors = product.color;
+                                }
+                                if ($.isArray(product.size)) {
+                                    for (let [key, value] of Object.entries(product.size)) {
+                                        sizes.push(value)
+                                    }
+                                } else {
+                                    sizes = product.size;
+                                }
+
+                                productColors = ($.isArray(colors) && colors.length > 0)
+                                    ? `<div class="NewEcomAi__product-box__variant__type product-variant-color">
+                                            <label>Color</label>
+                                            <select name="color" class="NewEcomAi__product-box__color-select-box">
+                                            ${colors.map(color => `<option value="${color}">${color}</option>`).join('')}
+                                            </select>
+                                        </div>`
+                                    : `<div class="NewEcomAi__product-box__variant__type product-variant-color">
+                                        <label>Color</label>
+                                        <div class="NewEcomAi__product-box__color-select-box">
+                                        <strong>${product.color}</strong>
+                                        </div>
+                                    </div>`;
+                                var sizesArray = [];
+                                $.each(sizes, function(index, value) {
+                                    sizesArray.push(value);
+                                });
+
+                                productSizes = ($.isArray(sizesArray) && sizesArray.length > 0)
+                                    ? `<div class="NewEcomAi__product-box__variant__type product-variant-size obj">
+                                        <label>Size</label>
+                                        <select name="size" class="NewEcomAi__product-box__size-select-box">
+                                        ${sizesArray.map(size => `<option value="${size}">${size}</option>`).join('')}
+                                        </select>
+                                    </div>`
+                                    : `<div class="NewEcomAi__product-box__variant__type product-variant-size simple">
+                                        <label>Size</label>
+                                        <div class="NewEcomAi__product-box__color-select-box">
+                                        <strong>${product.size}</strong>
+                                        </div>
+                                    </div>`;
+                                if (colors === null || colors === undefined) {
+                                    productColors = "";
+                                }
+                                if (sizes === null || sizes === undefined) {
+                                    productSizes = "";
+                                }
+                                productLinks += `
+                                    <div class="products-item" style="display: ${index < productGridColumn ? 'block' : 'none'};">
+                                        <input type="hidden" class="product-id" value="${product.id}">
+                                        <input type="hidden" class="product-sku" value="${product.sku}">
+                                        <input type="hidden" class="question-id" value="${product.questionId}">
+                                        <div class="NewEcomAi__product-box__info product-info">
+                                            <div class="NewEcomAi__product-box__details product-details">
+                                                <div class="NewEcomAi__product-box__image product-image">
+                                                    <a href="${product.productUrl}" target="_blank">
+                                                        <img loading="lazy" src="${product.imageUrl}" alt="${product.title}">
+                                                    </a>
+                                                </div>
+                                                <div class="NewEcomAi__product-box__title product-title">
+                                                    <div class="title">
+                                                        <a href="${product.productUrl}" target="_blank">${product.title}</a>
+                                                    </div>
+                                                </div>
+                                                <div class="NewEcomAi__product-box__price product-price">$${product.price}</div>
+                                                <div class="NewEcomAi__product-box__variant product-variant-container">
+                                                    ${productColors}
+                                                    ${productSizes}
+                                                </div>
+                                                <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
+                                                <div class="NewEcomAi__product-box__add-cart">
+                                                    <button class="NewEcomAi__popup-content__button NewEcomAi__add-to-cart">Add to cart</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                            } else {
+                                productLinks += `<li class="NewEcomAi__product-items__item"><a class="NewEcomAi__product-items__link" href="${product.productUrl}" target="_blank">${product.title}</a></li>`;
+                            }
+                        }
+                    });
+                    productLinks += `</ul>`;
+                    if (hasPricedProducts && allProducts.length > productGridColumn) {
+                        productLinks += '<button id="load-more-products" class="NewEcomAi__load-button">Load More</button>';
+                    }
+                    $(document).ready(function() {
+                        $('.NewEcomAi__product-items__item').each(function() {
+                            $(this).parent().css('display', 'block');
+                        });
+
+                        applyBootstrapColumnClass(productGridColumn); // Call with an example value
+                    });
+                    additionalInfo += productLinks;
+                }
+
                 let searchResult = {
                     searchText: currentSearchQuery,
                     additionalInfo: additionalInfo,
@@ -107,6 +378,11 @@ define([
                         iconsContainer.css("display", "none");
                     });
                 }
+
+                $(document).on('click', '#load-more-products', function() {
+                    $(".NewEcomAi__product-items .products-item, .NewEcomAi__product-items__item").css('display', 'block');
+                    $(this).hide();
+                });
                 searchResultsDiv.prepend(resultDiv);
             }
 
@@ -155,6 +431,5 @@ define([
                 });
             }
         });
-
     }
 });
