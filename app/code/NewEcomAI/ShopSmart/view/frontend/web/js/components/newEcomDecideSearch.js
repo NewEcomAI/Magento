@@ -32,7 +32,6 @@ define([
                 updateProductGridColumn();
                 // Update on resize
                 window.addEventListener('resize', updateProductGridColumn);
-                console.log("hehhehehhe",productGridColumn);
             });
 
             $("#NewEcomAi-search").click(function() {
@@ -52,7 +51,6 @@ define([
             function applyBootstrapColumnClass(value) {
                 $(".NewEcomAi__product-items .products-item").removeClass(function(index, className) {
                     let classesToRemove = (className.match(/(^|\s)col-(md)-\S+/g) || []).join(' ');
-                    console.log("Removing classes:", classesToRemove, "from element:", $(this));
                     return classesToRemove;
                 });
                 let classToAdd = '';
@@ -76,7 +74,6 @@ define([
 
                 $(".NewEcomAi__product-items .products-item").each(function() {
                     $(this).addClass('col-12 ' + classToAdd);
-                    console.log("Added classes to element:", $(this).attr('class'));
                 });
             }
 
