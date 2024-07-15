@@ -73,6 +73,7 @@ class AddToCart extends Action
      * @var CheckoutSession
      */
     private CheckoutSession $checkoutSession;
+    private \Magento\ConfigurableProduct\Model\Product\Type\Configurable $productTypeConfigurable;
 
     /**
      * @param Context $context
@@ -98,6 +99,7 @@ class AddToCart extends Action
         CartManagementInterface $cartManagement,
         StoreManagerInterface $storeManager,
         Config $config,
+        \Magento\ConfigurableProduct\Model\Product\Type\Configurable $productTypeConfigurable,
         CheckoutSession $checkoutSession
     ) {
         $this->resultJsonFactory = $resultJsonFactory;
@@ -111,6 +113,7 @@ class AddToCart extends Action
         $this->config = $config;
         $this->checkoutSession = $checkoutSession;
         parent::__construct($context);
+        $this->productTypeConfigurable = $productTypeConfigurable;
     }
 
     /**
@@ -135,7 +138,7 @@ class AddToCart extends Action
 
         try {
             // Fetch the configurable product
-            $configurableProduct = $this->productRepository->get($productId);
+            $requestProduct = $this->productRepository->get($productId);
 
             $colorAttribute = $this->config->getAttribute('catalog_product', 'color');
             $sizeAttribute = $this->config->getAttribute('catalog_product', 'size');
@@ -174,21 +177,39 @@ class AddToCart extends Action
             }
 
             $buyRequest = new DataObject([
-                'product' => $configurableProduct->getId(),
+                'product' => $requestProduct->getId(),
                 'qty' => $qty,
                 'super_attribute' => $superAttribute
             ]);
 
-            $quote->addProduct($configurableProduct, $buyRequest);
+            $quote->addProduct($requestProduct, $buyRequest);
             $quote->collectTotals()->save();
-            $this->setFlag($quote->getId(), $productId, $questionId);
-            $quote->setData('add_to_cart_from_discover', 1);
+            $this->setFlag($quote->getId(),$productId, $questionId);
+//            $quote->setData('add_to_cart_from_discover', 1);
+            if (!$this->customerSession->isLoggedIn()) {
+                $this->cartRepository->save($quote);
+            }
+            $this->cart->save();
+            $items = $quote->getAllItems();
+            foreach ($items as $item) {
+                if ($requestProduct->getId() == $item->getProductId() && $item->getProductType() == 'configurable') {
+                    foreach ($item->getChildren() as $child) {
+                        $child->setData('add_to_cart_from_discover', 1);
+                    }
+                }
+                if( $requestProduct->getId() == $item->getProductId()) {
+                    $item->setData('add_to_cart_from_discover', 1);
+                    $this->setDataForOrderApi($productId, $questionId,$item->getItemId());
+                }
+                $item->save();
+            }
+
+            $quote->save();
             if (!$this->customerSession->isLoggedIn()) {
                 $this->cartRepository->save($quote);
             }
 
             $this->cart->save(); // Ensure cart session is saved
-
             return $resultJson->setData(['success' => true]);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             return $resultJson->setData(['error' => true, 'message' => $e->getMessage()]);
@@ -211,5 +232,27 @@ class AddToCart extends Action
         $this->checkoutSession->setNewEcomAiQuoteId($quoteId);
         $this->checkoutSession->setNewEcomAiProductId($productId);
         $this->checkoutSession->setNewEcomAiQuestionId($questionId);
+    }
+
+    /**
+     * @param $productId
+     * @param $questionId
+     * @param $itemId
+     * @return void
+     */
+    protected function setDataForOrderApi($productId, $questionId,$itemId)
+    {
+        $data = [
+            'product_id' => $productId,
+            'question_id' => $questionId,
+            'item_id' => $itemId
+        ];
+        $sessionData = $this->checkoutSession->getOrderApiData();
+        if (!$sessionData) {
+            $sessionData = [];
+        }
+        // Add the new custom data to the session array
+        $sessionData[] = $data;
+        $this->checkoutSession->setOrderApiData($sessionData);
     }
 }

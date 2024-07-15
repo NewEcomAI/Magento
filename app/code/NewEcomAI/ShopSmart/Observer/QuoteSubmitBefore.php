@@ -17,11 +17,33 @@ class QuoteSubmitBefore implements ObserverInterface
     {
         $quote = $observer->getEvent()->getQuote();
         $order = $observer->getEvent()->getOrder();
+//
+//        $discoverQuoteAttribute = $quote->getData('add_to_cart_from_discover');
+//        $order->setData('discover_search_product', $discoverQuoteAttribute);
 
-        $discoverQuoteAttribute = $quote->getData('add_to_cart_from_discover');
-        $order->setData('discover_search_product', $discoverQuoteAttribute);
-
-        $decideQuoteAttribute = $quote->getData('add_to_cart_from_decide');
-        $order->setData('decide_search_product', $decideQuoteAttribute);
+        $items = $quote->getAllItems();
+        foreach ($items as $item) {
+            $discoverQuoteAttribute = $item->getData('add_to_cart_from_discover');
+            $decideQuoteAttribute = $item->getData('add_to_cart_from_decide');
+            if( $item->getData('add_to_cart_from_discover')) {
+                $itemId = $item->getData('item_id');
+                $orderItems = $order->getItems();
+                foreach ($orderItems as $orderItem) {
+                    if($orderItem->getQuoteItemId() == $itemId) {
+                        $orderItem->setData('discover_search_product', $discoverQuoteAttribute);
+                    }
+                }
+            }
+            if( $item->getData('add_to_cart_from_decide')) {
+                $itemId = $item->getData('item_id');
+                $orderItems = $order->getItems();
+                foreach ($orderItems as $orderItem) {
+                    if($orderItem->getQuoteItemId() == $itemId) {
+                        $orderItem->setData('decide_search_product', $decideQuoteAttribute);
+                    }
+                }
+            }
+        }
+        $order->save();
     }
 }

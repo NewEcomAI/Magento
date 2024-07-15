@@ -150,8 +150,8 @@ class DecideSearch extends Action
             $currentProductTitle = $params['currentProductTitle'];
             $currentProductDescription = $params['currentProductDescription'];
             $productRecommendation = $params['productRecommendation'];
+            $currentProductId = $params['currentProductId'];
             $userId = $this->dataHelper->getShopSmartUserId();
-            $this->checkoutSession->setNewEcomAiDecideSearchClicked(true);
             if ($this->http->isAjax()) {
                 $resultJson = $this->resultJsonFactory->create();
                 if (empty($questionId)) {
@@ -177,6 +177,8 @@ class DecideSearch extends Action
                 $endpoint = self::DECIDE_API_ENDPOINT;
                 $response = $this->dataHelper->sendApiRequest($endpoint, "POST", true, json_encode($data));
                 $responseData = json_decode($response, true);
+                $this->checkoutSession->setNewEcomAiDecideSearchClicked($currentProductId);
+                $this->checkoutSession->setNewEcomAiDecideQuestionId($responseData['id']);
                 if ($responseData['bestProducts']) {
                     foreach ($responseData['bestProducts'] as $product) {
                         $productSku = $product['product']['productId'];
