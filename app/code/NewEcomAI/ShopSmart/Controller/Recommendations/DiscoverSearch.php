@@ -41,7 +41,7 @@ class DiscoverSearch extends Action
     /**
      * @var JsonFactory
      */
-    private JsonFactory $resultJsonFactory;
+    private JsonFactory $resultJsonFactory; 
 
     /**
      * @var ProductRepository

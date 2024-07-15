@@ -11,6 +11,7 @@ define([
             var currentProductTitle = config.currentProductTitle;
             var currentProductDescription = config.currentProductDescription;
             var productRecommendation = config.productRecommendation;
+            var currentProductId = config.currentProductId;
             var questionId = "";
             let currentSearchQuery = '';
             var allProducts = [];
@@ -19,14 +20,15 @@ define([
 
             $("#NewEcomAi-search").click(function() {
                 let searchText = $("#NewEcomAi-question").val().trim();
-
+                console.log(currentProductId);
                 if (searchText === "") {
                     alert("Write your question");
                 } else {
                     if (questionId === "") {
                         $('body').trigger('processStart');
                         currentSearchId = new Date().getTime(); // Unique ID for each search
-                        decideSearchAPICall(searchText, questionId, currentProductTitle, currentProductDescription, currentSearchId, productRecommendation);
+                        console.log(currentProductId, "77777777777777777777777777");
+                        decideSearchAPICall(searchText, questionId, currentProductTitle, currentProductDescription, currentSearchId, productRecommendation, currentProductId);
                     }
                 }
             });
@@ -110,8 +112,8 @@ define([
                 searchResultsDiv.prepend(resultDiv);
             }
 
-            function decideSearchAPICall(searchQuestion, questionId, currentProductTitle, currentProductDescription, searchId, productRecommendation) {
-                var url = decideSearchUrl + '?searchKey=' + searchQuestion + '&questionId=' + questionId + '&currentProductTitle=' + currentProductTitle + '&currentProductDescription=' + currentProductDescription + '&productRecommendation=' + productRecommendation;
+          function decideSearchAPICall(searchQuestion, questionId, currentProductTitle, currentProductDescription, searchId, productRecommendation, currentProductId) {
+                var url = decideSearchUrl + '?searchKey=' + searchQuestion + '&questionId=' + questionId + '&currentProductTitle=' + currentProductTitle + '&productRecommendation=' + productRecommendation + "&currentProductId=" + currentProductId + '&currentProductDescription=' + currentProductDescription;
                 $.ajax({
                     url: url,
                     type: "POST",
@@ -130,7 +132,7 @@ define([
                         $('body').trigger('processStop');
                         if (response.response.hasNext == true) {
                             let qId = response.response.id;
-                            decideSearchAPICall(searchQuestion, qId, currentProductTitle, currentProductDescription, searchId, productRecommendation);
+                            decideSearchAPICall(searchQuestion, qId, currentProductTitle, currentProductDescription, searchId, productRecommendation, currentProductId);
                         }
                         if (response.response.hasNext == false) {
                             currentSearchQuery = "";

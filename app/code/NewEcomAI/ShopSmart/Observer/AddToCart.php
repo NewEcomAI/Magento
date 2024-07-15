@@ -58,10 +58,11 @@ class AddToCart implements ObserverInterface
         $productId = $this->checkoutSession->getNewEcomAiProductId();
         $questionId = $this->checkoutSession->getNewEcomAiQuestionId();
         $decideAddToCart = $this->checkoutSession->getNewEcomAiDecideSearchClicked();
+        $decideQuestionId = $this->checkoutSession->getNewEcomAiDecideQuestionId();
         if ($newComProduct && $quoteId && $productId) {
             $data = [
                 "userId" => $this->helper->getShopSmartUserId(),
-                "questionId"=> $questionId,
+                "questionId" => $questionId,
                 "productId" => $productId
             ];
             $endpoint = "api/questions/discovery/addtocart";
@@ -69,15 +70,62 @@ class AddToCart implements ObserverInterface
             $responseData = json_decode($response, true);
             if ($responseData && isset($responseData['response']['status'])
                 && $responseData['response']['status'] == 'success') {
-                Log::Info("The product has been added to cart and synced successfully.");
+                Log::Info("The product has been added to cart from discover and synced successfully.");
             }
         }
-        if (isset($decideAddToCart) && $decideAddToCart == true) {
+        if (isset($decideAddToCart) && isset($decideQuestionId)) {
+            $data = [
+                "userId" => $this->helper->getShopSmartUserId(),
+                "questionId" => $decideQuestionId
+            ];
+            $endpoint = "api/questions/decide/addtocart";
+            $response = $this->helper->sendApiRequest($endpoint, "POST", true, json_encode($data));
+            $responseData = json_decode($response, true);
+            if ($responseData && isset($responseData['response']['status'])
+                && $responseData['response']['status'] == 'success') {
+                Log::Info("The product has been added to cart from decide and synced successfully.");
+            }
+        }
+        if (isset($decideAddToCart)) {
             $quote = $this->checkoutSession->getQuote();
-            $quote->setData('add_to_cart_from_decide', 1);
+            $items = $observer->getEvent()->getItems();
+            foreach ($items as $item) {
+                if ($decideAddToCart == $item->getProductId() && $item->getProductType() == 'configurable') {
+                    foreach ($item->getChildren() as $child) {
+                        $child->setData('add_to_cart_from_decide', 1);
+                    }
+                }
+                if ($decideAddToCart == $item->getProductId()) {
+                    $item->setData('add_to_cart_from_decide', 1);
+                    $this->setDataForOrderApi($decideAddToCart, $decideQuestionId, $item->getItemId());
+                }
+            }
+
             $quote->save();
             $this->cartRepository->save($quote);
-            $this->checkoutSession->setNewEcomAiDecideSearchClicked(false);
+            $this->checkoutSession->setNewEcomAiDecideSearchClicked(null);
         }
+    }
+
+    /**
+     * @param $productId
+     * @param $questionId
+     * @param $itemId
+     * @return void
+     */
+    protected function setDataForOrderApi($productId, $questionId,$itemId)
+    {
+        $data = [
+            'product_id' => $productId,
+            'question_id' => $questionId,
+            'item_id' => $itemId
+        ];
+        $sessionData = $this->checkoutSession->getOrderApiData();
+        if (!$sessionData) {
+            $sessionData = [];
+        }
+        // Add the new custom data to the session array
+        $sessionData[] = $data;
+        $this->checkoutSession->setOrderApiData($sessionData);
     }
 }
