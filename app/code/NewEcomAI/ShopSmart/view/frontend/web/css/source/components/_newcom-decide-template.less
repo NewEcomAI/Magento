@@ -28,10 +28,13 @@
                 border-radius: 10px;
                 display: block;
                 font-size: 15px;
-                margin-bottom: 10px;
                 max-width: 90%;
+                margin: 0 auto 10px;
                 padding: 10px;
                 text-align: left;
+                display: flex;
+                align-items: flex-start;
+                flex-direction: column;
 
                 .lists {
                     .item {
@@ -71,7 +74,49 @@
             }
         }
     }
+
+    &__product-items {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0;
+
+        &__item {
+            margin-bottom: 0;
+        }
+
+        &__link {
+            color: @decide-search-link-color;
+            text-decoration: underline;
+        }
+
+        .NewEcomAi {
+            &__product-box {
+                &__image {
+                    min-height: unset;
+                }
+            }
+        }
+    }
+
+    &__load-button {
+        max-width: 150px;
+        margin: 0 auto;
+        color: @white;
+        background: @decide-load-more-button-bg-color;
+        border-radius: 0;
+        outline: none;
+        border: 0;
+
+        &:hover {
+            color: @white;
+            background: @decide-load-more-button-bg-color;
+            border-radius: 0;
+            outline: none;
+            border: 0;
+        }
+    }
 }
+
 #loader {
     border: 16px solid #f3f3f3;
     border-radius: 50%;
@@ -106,5 +151,30 @@
                 }
             }
         }
+    }
+
+    .col-md-12 {
+        width: 100%;
+        float: left;
+    }
+    .col-md-6 {
+        width: 50%;
+        float: left;
+    }
+    .col-md-4 {
+        width: 33.33%;
+        float: left;
+    }
+    .col-md-3 {
+        width: 25%;
+        float: left;
+    }
+    .col-md-2 {
+        width: 20%;
+        float: left;
+    }
+    .col-md-1 {
+        width: 16.66%;
+        float: left;
     }
 }
