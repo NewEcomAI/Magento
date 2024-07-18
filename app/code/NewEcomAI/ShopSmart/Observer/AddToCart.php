@@ -72,6 +72,10 @@ class AddToCart implements ObserverInterface
                 && $responseData['response']['status'] == 'success') {
                 Log::Info("The product has been added to cart from discover and synced successfully.");
             }
+            $this->checkoutSession->setNewEcomAiAddToCart(null);
+            $this->checkoutSession->setNewEcomAiQuoteId(null);
+            $this->checkoutSession->setNewEcomAiProductId(null);
+            $this->checkoutSession->setNewEcomAiQuestionId(null);
         }
         if (isset($decideAddToCart) && isset($decideQuestionId)) {
             $data = [
@@ -85,6 +89,8 @@ class AddToCart implements ObserverInterface
                 && $responseData['response']['status'] == 'success') {
                 Log::Info("The product has been added to cart from decide and synced successfully.");
             }
+            $this->checkoutSession->setNewEcomAiDecideSearchClicked(null);
+            $this->checkoutSession->setNewEcomAiDecideQuestionId(null);
         }
         if (isset($decideAddToCart)) {
             $quote = $this->checkoutSession->getQuote();
@@ -103,7 +109,6 @@ class AddToCart implements ObserverInterface
 
             $quote->save();
             $this->cartRepository->save($quote);
-            $this->checkoutSession->setNewEcomAiDecideSearchClicked(null);
         }
     }
 

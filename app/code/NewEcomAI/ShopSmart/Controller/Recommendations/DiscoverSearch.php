@@ -41,7 +41,7 @@ class DiscoverSearch extends Action
     /**
      * @var JsonFactory
      */
-    private JsonFactory $resultJsonFactory; 
+    private JsonFactory $resultJsonFactory;
 
     /**
      * @var ProductRepository
@@ -181,6 +181,7 @@ class DiscoverSearch extends Action
     public function loadProductDetails($product, $questionId)
     {
         return [
+            'source' => 'discover',
             'id' => $product->getId(),
             'sku' => $product->getSku(),
             'title' => $product->getName(),

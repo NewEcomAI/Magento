@@ -25,7 +25,6 @@ $customCss = $block->getCustomCss();
 $dataHelper = $block->getDataHelper();
 $showProductGrid = $block->getProductGrid();
 $currentProduct = $block->getCurrentProduct();
-
 $currentProductDetail = preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription())));
 $popupImage = $block->getImageUrl();
 $productRecommendation = $block->getProductRecommendation();
@@ -138,7 +137,8 @@ if ($dataHelper->isDecideWidgetEnabled() && $popupPosition):?>
                     "currentProductTitle": "<?= $escaper->escapeHtml($currentProduct->getName());?>",
                     "currentProductDescription": "<?= $escaper->escapeHtml(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription()))));?>",
                     "productRecommendation": "<?= $escaper->escapeHtml($productRecommendation);?>",
-                    "currentProductId": "<?= $escaper->escapeHtml($currentProduct->getId());?>"
+                    "currentProductId": "<?= $escaper->escapeHtml($currentProduct->getId());?>",
+                    "productAddToCartUrl": "<?= $escaper->escapeUrl($block->productAddToCartUrl());?>"
                 }
             }
         }

@@ -17,9 +17,6 @@ class QuoteSubmitBefore implements ObserverInterface
     {
         $quote = $observer->getEvent()->getQuote();
         $order = $observer->getEvent()->getOrder();
-//
-//        $discoverQuoteAttribute = $quote->getData('add_to_cart_from_discover');
-//        $order->setData('discover_search_product', $discoverQuoteAttribute);
 
         $items = $quote->getAllItems();
         foreach ($items as $item) {

@@ -114,7 +114,7 @@ class OrderPlace implements ObserverInterface
             ];
             $endpoint = "api/order/add";
             $response = $this->helper->sendApiRequest($endpoint, "POST", true, json_encode($data));
-             $responseData = json_decode($response, true);
+            $responseData = json_decode($response, true);
             Log::Info('Order details sent successfully: ' . json_encode($responseData));
         } catch (\Exception $e) {
             Log::Info('Error sending order details: ' . $e->getMessage());

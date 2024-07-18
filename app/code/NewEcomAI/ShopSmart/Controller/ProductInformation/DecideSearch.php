@@ -209,6 +209,7 @@ class DecideSearch extends Action
         try {
             if ($productRecommendation) {
                 return [
+                    'source' => 'decide',
                     'id' => $product->getId(),
                     'sku' => $product->getSku(),
                     'title' => $product->getName(),

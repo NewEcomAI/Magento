@@ -302,6 +302,7 @@ define([
                         <input type="hidden" class="product-id" value="${product.id}">
                         <input type="hidden" class="product-sku" value="${product.sku}">
                         <input type="hidden" class="question-id" value="${product.questionId}">
+                        <input type="hidden" class="source" value="${product.source}">
                         <div class="NewEcomAi__product-box__info product-info">
                             <div class="NewEcomAi__product-box__details product-details">
                                 <div class="NewEcomAi__product-box__image product-image">
@@ -402,11 +403,12 @@ define([
             let productId = productElement.find('.product-id').val();
             let productSku = productElement.find('.product-sku').val();
             let questionId = productElement.find('.question-id').val();
+            let source = productElement.find('.source').val();
             let { colorOption, sizeOption } = getSelectedOptions(productElement);
-            addToCartViaAjax(productSku, colorOption, sizeOption, questionId, $(this));
+            addToCartViaAjax(productSku, colorOption, sizeOption, questionId, source, $(this));
         });
 
-        function addToCartViaAjax(productSku, colorOption, sizeOption,questionId,buttonElement) {
+        function addToCartViaAjax(productSku, colorOption, sizeOption,questionId,source,buttonElement) {
             $.ajax({
                 url: productAddToCartUrl, // URL to the controller
                 method: 'POST',
@@ -415,7 +417,8 @@ define([
                     productId: productSku,
                     questionId: questionId,
                     colorOption: colorOption,
-                    sizeOption: sizeOption
+                    sizeOption: sizeOption,
+                    source : source
                 }),
                 success: function(response) {
                     if (response.success) {
@@ -437,7 +440,6 @@ define([
             });
         }
 
-        // Handle the remove from cart functionality
         $(document).on('click', '.NewEcomAi__popup-content__button.NewEcomAi__remove-from-cart', function() {
             let productElement = $(this).closest('.products-item');
             let productId = productElement.find('.product-id').val();
@@ -570,6 +572,7 @@ define([
                             <input type="hidden" class="product-id" value="${product.id}">
                             <input type="hidden" class="product-sku" value="${product.sku}">
                             <input type="hidden" class="question-id" value="${product.questionId}">
+                            <input type="hidden" class="source" value="${product.source}">
                             <div class="NewEcomAi__product-box__info product-info">
                                 <div class="NewEcomAi__product-box__details product-details">
                                     <div class="NewEcomAi__product-box__image product-image">

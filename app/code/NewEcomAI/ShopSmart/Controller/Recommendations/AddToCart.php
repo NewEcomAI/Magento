@@ -132,6 +132,7 @@ class AddToCart extends Action
 
         $productId = $data['productId'];
         $questionId = $data['questionId'];
+        $source = $data['source'];
         $colorOptionLabel = $data['colorOption']['value'];
         $sizeOptionLabel = $data['sizeOption']['value'];
         $qty = isset($data['qty']) ? (int)$data['qty'] : 1;
@@ -184,9 +185,14 @@ class AddToCart extends Action
 
             $quote->addProduct($requestProduct, $buyRequest);
             $quote->collectTotals()->save();
-            $this->setFlag($quote->getId(),$productId, $questionId);
-//            $quote->setData('add_to_cart_from_discover', 1);
-            if (!$this->customerSession->isLoggedIn()) {
+            if($source == "decide") {
+                $this->checkoutSession->setNewEcomAiDecideSearchClicked($productId);
+                $this->checkoutSession->setNewEcomAiDecideQuestionId($questionId);
+            }  elseif ($source == "discover") {
+                $this->setFlag($quote->getId(),$productId, $questionId);
+            }
+
+                if (!$this->customerSession->isLoggedIn()) {
                 $this->cartRepository->save($quote);
             }
             $this->cart->save();
@@ -194,11 +200,17 @@ class AddToCart extends Action
             foreach ($items as $item) {
                 if ($requestProduct->getId() == $item->getProductId() && $item->getProductType() == 'configurable') {
                     foreach ($item->getChildren() as $child) {
-                        $child->setData('add_to_cart_from_discover', 1);
+                        if($source == "decide")
+                            $child->setData('add_to_cart_from_decide', 1);
+                        elseif ($source == "discover")
+                            $child->setData('add_to_cart_from_discover', 1);
                     }
                 }
                 if( $requestProduct->getId() == $item->getProductId()) {
-                    $item->setData('add_to_cart_from_discover', 1);
+                    if($source == "decide")
+                        $item->setData('add_to_cart_from_decide', 1);
+                    elseif ($source == "discover")
+                        $item->setData('add_to_cart_from_discover', 1);
                     $this->setDataForOrderApi($productId, $questionId,$item->getItemId());
                 }
                 $item->save();

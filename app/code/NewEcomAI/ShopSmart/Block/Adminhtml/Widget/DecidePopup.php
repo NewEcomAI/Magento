@@ -14,6 +14,7 @@ class DecidePopup extends Template implements BlockInterface
 {
     protected const DECIDE_SEARCH_CONTROLLER_PATH = "newecomai/productinformation/decidesearch";
     protected const DECIDE_RATE_QUESTION_CONTROLLER_PATH = "newecomai/productinformation/ratequestion";
+    protected const PRODUCT_ADD_TO_CART_PATH = "newecomai/recommendations/addtocart";
     protected const POPUP_CLASS = 'newcomPopup';
     protected const LEFT_SIDE_CLASS = 'newcomLeftSide';
     protected const RIGHT_SIDE_CLASS = 'newcomRightSide';
@@ -310,5 +311,15 @@ class DecidePopup extends Template implements BlockInterface
     public function getCustomCss()
     {
         return $this->getData(self::SHOP_SMART_DECIDE_CUSTOM_CSS);
+    }
+
+    /**
+     * Get decide widget Add to cart URL path
+     *
+     * @return string
+     */
+    public function productAddToCartUrl()
+    {
+        return $this->getUrl(self:: PRODUCT_ADD_TO_CART_PATH);
     }
 }

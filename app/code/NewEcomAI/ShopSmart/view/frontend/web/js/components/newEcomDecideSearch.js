@@ -11,6 +11,7 @@ define([
             var currentProductTitle = config.currentProductTitle;
             var currentProductDescription = config.currentProductDescription;
             var productRecommendation = config.productRecommendation;
+            var productAddToCartUrl = config.productAddToCartUrl;
             var currentProductId = config.currentProductId;
             var questionId = "";
             let currentSearchQuery = '';
@@ -37,14 +38,12 @@ define([
 
             $("#NewEcomAi-search").click(function() {
                 let searchText = $("#NewEcomAi-question").val().trim();
-                console.log(currentProductId);
                 if (searchText === "") {
                     alert("Write your question");
                 } else {
                     if (questionId === "") {
                         $('body').trigger('processStart');
                         currentSearchId = new Date().getTime(); // Unique ID for each search
-                        console.log(currentProductId, "77777777777777777777777777");
                         decideSearchAPICall(searchText, questionId, currentProductTitle, currentProductDescription, currentSearchId, productRecommendation, currentProductId);
                     }
                 }
@@ -56,7 +55,7 @@ define([
                     return classesToRemove;
                 });
                 let classToAdd = '';
-                
+
                 if (value === '1') {
                     classToAdd = 'col-md-12';
                 } else if (value === '2') {
@@ -167,6 +166,7 @@ define([
                                         <input type="hidden" class="product-id" value="${product.id}">
                                         <input type="hidden" class="product-sku" value="${product.sku}">
                                         <input type="hidden" class="question-id" value="${product.questionId}">
+                                        <input type="hidden" class="source" value="${product.source}">
                                         <div class="NewEcomAi__product-box__info product-info">
                                             <div class="NewEcomAi__product-box__details product-details">
                                                 <div class="NewEcomAi__product-box__image product-image">
@@ -292,6 +292,7 @@ define([
                                         <input type="hidden" class="product-id" value="${product.id}">
                                         <input type="hidden" class="product-sku" value="${product.sku}">
                                         <input type="hidden" class="question-id" value="${product.questionId}">
+                                        <input type="hidden" class="source" value="${product.source}">
                                         <div class="NewEcomAi__product-box__info product-info">
                                             <div class="NewEcomAi__product-box__details product-details">
                                                 <div class="NewEcomAi__product-box__image product-image">
@@ -311,7 +312,7 @@ define([
                                                 </div>
                                                 <div class="NewEcomAi__product-box__quantity"><input class="item-qty" type="number" value="1" name="quantity" min="1"></div>
                                                 <div class="NewEcomAi__product-box__add-cart">
-                                                    <button class="NewEcomAi__popup-content__button NewEcomAi__add-to-cart">Add to cart</button>
+                                                    <button class="NewEcomAi__popup-content__button NewEcomAi__add-to-cart NewEcomAi__add-to-cart-decide">Add to cart</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -395,7 +396,6 @@ define([
                         let searchResponseData = response.response;
                         if (response.products)
                         {
-                            console.log(response.products);
                             response.products.forEach(function(product) {
                                 allProducts.push(product);
                             });
@@ -428,6 +428,106 @@ define([
                         $('.error_msg').show().text("An error occurred while processing your request");
                     }
                 });
+            }
+
+            $(document).on('click', '.NewEcomAi__popup-content__button.NewEcomAi__add-to-cart-decide', function() {
+                let productElement = $(this).closest('.products-item');
+                let productId = productElement.find('.product-id').val();
+                let productSku = productElement.find('.product-sku').val();
+                let questionId = productElement.find('.question-id').val();
+                let source = productElement.find('.source').val();
+                let { colorOption, sizeOption } = getSelectedOptions(productElement);
+                addToCartViaAjax(productSku, colorOption, sizeOption, questionId, source, $(this));
+            });
+
+            function addToCartViaAjax(productSku, colorOption, sizeOption,questionId,source,buttonElement) {
+                $.ajax({
+                    url: productAddToCartUrl, // URL to the controller
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        productId: productSku,
+                        questionId: questionId,
+                        colorOption: colorOption,
+                        sizeOption: sizeOption,
+                        source : source
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Change button text to "Remove from cart"
+                            buttonElement.removeClass('NewEcomAi__add-to-cart').addClass('NewEcomAi__remove-from-cart').text('Remove from cart');
+                            // Refresh the page to update the mini cart
+                            require(['Magento_Customer/js/customer-data'], function (customerData) {
+                                var sections = ['cart'];
+                                customerData.invalidate(sections);
+                                customerData.reload(sections, true);
+                            });
+                        } else {
+                            console.log('Error adding product to cart: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('An error occurred: ' + error);
+                    }
+                });
+            }
+
+
+            $(document).on('click', '.NewEcomAi__popup-content__button.NewEcomAi__remove-from-cart', function() {
+                let productElement = $(this).closest('.products-item');
+                let productId = productElement.find('.product-id').val();
+                removeFromCartViaAjax(productId, $(this));
+            });
+
+            function removeFromCartViaAjax(productId, buttonElement) {
+                $.ajax({
+                    url: productRemoveFromCartUrl, // URL to your custom remove controller
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ productId: productId }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Change button text to "Add to cart"
+                            buttonElement.removeClass('NewEcomAi__remove-from-cart').addClass('NewEcomAi__add-to-cart').text('Add to cart');
+
+                            // Refresh the mini cart
+                            require(['Magento_Customer/js/customer-data'], function (customerData) {
+                                var sections = ['cart'];
+                                customerData.invalidate(sections);
+                                customerData.reload(sections, true);
+                            });
+                        } else {
+                            console.log('Error removing product from cart: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('An error occurred: ' + error);
+                    }
+                });
+            }
+
+            function getSelectedOptions(productElement) {
+                let color = productElement.find('.NewEcomAi__product-box__color-select-box option:selected').val();
+                let size = productElement.find('.NewEcomAi__product-box__size-select-box option:selected').val();
+
+                let colorOption = null;
+                let sizeOption = null;
+
+                if (color) {
+                    colorOption = {
+                        option_id: 'color', // Replace with actual option ID
+                        value: color
+                    };
+                }
+
+                if (size) {
+                    sizeOption = {
+                        option_id: 'size', // Replace with actual option ID
+                        value: size
+                    };
+                }
+
+                return { colorOption, sizeOption };
             }
         });
     }
