@@ -1,17 +1,20 @@
 {
-  "name": "new-ecom-ai/module-shop-smart",
-  "version": "1.0.0",
-  "description": "N/A",
-  "type": "magento2-module",
-  "require": {
-    "magento/framework": "*"
-  },
-  "autoload": {
-    "files": [
-      "registration.php"
+    "name": "new-ecom-ai/module-shop-smart",
+    "description": "N/A",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
     ],
-    "psr-4": {
-      "NewEcomAi\\ShopSmart\\": ""
+    "require": {
+        "php": "~8.2.0|~8.3.0",
+        "magento/framework": "~100.0.4"
+    },
+    "autoload": {
+        "files": [ "registration.php" ],
+        "psr-4": {
+            "NewEcomAi\\ShopSmart\\": ""
+        }
     }
-  }
 }
