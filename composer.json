@@ -1,0 +1,26 @@
+{
+    "name": "newecomai/shopsmart",
+    "description": "N/A",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": [
+        "OSL-3.0"
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:NewEcomAI/Magento.git"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "NewEcomAI/Magento": "dev-develop-newcomai-5",
+        "magento/framework": "~100.0.4||~103.0.0"
+    },
+    "autoload": {
+        "files": [ "registration.php" ],
+        "psr-4": {
+            "NewEcomAi\\ShopSmart\\": ""
+        }
+    }
+}
