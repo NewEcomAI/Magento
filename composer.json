@@ -6,15 +6,8 @@
     "license": [
         "OSL-3.0"
     ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url":  "git@github.com:newecomai/magento.git"
-        }
-    ],
     "require": {
         "php": ">=7.4",
-        "NewEcomAI/Magento": "dev-ocomposer",
         "magento/framework": "~100.0.4||~103.0.0"
     },
     "autoload": {
