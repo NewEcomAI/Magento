@@ -9,7 +9,7 @@
     "repositories": [
         {
             "type": "composer",
-            "url":  "git@github.com:NewEcomAI/Magento.git"
+            "url":  "git@github.com:newecomai/magento.git"
         }
     ],
     "require": {
