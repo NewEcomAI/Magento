@@ -4,7 +4,7 @@ namespace NewEcomAI\ShopSmart\Console\Command;
 
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Type;
-use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use NewEcomAI\ShopSmart\Helper\Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
 use Symfony\Component\Console\Command\Command;
@@ -20,21 +20,20 @@ class SyncCatalogCommand extends Command
     private Data $helperData;
 
     /**
-     * @var ProductCollection
+     * @var ProductCollectionFactory
      */
-    private ProductCollection $productCollection;
-
+    private ProductCollectionFactory $productCollectionFactory;
 
     /**
      * @param Data $helperData
-     * @param ProductCollection $productCollection
+     * @param ProductCollectionFactory $productCollectionFactory
      */
     public function __construct(
         Data                    $helperData,
-        ProductCollection       $productCollection
+        ProductCollectionFactory $productCollectionFactory
     ) {
         $this->helperData = $helperData;
-        $this->productCollection = $productCollection;
+        $this->productCollectionFactory = $productCollectionFactory;
         parent::__construct();
     }
 
@@ -56,9 +55,12 @@ class SyncCatalogCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>Catalog sync started.</info>');
-        $productCollection = $this->productCollection->addAttributeToSelect('*');
+
+        // Create the product collection using the factory
+        $productCollection = $this->productCollectionFactory->create();
+        $productCollection->addAttributeToSelect('*');
         $productCollection->addAttributeToFilter('status', Status::STATUS_ENABLED);
-        $productCollection->addAttributeToFilter('type_id', ['in' => [Type::TYPE_SIMPLE, "configurable"]]);
+        $productCollection->addAttributeToFilter('type_id', ['in' => [Type::TYPE_SIMPLE, 'configurable']]);
 
         // Initialize the configurable product resource model
         $connection = $productCollection->getConnection();
@@ -79,7 +81,7 @@ class SyncCatalogCommand extends Command
         $products->setPageSize(20);
         $pages = $productCollection->getLastPageNumber();
         $productData = [];
-        for ($pageNum = 1; $pageNum<=$pages; $pageNum++) {
+        for ($pageNum = 1; $pageNum <= $pages; $pageNum++) {
             $productCollection->setCurPage($pageNum);
             foreach ($productCollection as $key => $product) {
                 $productData[] = $this->helperData->getProductAttributeMapping($product->getData());
@@ -90,8 +92,7 @@ class SyncCatalogCommand extends Command
                 "catalog" => $productData
             ];
             $endpoint = "api/catalog/update";
-            $response = $this->helperData->
-            sendApiRequest($endpoint, "POST", true, json_encode($data));
+            $response = $this->helperData->sendApiRequest($endpoint, "POST", true, json_encode($data));
             $responseData = json_decode($response, true);
             if ($responseData && isset($responseData['response']['status']) &&
                 $responseData['response']['status'] == 'success') {
@@ -105,3 +106,4 @@ class SyncCatalogCommand extends Command
         return Cli::RETURN_SUCCESS;
     }
 }
+
