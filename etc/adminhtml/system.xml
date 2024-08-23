@@ -14,7 +14,6 @@
             <group id="general" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>NewEcomAi API Configuration</label>
                 <include path="NewEcomAI_ShopSmart::system/account_configuration.xml"/>
-                <include path="NewEcomAI_ShopSmart::system/catalog_sync.xml"/>
                 <include path="NewEcomAI_ShopSmart::system/product_attribute_mapping.xml"/>
                 <include path="NewEcomAI_ShopSmart::system/newecomai_widgets.xml"/>
             </group>
