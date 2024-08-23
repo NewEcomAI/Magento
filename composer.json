@@ -15,5 +15,12 @@
         "psr-4": {
             "NewEcomAi\\ShopSmart\\": ""
         }
+    },
+    "extra": {
+        "patches": {
+            "magento/module-store": {
+                "Cache not cleared during install": "patches/magento_install_clear_cache.patch"
+            }
+        }
     }
 }
