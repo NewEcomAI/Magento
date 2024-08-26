@@ -12,8 +12,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source\Mode;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\CategoryFactory;
@@ -21,7 +19,7 @@ use Magento\Framework\Session\Generic;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 
-class Data extends AbstractHelper
+class Data
 {
     protected const MODULE_ENABLE = 'shop_smart/general/account_configuration/enable';
     protected const SHOP_SMART_DISCOVER_WIDGET = 'shop_smart/general_newecomai_widgets/shop_smart_discover_widget';
@@ -90,7 +88,6 @@ class Data extends AbstractHelper
      * @param StoreManagerInterface $storeManager
      * @param ProductRepository $productRepository
      * @param ScopeConfigInterface $scopeConfigInterface
-     * @param Context $context
      * @param Generic $session
      * @param CategoryFactory $categoryFactory
      * @param JsonFactory $resultJsonFactory
@@ -102,7 +99,6 @@ class Data extends AbstractHelper
         StoreManagerInterface $storeManager,
         ProductRepository     $productRepository,
         ScopeConfigInterface  $scopeConfigInterface,
-        Context               $context,
         Generic               $session,
         CategoryFactory       $categoryFactory,
         JsonFactory           $resultJsonFactory,
@@ -118,7 +114,6 @@ class Data extends AbstractHelper
         $this->categoryFactory = $categoryFactory;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->configDataCollectionFactory = $configDataCollectionFactory;
-        parent::__construct($context);
     }
 
     /**
@@ -129,7 +124,7 @@ class Data extends AbstractHelper
     public function isEnable()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::MODULE_ENABLE,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -148,7 +143,7 @@ class Data extends AbstractHelper
     public function isDiscoverWidgetEnabled()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::SHOP_SMART_DISCOVER_WIDGET,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -167,7 +162,7 @@ class Data extends AbstractHelper
     public function isDecideWidgetEnabled()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::SHOP_SMART_DECIDE_WIDGET,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -186,7 +181,7 @@ class Data extends AbstractHelper
     public function getShopSmartMode()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::SHOP_SMART_MODE,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -205,7 +200,7 @@ class Data extends AbstractHelper
     public function getShopSmartUserId()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::SHOP_SMART_USER_ID,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -224,7 +219,7 @@ class Data extends AbstractHelper
     public function getShopSmartUserName()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::SHOP_SMART_USER_NAME,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -244,7 +239,7 @@ class Data extends AbstractHelper
     public function getShopSmartUserPassword()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::SHOP_SMART_USER_PASSWORD,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -263,7 +258,7 @@ class Data extends AbstractHelper
     public function getShopSmartABTesting()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::SHOP_SMART_AB_TESTING,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -282,7 +277,7 @@ class Data extends AbstractHelper
     public function getShopSmartProductAttribute()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::SHOP_SMART_MAPPING,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -301,7 +296,7 @@ class Data extends AbstractHelper
     public function getShopSmartCatalogSyncButton()
     {
         try {
-            return $this->scopeConfig->getValue(
+            return $this->scopeConfigInterface->getValue(
                 self::SHOP_SMART_CATALOG_SYNC_BUTTON,
                 ScopeInterface::SCOPE_STORE,
                 $this->storeManager->getStore()->getId()
@@ -327,7 +322,7 @@ class Data extends AbstractHelper
             $configData = $collection->getFirstItem();
             if ($configData->getValue()) {
                 $timestamp = strtotime($configData->getUpdatedAt());
-                date_default_timezone_set($this->scopeConfig->getValue(
+                date_default_timezone_set($this->scopeConfigInterface->getValue(
                     self::LOCALE_TIME_ZONE,
                     ScopeInterface::SCOPE_STORE
                 ));
@@ -355,11 +350,11 @@ class Data extends AbstractHelper
 
             $configData = $collection->getFirstItem();
             if ($configData->getValue()) {
-                date_default_timezone_set($this->scopeConfig->getValue(
+                date_default_timezone_set($this->scopeConfigInterface->getValue(
                     self::LOCALE_TIME_ZONE,
                     ScopeInterface::SCOPE_STORE
                 ));
-                 $configData->setUpdatedAt(date("Y-m-d H:i:s"));
+                $configData->setUpdatedAt(date("Y-m-d H:i:s"));
                 $configData->save();
             }
         } catch (NoSuchEntityException $e) {
@@ -475,8 +470,6 @@ class Data extends AbstractHelper
      * Get Token.
      *
      * Returns an existing token or refreshes the token and returns the new token
-     *
-     * @param bool $refresh
      *
      * @return string
      */
