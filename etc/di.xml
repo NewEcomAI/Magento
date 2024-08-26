@@ -11,6 +11,10 @@
         <arguments>
             <argument name="data" xsi:type="object">NewEcomAI\ShopSmart\Helper\Data</argument>
             <argument name="sentryLog" xsi:type="object">Magento\Catalog\Model\ResourceModel\Product\CollectionFactory\Proxy</argument>
+<<<<<<< Updated upstream
+=======
+            <argument name="sentryLog" xsi:type="object">NewEcomAI\ShopSmart\Helper\Area\Proxy</argument>
+>>>>>>> Stashed changes
         </arguments>
     </type>
 </config>
