@@ -9,12 +9,9 @@
     </type>
     <type name="NewEcomAI\ShopSmart\Console\Command\SyncCatalogCommand">
         <arguments>
-            <argument name="data" xsi:type="object">NewEcomAI\ShopSmart\Helper\Data</argument>
-            <argument name="sentryLog" xsi:type="object">Magento\Catalog\Model\ResourceModel\Product\CollectionFactory\Proxy</argument>
-<<<<<<< Updated upstream
-=======
-            <argument name="sentryLog" xsi:type="object">NewEcomAI\ShopSmart\Helper\Area\Proxy</argument>
->>>>>>> Stashed changes
+            <argument name="helperData" xsi:type="object">NewEcomAI\ShopSmart\Helper\Data</argument>
+            <argument name="productCollectionFactory" xsi:type="object">Magento\Catalog\Model\ResourceModel\Product\CollectionFactory\Proxy</argument>
+            <argument name="area" xsi:type="object">Magento\Catalog\Model\ResourceModel\Product\CollectionFactory\Proxy</argument>
         </arguments>
     </type>
 </config>
