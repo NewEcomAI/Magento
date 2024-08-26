@@ -103,7 +103,7 @@ class SyncCatalogCommand extends Command
         }
 
         $output->writeln('<info>Catalog sync completed.</info>');
-        return 1;
+        return Cli::RETURN_SUCCESS;
     }
 }
 

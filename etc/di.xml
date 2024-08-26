@@ -2,7 +2,8 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="newecomai_shopsmart:sync_catalog_command" xsi:type="object">NewEcomAI\ShopSmart\Console\Command\SyncCatalogCommand</item>
+                <item name="newecomai_shopsmart:sync_catalog_command" xsi:type="object">
+                    NewEcomAI\ShopSmart\Console\Command\SyncCatalogCommand</item>
             </argument>
         </arguments>
     </type>
