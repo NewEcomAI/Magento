@@ -29,8 +29,8 @@ class SyncCatalogCommand extends Command
      * @param ProductCollectionFactory $productCollectionFactory
      */
     public function __construct(
-        Data\Proxy                    $helperData,
-        ProductCollectionFactory\Proxy $productCollectionFactory
+        Data                    $helperData,
+        ProductCollectionFactory $productCollectionFactory
     ) {
         $this->helperData = $helperData;
         $this->productCollectionFactory = $productCollectionFactory;
@@ -106,4 +106,3 @@ class SyncCatalogCommand extends Command
         return Cli::RETURN_SUCCESS;
     }
 }
-

@@ -7,4 +7,10 @@
             </argument>
         </arguments>
     </type>
+    <type name="NewEcomAI\ShopSmart\Console\Command\SyncCatalogCommand">
+        <arguments>
+            <argument name="data" xsi:type="object">NewEcomAI\ShopSmart\Helper\Data\Proxy</argument>
+            <argument name="sentryLog" xsi:type="object">Magento\Catalog\Model\ResourceModel\Product\CollectionFactory</argument>
+        </arguments>
+    </type>
 </config>

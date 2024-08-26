@@ -35,8 +35,7 @@ class OrderPlace implements ObserverInterface
         OrderRepositoryInterface $orderRepository,
         Data $helper,
         CheckoutSession $checkoutSession
-    )
-    {
+    ) {
         $this->orderRepository = $orderRepository;
         $this->helper = $helper;
         $this->checkoutSession = $checkoutSession;
@@ -61,7 +60,7 @@ class OrderPlace implements ObserverInterface
             $sessionData = $this->checkoutSession->getOrderApiData();
             $sourceArray = [];
             foreach ($order->getItems() as $item) {
-                if($item->getProductType() == 'simple') {
+                if ($item->getProductType() == 'simple') {
                     $orderItems[] = [
                         'id' => $item->getSku(),
                         'name' => $item->getName(),
