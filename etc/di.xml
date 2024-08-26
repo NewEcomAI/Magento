@@ -9,7 +9,7 @@
     </type>
     <type name="NewEcomAI\ShopSmart\Console\Command\SyncCatalogCommand">
         <arguments>
-            <argument name="helperData" xsi:type="object">NewEcomAI\ShopSmart\Helper\Data</argument>
+            <argument name="helperData" xsi:type="object">NewEcomAI\ShopSmart\Helper\Data\Proxy</argument>
             <argument name="productCollectionFactory" xsi:type="object">Magento\Catalog\Model\ResourceModel\Product\CollectionFactory\Proxy</argument>
             <argument name="area" xsi:type="object">Magento\Catalog\Model\ResourceModel\Product\CollectionFactory\Proxy</argument>
         </arguments>
