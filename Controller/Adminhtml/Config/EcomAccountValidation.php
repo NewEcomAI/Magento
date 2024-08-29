@@ -9,7 +9,7 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
-use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
+use NewEcomAI\ShopSmart\Model\Config as ConfigHelper;
 
 /**
  * Check Account Validation
@@ -27,21 +27,21 @@ class EcomAccountValidation extends Action
     private JsonFactory $resultJsonFactory;
 
     /**
-     * @var Data
+     * @var ConfigHelper
      */
-    private Data $helperData;
+    private ConfigHelper $helperData;
 
     /**
      * @param Http $http
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
-     * @param Data $helperData
+     * @param ConfigHelper $helperData
      */
     public function __construct(
         Http        $http,
         Context     $context,
         JsonFactory $resultJsonFactory,
-        Data        $helperData
+        ConfigHelper        $helperData
     ) {
         $this->http = $http;
         $this->resultJsonFactory = $resultJsonFactory;

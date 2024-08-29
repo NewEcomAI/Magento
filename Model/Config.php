@@ -50,20 +50,6 @@ class Config
     }
 
     /**
-     * Get value of module enable configuration
-     *
-     * @return false|mixed
-     */
-    public function isEnable()
-    {
-        $value = $this->scopeConfigInterface->getValue(
-            self::MODULE_ENABLE,
-            ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId()
-        );
-        return $value ?: false;
-    }
-    /**
      * Get value of Discover widget enable configuration
      *
      * @return mixed|void
@@ -157,21 +143,6 @@ class Config
     {
         $value = $this->scopeConfigInterface->getValue(
             self::SHOP_SMART_MAPPING,
-            ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId()
-        );
-        return $value ?: false;
-    }
-
-    /**
-     * Get value of catalog sync button configuration
-     *
-     * @return false|mixed
-     */
-    public function getShopSmartCatalogSyncButton()
-    {
-        $value = $this->scopeConfigInterface->getValue(
-            self::SHOP_SMART_CATALOG_SYNC_BUTTON,
             ScopeInterface::SCOPE_STORE,
             $this->storeManager->getStore()->getId()
         );
