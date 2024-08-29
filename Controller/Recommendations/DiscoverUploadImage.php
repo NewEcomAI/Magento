@@ -20,7 +20,7 @@ use Magento\Framework\File\UploaderFactory;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\Filesystem;
 use Magento\Store\Model\StoreManagerInterface;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
 
 class DiscoverUploadImage extends Action

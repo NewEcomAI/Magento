@@ -19,7 +19,7 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Psr\Log\LoggerInterface;

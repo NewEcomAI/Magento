@@ -10,7 +10,7 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Model\Config as ConfigHelper;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResource;
 
@@ -35,9 +35,9 @@ class CatalogProductSync extends Action
     private WriterInterface $writer;
 
     /**
-     * @var Data
+     * @var ConfigHelper
      */
-    private Data $helperData;
+    private ConfigHelper $helperData;
 
     /**
      * @var ProductCollection
@@ -53,7 +53,7 @@ class CatalogProductSync extends Action
      * @param Http $http
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
-     * @param Data $helperData
+     * @param ConfigHelper $helperData
      * @param ProductCollection $productCollection
      * @param WriterInterface $writer
      * @param ConfigurableResource $configurableResource
@@ -62,7 +62,7 @@ class CatalogProductSync extends Action
         Http                    $http,
         Context                 $context,
         JsonFactory             $resultJsonFactory,
-        Data                    $helperData,
+        ConfigHelper                    $helperData,
         ProductCollection       $productCollection,
         WriterInterface         $writer,
         ConfigurableResource    $configurableResource

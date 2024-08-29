@@ -5,24 +5,24 @@ namespace NewEcomAI\ShopSmart\Block\System\Config\Button;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
-use NewEcomAI\ShopSmart\Helper\Data as DataHelper;
+use NewEcomAI\ShopSmart\Model\Config as ConfigHelper;
 
 class CatalogSyncExecution extends Field
 {
     /**
-     * @var DataHelper
+     * @var ConfigHelper
      */
-    private DataHelper $dataHelper;
+    private ConfigHelper $dataHelper;
     protected const BUTTON_TEMPLATE = 'NewEcomAI_ShopSmart::system/config/button/catalog_sync_execution.phtml';
 
     /**
      * @param Context $context
-     * @param DataHelper $dataHelper
+     * @param ConfigHelper $dataHelper
      * @param array $data
      */
     public function __construct(
         context $context,
-        DataHelper $dataHelper,
+        ConfigHelper $dataHelper,
         array $data = []
     ) {
         $this->dataHelper = $dataHelper;
@@ -32,7 +32,7 @@ class CatalogSyncExecution extends Field
     /**
      * Get the data helper class
      *
-     * @return DataHelper
+     * @return ConfigHelper
      */
     public function getHelper()
     {

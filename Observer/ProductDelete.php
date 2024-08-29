@@ -4,7 +4,7 @@ namespace NewEcomAI\ShopSmart\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
 
 class ProductDelete implements ObserverInterface

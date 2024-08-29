@@ -5,10 +5,11 @@ namespace NewEcomAI\ShopSmart\Block\Adminhtml\Widget;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Widget\Block\BlockInterface;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
 use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
 use Magento\Store\Model\StoreManagerInterface;
 use NewEcomAI\ShopSmart\Model\Log\Log;
+use NewEcomAI\ShopSmart\Model\Config as ConfigHelper;
 
 /**
  * Get All NewEcomAI Widget Parameters Class
@@ -59,20 +60,28 @@ class DiscoverPopup extends Template implements BlockInterface
     protected $_template = "NewEcomAI_ShopSmart::widget/discover_template.phtml";
 
     /**
+     * @var ConfigHelper
+     */
+    private ConfigHelper $configHelper;
+
+    /**
      * @param Context $context
      * @param Data $helperData
      * @param StoreManagerInterface $storeManager
+     * @param ConfigHelper $configHelper
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
         Data             $helperData,
         StoreManagerInterface $storeManager,
+        ConfigHelper           $configHelper,
         array            $data = []
     ) {
         $this->helperData = $helperData;
         $this->data = $data;
         $this->storeManager = $storeManager;
+        $this->configHelper = $configHelper;
         parent::__construct($context);
     }
 
@@ -84,6 +93,16 @@ class DiscoverPopup extends Template implements BlockInterface
     public function getDatahelper()
     {
         return $this->helperData;
+    }
+
+    /**
+     * Get Data Helper functions
+     *
+     * @return ConfigHelper
+     */
+    public function getConfigHelper()
+    {
+        return $this->configHelper;
     }
 
     /**

@@ -21,10 +21,10 @@ $exampleQueryFour = $block->getExampleQueryFour();
 $exampleQueryFive = $block->getExampleQueryFive();
 $destinationStatus = $block->getDestinaltionStatus();
 $customCss = $block->getCustomCss();
-$dataHelper = $block->getDataHelper();
+$configHelper = $block->getConfigHelper();
 $showProductGrid = $block->getProductGrid();
 $popupImage = $block->getImageUrl();
-if ($dataHelper->isDiscoverWidgetEnabled() && $popupPosition):?>
+if ($configHelper->isDiscoverWidgetEnabled() && $popupPosition):?>
     <?= $customCss ? $escaper->escapeCss($customCss) : ""; ?>
     <div class="discover_widget" style="display: none">
         <div class="NewEcomAi newSmartShopDiscover <?= $escaper->escapeHtml($popupPosition);?>">
@@ -56,7 +56,7 @@ if ($dataHelper->isDiscoverWidgetEnabled() && $popupPosition):?>
                                        placeholder="<?= $placeHolder ? $escaper->escapeHtml($placeHolder) :
                                         $escaper->escapeHtml(
                                             __('Tell us what you are looking for, I am here to help!')
-                                        );?>">
+                                                    );?>">
                                 <?php if ($imageRecognition == 1): ?>
                                     <label class="NewEcomAi__popup-content__upload">
                                         <svg class="NewEcomAi__popup-content__svg" xmlns="http://www.w3.org/2000/svg"
