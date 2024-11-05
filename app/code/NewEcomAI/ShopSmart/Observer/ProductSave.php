@@ -4,7 +4,7 @@ namespace NewEcomAI\ShopSmart\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
 
 class ProductSave implements ObserverInterface
@@ -18,7 +18,7 @@ class ProductSave implements ObserverInterface
      * @param Data $helper
      */
     public function __construct(
-        Data $helper,
+        Data $helper
     ) {
         $this->helper = $helper;
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace NewEcomAI\ShopSmart\Helper;
 
 use Exception;
@@ -12,16 +11,17 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use NewEcomAI\ShopSmart\Model\Adminhtml\Config\Source\Mode;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Framework\Session\Generic;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
+use Magento\Framework\App\State;
+use Magento\Framework\Exception\LocalizedException;
+use NewEcomAI\ShopSmart\Model\Config as ConfigHelper;
 
-class Data extends AbstractHelper
+class SyncManagement
 {
     protected const MODULE_ENABLE = 'shop_smart/general/account_configuration/enable';
     protected const SHOP_SMART_DISCOVER_WIDGET = 'shop_smart/general_newecomai_widgets/shop_smart_discover_widget';
@@ -34,80 +34,82 @@ class Data extends AbstractHelper
     protected const SHOP_SMART_CATALOG_SYNC_BUTTON = 'shop_smart/general_catalog_sync/catalog_sync_button';
     protected const SHOP_SMART_MAPPING = 'shop_smart/general/product_attribute_mapping/mapping';
     protected const LOCALE_TIME_ZONE = 'general/locale/timezone';
-
     /**
      * @var string NewCommAI authentication token
      */
     protected string $token;
-
     /**
      * @var LoggerInterface
      */
     private LoggerInterface $logger;
-
     /**
      * @var StoreManagerInterface
      */
     private StoreManagerInterface $storeManager;
-
     /**
      * @var ScopeConfigInterface
      */
     private ScopeConfigInterface $scopeConfigInterface;
-
     /**
      * @var ProductRepository
      */
     private ProductRepository $productRepository;
-
     /**
      * @var CategoryFactory
      */
     private CategoryFactory $categoryFactory;
-
     /**
      * @var Generic
      */
     private Generic $session;
-
     /**
      * @var Curl
      */
     private Curl $httpClient;
-
     /**
      * @var JsonFactory
      */
     private JsonFactory $resultJsonFactory;
-
     /**
      * @var CollectionFactory
      */
     protected CollectionFactory $configDataCollectionFactory;
 
     /**
+     * @var State
+     */
+    private State $state;
+
+    /**
+     * @var ConfigHelper
+     */
+    private ConfigHelper $configHelper;
+
+    /**
      * @param LoggerInterface $logger
      * @param StoreManagerInterface $storeManager
      * @param ProductRepository $productRepository
      * @param ScopeConfigInterface $scopeConfigInterface
-     * @param Context $context
      * @param Generic $session
      * @param CategoryFactory $categoryFactory
      * @param JsonFactory $resultJsonFactory
      * @param CollectionFactory $configDataCollectionFactory
      * @param Curl $httpClient
+     * @param State $state
+     * @param ConfigHelper $configHelper
      */
     public function __construct(
         LoggerInterface       $logger,
         StoreManagerInterface $storeManager,
         ProductRepository     $productRepository,
         ScopeConfigInterface  $scopeConfigInterface,
-        Context               $context,
         Generic               $session,
         CategoryFactory       $categoryFactory,
         JsonFactory           $resultJsonFactory,
         CollectionFactory     $configDataCollectionFactory,
-        Curl                  $httpClient
+        Curl                  $httpClient,
+        State                 $state,
+        ConfigHelper          $configHelper
     ) {
         $this->logger = $logger;
         $this->storeManager = $storeManager;
@@ -118,284 +120,9 @@ class Data extends AbstractHelper
         $this->categoryFactory = $categoryFactory;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->configDataCollectionFactory = $configDataCollectionFactory;
-        parent::__construct($context);
+        $this->state = $state;
+        $this->configHelper = $configHelper;
     }
-
-    /**
-     * Get value of module enable configuration
-     *
-     * @return false|mixed
-     */
-    public function isEnable()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::MODULE_ENABLE,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Get value of Discover widget enable configuration
-     *
-     * @return mixed|void
-     */
-    public function isDiscoverWidgetEnabled()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::SHOP_SMART_DISCOVER_WIDGET,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Get value of Decide widget enable configuration
-     *
-     * @return false|mixed
-     */
-    public function isDecideWidgetEnabled()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::SHOP_SMART_DECIDE_WIDGET,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     *  Get value of mode configuration
-     *
-     * @return false|mixed
-     */
-    public function getShopSmartMode()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::SHOP_SMART_MODE,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Get value of user id configuration
-     *
-     * @return false|mixed
-     */
-    public function getShopSmartUserId()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::SHOP_SMART_USER_ID,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Get value of username configuration
-     *
-     * @return false|mixed
-     */
-    public function getShopSmartUserName()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::SHOP_SMART_USER_NAME,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-
-        }
-    }
-
-    /**
-     * Get value of password configuration
-     *
-     * @return false|mixed
-     */
-    public function getShopSmartUserPassword()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::SHOP_SMART_USER_PASSWORD,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Get value of AB testing configuration
-     *
-     * @return false|mixed
-     */
-    public function getShopSmartABTesting()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::SHOP_SMART_AB_TESTING,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Get value of product attributes mapping configuration
-     *
-     * @return false|mixed
-     */
-    public function getShopSmartProductAttribute()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::SHOP_SMART_MAPPING,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Get value of catalog sync button configuration
-     *
-     * @return false|mixed
-     */
-    public function getShopSmartCatalogSyncButton()
-    {
-        try {
-            return $this->scopeConfig->getValue(
-                self::SHOP_SMART_CATALOG_SYNC_BUTTON,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Get value of catalog sync date configuration
-     *
-     * @return string
-     */
-    public function getShopSmartCatalogSyncDate()
-    {
-        try {
-            $collection = $this->configDataCollectionFactory->create()
-                ->addFieldToFilter('path', self::SHOP_SMART_CATALOG_SYNC_BUTTON)
-                ->setPageSize(1);
-
-            $configData = $collection->getFirstItem();
-            if ($configData->getValue()) {
-                $timestamp = strtotime($configData->getUpdatedAt());
-                date_default_timezone_set($this->scopeConfig->getValue(
-                    self::LOCALE_TIME_ZONE,
-                    ScopeInterface::SCOPE_STORE
-                ));
-                return date("Y-m-d H:i:s", $timestamp);
-            } else {
-                return "0000-00-00 00:00:00";
-            }
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Set value of mode configuration
-     *
-     * @return void
-     */
-    public function setShopSmartCatalogSyncDate()
-    {
-        try {
-            $collection = $this->configDataCollectionFactory->create()
-                ->addFieldToFilter('path', self::SHOP_SMART_CATALOG_SYNC_BUTTON)
-                ->setPageSize(1);
-
-            $configData = $collection->getFirstItem();
-            if ($configData->getValue()) {
-                date_default_timezone_set($this->scopeConfig->getValue(
-                    self::LOCALE_TIME_ZONE,
-                    ScopeInterface::SCOPE_STORE
-                ));
-                 $configData->setUpdatedAt(date("Y-m-d H:i:s"));
-                $configData->save();
-            }
-        } catch (NoSuchEntityException $e) {
-            Log::Error($e->getMessage());
-        }
-    }
-
-    /**
-     * Get value of Popup Position configuration
-     *
-     * @return mixed|null
-     */
-    public function getPopUpPosition()
-    {
-        return $this->getConfigValue('shop_smart/general/popup');
-    }
-
-    /**
-     * Get Admin Configuration Values
-     *
-     * @param string $path
-     * @return mixed|void
-     */
-    public function getConfigValue($path)
-    {
-        try {
-            return $this->scopeConfigInterface->getValue(
-                $path,
-                ScopeInterface::SCOPE_STORE,
-                $this->storeManager->getStore()->getId()
-            );
-        } catch (Exception $e) {
-            $this->logger->critical('Config value: ' . $e->getMessage());
-        }
-    }
-
     /**
      * Get Product via sku
      *
@@ -410,7 +137,6 @@ class Data extends AbstractHelper
         }
         return $this->productRepository->get($sku);
     }
-
     /**
      * Get Category Name
      *
@@ -426,7 +152,6 @@ class Data extends AbstractHelper
         }
         return $categoryNames;
     }
-
     /**
      * Get Product Attribute Arrays
      *
@@ -436,7 +161,7 @@ class Data extends AbstractHelper
     public function getProductAttributeMapping($data)
     {
         try {
-            $productAttributes = $this->getShopSmartProductAttribute();
+            $productAttributes = $this->configHelper->getShopSmartProductAttribute();
             $attributesArray = explode(',', $productAttributes);
             $valuesString = '';
             $valuesArray = [];
@@ -470,22 +195,17 @@ class Data extends AbstractHelper
             $this->logger->critical($e->getMessage());
         }
     }
-
     /**
      * Get Token.
      *
      * Returns an existing token or refreshes the token and returns the new token
      *
-     * @param bool $refresh
-     *
      * @return string
      */
-
     public function getToken()
     {
         $authToken = "";
         $tokenData = $this->session->getData('NewCommAISession');
-
         if (isset($tokenData['token']) && !empty($tokenData['token']) && isset($tokenData['expiresIn'])) {
             // Check if the token has expired
             if (time() < $tokenData['expiresAt']) {
@@ -495,7 +215,6 @@ class Data extends AbstractHelper
                 $this->session->unsetData('NewCommAISession');
             }
         }
-
         if (empty($authToken)) {
             $accessTokenData = self::getAccessToken();
             if (!empty($accessTokenData['token'])) {
@@ -508,10 +227,8 @@ class Data extends AbstractHelper
                 ]);
             }
         }
-
         return $authToken;
     }
-
     /**
      * Get the access token
      *
@@ -519,18 +236,15 @@ class Data extends AbstractHelper
      */
     public function getAccessToken()
     {
-
         $endpoint = "api/oauth/v1/token";
         $postData = json_encode([
-            'username' => $this->getShopSmartUserName(),
-            'password' => $this->getShopSmartUserPassword(),
-            'userId' => $this->getShopSmartUserId()
+            'username' => $this->configHelper->getShopSmartUserName(),
+            'password' => $this->configHelper->getShopSmartUserPassword(),
+            'userId' => $this->configHelper->getShopSmartUserId()
         ]);
-
         $response = $this->sendApiRequest($endpoint, "POST", false, $postData);
         return json_decode($response, true);
     }
-
     /**
      * General function to send Api request
      *
@@ -542,7 +256,7 @@ class Data extends AbstractHelper
      */
     public function sendApiRequest($endpoint, $method, $requireOAuth, $data = [])
     {
-        $mode = $this->getShopSmartMode();
+        $mode = $this->configHelper->getShopSmartMode();
         $url = '';
         if ($mode === Mode::STAGING_URL) {
             $url = Mode::STAGING_URL . $endpoint;
@@ -565,5 +279,39 @@ class Data extends AbstractHelper
             $this->httpClient->get($url);
         }
         return $this->httpClient->getBody();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAreaCode(): ?string
+    {
+        try {
+            return $this->state->getAreaCode();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+    /**
+     * @param string $code
+     *
+     * AREA_GLOBAL = 'global';
+     * AREA_FRONTEND = 'frontend';
+     * AREA_ADMINHTML = 'adminhtml';
+     * AREA_DOC = 'doc';
+     * AREA_CRONTAB = 'crontab';
+     * AREA_WEBAPI_REST = 'webapi_rest';
+     * AREA_WEBAPI_SOAP = 'webapi_soap';
+     * AREA_GRAPHQL = 'graphql';
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    public function setAreaCode(string $code = "global")
+    {
+        $areaCode = $this->getAreaCode();
+        if (!$areaCode) {
+            $this->state->setAreaCode($code);
+        }
     }
 }

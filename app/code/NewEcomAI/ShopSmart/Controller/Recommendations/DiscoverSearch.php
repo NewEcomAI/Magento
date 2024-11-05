@@ -14,7 +14,7 @@ use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use NewEcomAI\ShopSmart\Model\Log\Log;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
 use Magento\Catalog\Model\Product\Attribute\Repository as AttributeRepository;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Catalog\Model\ProductRepository;

@@ -9,7 +9,7 @@ use Magento\Framework\App\ResponseInterface as Response;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
 
 class CheckLimit extends Action
 {

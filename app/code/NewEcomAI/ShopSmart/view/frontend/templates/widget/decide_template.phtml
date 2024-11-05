@@ -22,13 +22,13 @@ $exampleQueryFour = $block->getExampleQueryFour();
 $exampleQueryFive = $block->getExampleQueryFive();
 $destinationStatus = $block->getDestinaltionStatus();
 $customCss = $block->getCustomCss();
-$dataHelper = $block->getDataHelper();
+$configHelper = $block->getConfigHelper();
 $showProductGrid = $block->getProductGrid();
 $currentProduct = $block->getCurrentProduct();
 $currentProductDetail = preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($currentProduct->getDescription())));
 $popupImage = $block->getImageUrl();
 $productRecommendation = $block->getProductRecommendation();
-if ($dataHelper->isDecideWidgetEnabled() && $popupPosition):?>
+if ($configHelper->isDecideWidgetEnabled() && $popupPosition):?>
     <?= $customCss ? $escaper->escapeCss($customCss) : ""; ?>
     <div class="decide_widget" style="display: none">
         <div class="NewEcomAi newSmartShopDecide <?= $escaper->escapeHtml($popupPosition); ?>">

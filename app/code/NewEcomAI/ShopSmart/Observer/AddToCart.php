@@ -5,7 +5,7 @@ namespace NewEcomAI\ShopSmart\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Checkout\Model\Session as CheckoutSession;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
 use Magento\Quote\Api\CartRepositoryInterface;
 
@@ -118,7 +118,7 @@ class AddToCart implements ObserverInterface
      * @param $itemId
      * @return void
      */
-    protected function setDataForOrderApi($productId, $questionId,$itemId)
+    protected function setDataForOrderApi($productId, $questionId, $itemId)
     {
         $data = [
             'product_id' => $productId,

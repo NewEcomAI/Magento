@@ -5,7 +5,7 @@ namespace NewEcomAI\ShopSmart\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
 use NewEcomAI\ShopSmart\Model\Log\Log;
 use Magento\Checkout\Model\Session as CheckoutSession;
 
@@ -35,8 +35,7 @@ class OrderPlace implements ObserverInterface
         OrderRepositoryInterface $orderRepository,
         Data $helper,
         CheckoutSession $checkoutSession
-    )
-    {
+    ) {
         $this->orderRepository = $orderRepository;
         $this->helper = $helper;
         $this->checkoutSession = $checkoutSession;
@@ -61,7 +60,7 @@ class OrderPlace implements ObserverInterface
             $sessionData = $this->checkoutSession->getOrderApiData();
             $sourceArray = [];
             foreach ($order->getItems() as $item) {
-                if($item->getProductType() == 'simple') {
+                if ($item->getProductType() == 'simple') {
                     $orderItems[] = [
                         'id' => $item->getSku(),
                         'name' => $item->getName(),

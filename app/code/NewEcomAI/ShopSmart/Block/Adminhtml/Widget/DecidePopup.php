@@ -6,7 +6,8 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Widget\Block\BlockInterface;
-use NewEcomAI\ShopSmart\Helper\Data;
+use NewEcomAI\ShopSmart\Helper\SyncManagement as Data;
+use NewEcomAI\ShopSmart\Model\Config as ConfigHelper;
 use NewEcomAI\ShopSmart\Model\Config\Source\PopupLayout;
 use Magento\Catalog\Block\Product\View as ProductViewBlock;
 
@@ -56,21 +57,29 @@ class DecidePopup extends Template implements BlockInterface
     protected ProductViewBlock $productViewBlock;
 
     /**
+     * @var ConfigHelper
+     */
+    private ConfigHelper $configHelper;
+
+    /**
      * @param Context $context
      * @param Data $helperData
      * @param ProductViewBlock $productViewBlock
+     * @param ConfigHelper $configHelper
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
         Data             $helperData,
         ProductViewBlock $productViewBlock,
+        ConfigHelper     $configHelper,
         array            $data = []
     ) {
         $this->productViewBlock = $productViewBlock;
         $this->helperData = $helperData;
         $this->data = $data;
         parent::__construct($context);
+        $this->configHelper = $configHelper;
     }
 
     /**
@@ -91,6 +100,16 @@ class DecidePopup extends Template implements BlockInterface
     public function getDatahelper()
     {
         return $this->helperData;
+    }
+
+    /**
+     * Get Data Helper functions
+     *
+     * @return ConfigHelper
+     */
+    public function getConfigHelper()
+    {
+        return $this->configHelper;
     }
 
     /**

@@ -21,10 +21,10 @@ $exampleQueryFour = $block->getExampleQueryFour();
 $exampleQueryFive = $block->getExampleQueryFive();
 $destinationStatus = $block->getDestinaltionStatus();
 $customCss = $block->getCustomCss();
-$dataHelper = $block->getDataHelper();
+$configHelper = $block->getConfigHelper();
 $showProductGrid = $block->getProductGrid();
 $popupImage = $block->getImageUrl();
-if ($dataHelper->isDiscoverWidgetEnabled() && $popupPosition):?>
+if ($configHelper->isDiscoverWidgetEnabled() && $popupPosition):?>
     <?= $customCss ? $escaper->escapeCss($customCss) : ""; ?>
     <div class="discover_widget" style="display: none">
         <div class="NewEcomAi newSmartShopDiscover <?= $escaper->escapeHtml($popupPosition);?>">

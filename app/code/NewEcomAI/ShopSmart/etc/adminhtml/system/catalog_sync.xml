@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="catalog_sync" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+           showInStore="1">
+        <label>Catalog Sync Configuration</label>
+        <depends>
+            <field id="shop_smart/general/account_configuration/enable">1</field>
+        </depends>
+
+        <field id="catalog_sync_button" translate="label" type="button" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Catalog Sync</label>
+            <depends>
+                <field id="shop_smart/general/account_configuration/enable">1</field>
+            </depends>
+            <frontend_model>NewEcomAI\ShopSmart\Block\System\Config\Button\CatalogSyncExecution</frontend_model>
+            <config_path>shop_smart/general_catalog_sync/catalog_sync_button</config_path>
+        </field>
+    </group>
+</include>
